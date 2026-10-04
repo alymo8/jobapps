@@ -1,6 +1,6 @@
 # Application: Durable, AI Engineer
 
-Tab URL: https://job-boards.greenhouse.io/durable/jobs/5156304008 (batch subagent tab 855889777)
+Tab URL: https://job-boards.greenhouse.io/durable/jobs/5156304008 (batch subagent tab 855891300, re-filled 2026-10-04; phone country set to Canada)
 Resume: Aly_Mohamed_Hussein_Resume_Durable.pdf (uploaded, filename verified on form)
 Status: filled, NOT submitted. 2 ASK fields (both required) left empty.
 
@@ -45,3 +45,8 @@ What is your salary expectation?* | $200,000 CAD base + equity, flexible within 
 Loom link* | (pending: Aly to record) | ASK
 
 Status: held. Not approved for submit until the Loom link is in and Aly approves.
+
+
+## HELD 2026-10-04: not approved yet
+
+Waiting on Aly's Loom link. Approved edits for when it's submitted: work-sample link → https://github.com/alymo8/claude-kit; "Why Durable?" draft OK; salary 210000 (upper-middle of $180-225k).

@@ -1,0 +1,197 @@
+QUESTIONS FOR ALY - outreach batch 2026-10-04 (ranks 3-40)
+Write your answer after each "Answer:". Leave a line blank to use the suggestion shown.
+Posting numbers (#) match review.md. Reusable answers (part 1) are saved to profile.md.
+
+======================================================================
+PART 1 - REUSABLE ANSWERS (asked by several forms)
+======================================================================
+
+1. Salary expectation in CAD (base). One number, or a number per posting.
+   Asked by: #1 Artefact (no range given), #12 Durable (range $180-225k),
+   #13 Guidepoint ($135-210k), #19 Knak (optional, no range),
+   #23 Banyan (optional, $145-170k).
+   Answer: if salary range is posted, put something in the upper middle range they mention. Otherwise: ask me. If optional, don't fill it.
+Here - Artefact put 130000
+
+2. Salary expectation in USD, for US-dollar forms or recruiters. Optional.
+   Answer: if salary range is posted, put something in the upper middle range they mention. Otherwise: ask me. If optional, don't fill it. Otherwise put 130000
+
+3. Are you legally authorized to work in the US without restriction? (Yes/No)
+   Asked by: #5 Baseten.
+   Answer: Yes
+
+4. Will you now or in the future need visa sponsorship to work in the US? (Yes/No)
+   Asked by: #5 Baseten, #14 Censys, #22 Sardine (Sardine's form says "employment visa", and the role is US or Canada remote).
+   Answer: If the role is in Canada say no. Otherwise escalate to me
+
+5. Voluntary EEO questions: gender, Hispanic/Latino, veteran status, disability.
+   Give answers, or "decline" to answer "prefer not to say" everywhere.
+   Asked by: #5 Baseten, #14 Censys, #16 GitLab.
+   Answer: North aftican/middle eastern/arab when available, otherwise White 
+
+6. Do you need accommodations for interviews? (Suggested: "No" / "None")
+   Asked by: #14 Censys (free text), #19 Knak (AODA, Yes/No).
+   Answer:No
+
+7. Earliest start date / notice period (e.g. "2 weeks", "4 weeks", a date).
+   Asked by: #1 Artefact.
+   Answer: 2 weeks (always say that)
+
+8. Years of professional experience to state.
+   You have about 3 years full time since Sept 2023, plus an internship.
+   Asked by: #1 Artefact (a number), #16 GitLab ("over 3 years?" Yes/No).
+   Answer: 4
+
+9. Preferred first name on forms. (Suggested: Aly)
+   Asked by: #1, #12, #16 (required), #19, #23.
+   Answer: Aly
+
+10. Willing to work hybrid in Toronto (i.e. relocate or commute from Montreal)? (Yes/No)
+    Asked by: #13 Guidepoint (required). Also relevant to Banyan (#23, Toronto hybrid 3 days/week).
+    Answer: Yes (say that always when asked on willing to work hybrid/relocate)
+
+11. "How did you hear about this job?" (Suggested: "Company careers page")
+    Asked by: #13 Guidepoint (optional).
+    Answer: Company careers page (always)
+
+======================================================================
+PART 2 - ONE-OFF FORM QUESTIONS
+======================================================================
+
+12. #12 Durable: Loom video link (required; 2-3 min, unscripted: who you are,
+    what you're building, how AI is core to how you work). Paste the URL, or
+    "later" to hold Durable.
+    Answer:
+
+13. #16 GitLab: Ruby on Rails self-rating, 0-5. Your resume has no Rails. (Suggested: 0)
+    Answer: 2
+
+14. #16 GitLab: Python self-rating, 0-5. I put 4 (advanced). OK, or another number?
+    Answer: Yesm put 4 or similar always
+
+15. #16 GitLab: Are you bound by employment agreements or post-employment
+    restrictions (e.g. a non-compete in your Accenture contract)? (Yes/No)
+    Answer: No
+
+16. #22 Sardine: Available for an in-person interview if requested? (Yes/No)
+    Answer: Yes (always)
+
+17. #22 Sardine: Consent to a background check? (Yes/No)
+    Answer: Yes (always)
+
+18. #13 Guidepoint: Attestation checkbox ("information is true and complete,
+    reference checks allowed"). Tick it? (Yes/No)
+    Answer: Yes
+
+======================================================================
+PART 3 - DRAFTED ANSWERS TO OK (full text in each posting's application.md)
+======================================================================
+
+19. #12 Durable "Why Durable?" draft, and the work-sample link
+    (https://alymo8.github.io/safi-ai/; alternative: github.com/alymo8/claude-kit).
+    OK / edit / use the other link?
+    Answer: ok, but use claude kit
+
+20. #14 Censys "Example of an AI service taken to production" draft
+    (the Azure agentic billing-verification system). OK / edit?
+    Answer: OK.
+
+21. #22 Sardine "What excites you about Sardine?" draft (3 sentences). OK / edit?
+    Answer:OK
+
+======================================================================
+PART 4 - DECISIONS
+======================================================================
+
+22. Which applications should I submit? (Suggested: all that are fully answered)
+    Ready: #1 Artefact, #5 Baseten, #6 11x, #12 Durable, #13 Guidepoint,
+    #14 Censys, #16 GitLab, #19 Knak, #22 Sardine, #23 Banyan.
+    Answer ("all", or list / "all except ..."): all
+
+23. #20 Block: there's no Canada posting; the only posting is "Bay Area - Remote"
+    (Greenhouse id 5434157008), but it lists Canadian pay ranges. Apply there or skip?
+    Answer: apply
+
+24. #24 Velixo: there's no web form; the only way to apply is emailing jobs@velixo.com.
+    Do you email them yourself (I can draft the email), or skip?
+    Answer: skip and flag
+
+25. Thomson Reuters (#10, #11) and Scotiabank (#2, #17): all 4 applications need an
+    account first (TR: a Workday account at thomsonreuters.wd5.myworkdayjobs.com;
+    Scotiabank: a Talent Community account). The combined LinkedIn messages say
+    "applying shortly".
+    Send LinkedIn now, or wait until you've applied?
+    Answer: Send linkedIn now
+
+26. Workday accounts: do you want to create them (Morgan Stanley, Manulife,
+    Thomson Reuters, RBC) and the Scotiabank account, so I can retry those 7?
+    Answer: Flag for later
+
+27. Klue closed, but it has a similar live role, "Senior Software Engineer, AI".
+    Add it to the next batch? (Yes/No)
+    Answer: Yes
+
+======================================================================
+PART 5 - LINKEDIN: WHO TO MESSAGE (up to 3 per company)
+======================================================================
+Premium looks lapsed, so each message is a connection note plus a follow-up after
+they accept. Messages go out only after that company's application is submitted.
+Answer "top" to take my suggested picks, list names, or "none".
+
+28. #1 Artefact: suggested Tom Consolin, Vasilis Christopoulos, Ben Catchpole
+    (others: Pauline Chapelle, Gabriela Signeux Cucu)
+    Answer: ok
+
+29. #5 Baseten: suggested Lou Zumpano, Kelly Hall (both 1st degree, resume
+    attachable), Crystal Warmington-North (others: Julia Cozzette, Daniel Sarfati)
+    Answer:ok
+
+30. #6 11x: suggested Lily Chan, Evan Timms (other: Olivia Naidu)
+    Answer:ok
+
+31. #12 Durable: suggested Mohammad Zeinalizadeh, Billy Lam, James Clift (founder)
+    Answer:ok
+
+32. #13 Guidepoint: suggested Aniketh Pradhan, Megha Garg, Saarthak Sangamnerkar
+    (others: Ying Zhou, Krishna M.)
+    Answer:ok
+
+33. #14 Censys: suggested Rohan Kanade (Montreal), Melissa Kiriu, Eirik Herskedal
+    (others: Matt C., Yana Tychynska)
+    Answer:ok
+
+34. #16 GitLab: suggested Jessica Lacey, Joyce Wang, Christopher Fraser
+    (others: Annie Ying, Donald Cook)
+    Answer:ok
+
+35. #19 Knak: suggested Zak Michalyshyn (recruiter), Scott Broschell, Calvin Smith
+    (other: Joel Chretien, VP Eng)
+    Answer:ok
+
+36. #22 Sardine: suggested George Cave, Chandni Raja, Zhiheng Yi
+    (others: Andrew Hennessy, Kartik Agarwal)
+    Answer:ok
+
+37. #23 Banyan: suggested Charles Duckworth, Trevor Rudd (talent acquisition), Tom Prendiville
+    Answer:ok
+
+38. #20 Block (only if you apply): suggested Haroon Salimi, Aaron Young, Jered Davis
+    (others: Shahzad Raza, Victor Borges). One connection note is 301 characters,
+    so I'll trim it.
+    Answer: do it, I'll apply
+
+39. #24 Velixo: suggested Anna Kosianenko (recruiter), Gabriel Michaud (CEO),
+    Anastasiya Babiy (others: Philippe Bellefeuille, Aaron Solomon)
+    Answer:yes
+
+40. Thomson Reuters (combined): suggested Garima Kalra, Elvis L., Mohammad Neisiani
+    (others: Connor Quinn, Kanish Goel)
+    Answer:ok
+
+41. Scotiabank (combined): suggested Margarita K., Claudia Jin, Vipul Malhotra
+    (others: Sandra Jennings, Will Lau - 1st degree)
+    Answer:ok
+
+The full message texts are in review.md (section B, "LinkedIn shortlist and drafts"),
+or in each postings/<dir>/outreach.md. To change any message, write
+"edit <#> <name>: <new text>" at the end of this file.

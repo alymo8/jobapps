@@ -1,0 +1,10 @@
+# Changelog: Jackpocket (DraftKings), Software Engineer, AI Platform
+
+- **Emphasized:** backend services, APIs, and AI platform plumbing. Accenture AI bullets cover agents (billing router/subagents, LangGraph fraud agent with RAG), a FastAPI service on a streaming pipeline (Kinesis/Flink, event-driven), and observability (Langfuse tracing, LLM-as-a-judge, and monitoring/logging/alerting with Splunk/New Relic/CloudWatch), all of which map directly to the posting's responsibilities. The SWE role keeps microservices, REST APIs, and SQS-event Lambdas (for "microservices, event-driven"). Projects: Safi (Python/FastAPI multi-provider LLM layer, evals, 448 tests) and Clinic Ops (AI gateway, MCP, TDD with 584 tests) fit "platform tooling", "testing", and "production-ready code". The summary leads with backend services, APIs, agents, and RAG in Python/TypeScript.
+- **Close-call cuts:** dropped Cold-Chain Dispatch (no AI/RAG content, and space ran out) and claude-kit. Dropped the Research section (it doesn't fit a platform-engineering role). Cut the Gemini/Vertex chatbot, the voice PoC, and the "two revenue-generating systems solo" summary clause for space. No age-rule override. Leagueware kept at 1 bullet.
+- **Gaps:** no n8n or low-code/no-code automation experience (the posting accepts "willingness to learn"). No dedicated vector database (Pinecone/Weaviate/etc.) or retrieval-optimization work is evidenced. The only RAG bullet is the fraud agent, and pgvector appears only in the mega resume's skills list. C# appears only via Stocate (not on this resume). The posting notes that a gaming license may be required.
+- **Sanity-check:** "RAG (pgvector)" and "C#" in Skills are not backed by a bullet on this page. The Langfuse bullet merges the tracing bullet and the LLM-as-a-judge bullet (both from the call-summarization app). The Safi bullet says "savings audit ingesting multi-provider LLM logs" (source: ingests OpenAI/Anthropic, LiteLLM, Helicone, and Portkey logs).
+- **Build:** 1 page, fill 0.962, skills_lines 5, ok true. Only the template's standard 0.56pt overfull boxes remain.
+
+## Questions for Aly
+None.

@@ -1,0 +1,17 @@
+FOLLOW-UP QUESTIONS - outreach batch 2026-10-04
+Your answers from questions.txt are saved to profile.md, most of them as standing rules.
+Three voluntary EEO questions were still open. Baseten, Censys and GitLab wait for them;
+the other 6 approved applications are being submitted now.
+
+1. Gender, for voluntary EEO forms (or "decline").
+   Answer:Male
+
+2. Veteran status (Suggested: "I am not a protected veteran").
+   Answer:I am not a protected veteran
+
+3. Disability status (Suggested: "No, I don't have a disability", or "decline").
+   Answer:No, I don't have a disability
+
+4. Durable: I'm holding the application and its LinkedIn messages until you add the
+   Loom link. Paste the URL when you have it, or write "skip" to drop Durable.
+   Answer:skip for now

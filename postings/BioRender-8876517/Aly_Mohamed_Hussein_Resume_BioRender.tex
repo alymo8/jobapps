@@ -1,0 +1,213 @@
+%-------------------------
+% Resume in Latex
+% Based off of: https://github.com/sb2nov/resume
+%------------------------
+ 
+\documentclass[letterpaper,11pt]{article}
+ 
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+ 
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+ 
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+ 
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+ 
+\pdfgentounicode=1
+ 
+%-------------------------
+% Custom commands
+ 
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+ 
+% Standard heading: Company/School + Date | Role/Degree + Location
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Continued role at the SAME company (no repeated company name)
+% Args: {Role | Tech} {Date range} {Location}
+\newcommand{\resumeSubheadingContinued}[3]{
+  \vspace{4pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      & \textbf{\small #2} \\
+      \textit{\small#1} & \textit{\small #3} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Additional degree at the SAME institution (no repeated school name)
+% Arg: {Degree name}
+\newcommand{\resumeSubheadingDegree}[2]{
+  \vspace{2pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+ 
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+ 
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+ 
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Aly Mohamed Hussein} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ 438-993-5035 ~
+    {\raisebox{-0.2\height}\faHome\ {Montreal}}  ~
+    \href{mailto:aly4@outlook.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{aly4@outlook.com}} ~
+    \href{https://linkedin.com/in/aly-mohamed-hussein}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/aly-mohamed-hussein}}  ~
+    \href{https://github.com/alymo8}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/alymo8}}
+    \vspace{-8pt}
+\end{center}
+
+%-----------SUMMARY-----------
+\vspace{+5pt}
+{AI engineer with 3 years shipping production AI agents and LLM workflows (Python, TypeScript, Anthropic, OpenAI, Gemini); shipped two revenue-generating systems solo. M.Sc. in Machine Learning, McGill / MILA.}
+\vspace{-8pt}
+
+%-----------SKILLS-----------
+\section{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}] \small{\item{
+    \begin{tabular}{ l @{\hspace{0.3cm}} l } \textbf{Programming Languages}: Python, JavaScript, TypeScript, Java, SQL & \textbf{Cloud}: AWS, Azure, GCP (Vertex AI) \\ \end{tabular} \\
+    \textbf{LLMs \& Agents}{: Anthropic / OpenAI / Gemini APIs, LangGraph, MCP, RAG, LLM-as-a-judge evals, Langfuse} \\
+    \textbf{Frameworks \& Tools}{: Node.js, Next.js, React, FastAPI, REST APIs, PostgreSQL, Docker, GitHub Actions} \\
+    \textbf{Certifications}{: AWS Certified Solutions Architect - Associate, Claude Certified Architect} \\
+    \textbf{Languages}{: English (Bilingual), French (Bilingual), Arabic (Native), Spanish (Intermediate)} }}
+\end{itemize}
+\vspace{-18pt}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Accenture}{January 2025 -- Present}
+      {AI Engineer - Python, TypeScript, FastAPI, LangGraph, Langfuse, Azure, AWS, GCP}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Built an agentic system on Azure AI Foundry and Azure ML automating a client's manual billing verification: a router agent orchestrates parallel subagents, with an operator-facing React/TypeScript frontend.}
+        \resumeItem{Partnered with stakeholders to turn ambiguous requirements into measurable success criteria; owned the deployment.}
+        \resumeItem{Created a Langfuse evaluation framework benchmarking the agentic billing system against the manual process.}
+        \resumeItem{Built an internal chatbot (Gemini on Vertex AI) that generates dashboard visualizations from natural language queries.}
+        \resumeItem{Built a Llama-based FastAPI application on a real-time transcript stream (AWS Kinesis, Apache Flink) generating call summaries and live recommendations for support associates, saving 15 minutes per call for a major U.S. bank.}
+        \resumeItem{Delivered an LLM-as-a-judge framework scoring summaries for completeness, hallucination, and readability, with Langfuse tracing of prompts and outputs, enabling early detection of performance degradation.}
+      \resumeItemListEnd
+      \vspace{-8pt}
+
+    \resumeSubheadingContinued
+      {Software Engineer - Java, Spring Boot, Groovy, Python, AWS, Jenkins}{September 2023 -- January 2025}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Led development of microservices integrating with a major U.S. bank's Jenkins CI/CD pipeline, reducing failing pipelines by 33\% across the bank and cutting roughly 15 minutes per run.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Ericsson}{May 2022 -- August 2022}
+      {Full-Stack Developer Intern - Java, Spring Boot, Python, Bash, Docker, Kubernetes}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Built Bash and Python log-analysis tools that reduced production support task time by 50\% for 30+ developers.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+\vspace{-14pt}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {McGill University, in affiliation with MILA (Quebec AI Institute)}{Montreal, Canada}
+      {M.Sc. in Machine Learning (Part time), GPA: 3.85/4.00}{January 2025 -- April 2026}
+    \vspace{1pt}
+    \resumeSubheadingDegree{Bachelor of Software Engineering, GPA: 3.82/4.00}{September 2019 -- April 2023}
+  \resumeSubHeadingListEnd
+\vspace{-12pt}
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+
+      \resumeProjectHeading
+        {\textbf{claude-kit: Open-Source Claude Code Plugin} $|$ \emph{Python, pytest} \href{https://github.com/alymo8/claude-kit}{\raisebox{-0.2\height}\ \underline{github.com/alymo8/claude-kit}}}{July 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Built and open-sourced a Claude Code plugin (commands, hooks, skills) that packages my agentic engineering workflow (spec-plan-build flow, test-first merge gate, AI review), now the default setup across three active repos.}
+          \resumeItem{Engineered agent constraints for reliability over autonomy (decision-verification gate, eval criteria agreed upfront, worktree isolation); 64 tests, CI on Ubuntu and Windows.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Clinic Ops Platform: AI Patient Record} $|$ \emph{Next.js, TypeScript, Anthropic API, MCP, Azure}}{2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Sole engineer for a paying client: ran customer discovery (84-clinic survey, owner-doctor interviews) that reshaped v1; live with a practicing Cairo surgeon who reports roughly 20 minutes saved per patient visit.}
+          \resumeItem{Shipped four production LLM workflows (handwritten document extraction, history structuring, report drafting, pre-visit brief) on Anthropic structured outputs behind an AI gateway, plus an MCP server exposing the platform to LLM agents.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Safi: LLM Cost-Optimization Layer} $|$ \emph{Python, FastAPI, Anthropic / OpenAI / Gemini SDKs}}{June 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Architected a workload-aware planner (prompt caching, model routing, context compaction) behind a provider abstraction spanning Anthropic, OpenAI, and Gemini; a live 48-request trace against Claude showed 61.7\% realized savings at 100\% quality agreement.}
+          \resumeItem{Used evals as the honesty mechanism: when the first live audit missed its thresholds, diagnosed rather than tuned, and a revised LLM judge lifted agreement from 77\% to 96\% on identical outputs.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Startup Co-Founder: Leagueware} $|$ \emph{JavaScript, MongoDB, Vue.js} \href{https://kingsleague.ca/}{\raisebox{-0.2\height}\ \underline{kingsleague.ca}}}{}
+        \resumeItemListStart
+          \resumeItem{Co-founded and built a soccer league platform serving 70 teams and 700 players; led the decoupled, scalable back end.}
+        \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+
+\end{document}

@@ -1,0 +1,209 @@
+%-------------------------
+% Resume in Latex
+% Based off of: https://github.com/sb2nov/resume
+%------------------------
+ 
+\documentclass[letterpaper,11pt]{article}
+ 
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+ 
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+ 
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+ 
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+ 
+\pdfgentounicode=1
+ 
+%-------------------------
+% Custom commands
+ 
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+ 
+% Standard heading: Company/School + Date | Role/Degree + Location
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Continued role at the SAME company (no repeated company name)
+% Args: {Role | Tech} {Date range} {Location}
+\newcommand{\resumeSubheadingContinued}[3]{
+  \vspace{4pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      & \textbf{\small #2} \\
+      \textit{\small#1} & \textit{\small #3} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Additional degree at the SAME institution (no repeated school name)
+% Arg: {Degree name}
+\newcommand{\resumeSubheadingDegree}[2]{
+  \vspace{2pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+ 
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+ 
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+ 
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\begin{document}
+ 
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Aly Mohamed Hussein} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ 438-993-5035 ~
+    {\raisebox{-0.2\height}\faHome\ {Montreal}}  ~
+    \href{mailto:aly4@outlook.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{aly4@outlook.com}} ~ 
+    \href{https://linkedin.com/in/aly-mohamed-hussein}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/aly-mohamed-hussein}}  ~
+    \href{https://github.com/alymo8}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/alymo8}}
+    \vspace{-8pt}
+\end{center}
+ 
+
+%-----------SUMMARY-----------
+\vspace{+5pt}
+{AI engineer with 3 years of experience embedding with business teams to turn manual workflows into production LLM, retrieval, and agentic tools (Python, TypeScript, AWS, Azure), built with Claude Code; shipped two revenue-generating systems solo. M.Sc. in Machine Learning from McGill University, in affiliation with MILA.}
+\vspace{-8pt}
+
+%-----------SKILLS-----------
+\section{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}] \small{\item{
+    \begin{tabular}{ l @{\hspace{0.3cm}} l } \textbf{Programming Languages}: Python, TypeScript, SQL, Java, Bash & \textbf{Cloud}: AWS, Azure, GCP (Vertex AI) \\ \end{tabular} \\
+    \textbf{LLMs \& Agents}{: Anthropic API (tool use), LangGraph, RAG, MCP, LLM-as-a-judge evals, Langfuse, Claude Code} \\
+    \begin{tabular}{ l @{\hspace{0.3cm}} l } \textbf{Frameworks}: FastAPI, Next.js, React, Docker & \textbf{DevOps \& IaC}: GitHub Actions, AWS CDK, Bicep \\ \end{tabular} \\
+    \begin{tabular}{ l @{\hspace{0.3cm}} l } \textbf{Databases}: PostgreSQL (RLS, triggers), DynamoDB & \textbf{Languages}: English, French (Bilingual) \\ \end{tabular} \\
+    \textbf{Certifications}{: AWS Certified Solutions Architect - Associate, Claude Certified Architect} }}
+\end{itemize}
+\vspace{-18pt}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Accenture}{January 2025 -- Present}
+      {AI Engineer - Python, TypeScript, React, FastAPI, LangGraph, Langfuse, AWS, Azure, GCP}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Partnered with enterprise stakeholders to translate ambiguous billing requirements into measurable success criteria, drove the agentic system end to end, and owned its production deployment on Azure.}
+        \resumeItem{Automated a consulting client's manual billing verification with an agentic system on Azure AI Foundry, Azure ML, and Azure Containers: a router agent orchestrates parallel subagents, with an operator-facing React/TypeScript frontend.}
+        \resumeItem{Created an evaluation framework on Langfuse that benchmarks the agentic billing system against the manual process.}
+        \resumeItem{Designed a real-time fraud detection agent for a major U.S. bank with LangGraph (plan-execute), augmenting fraud alerts via RAG over customer and transaction history; 96\% accuracy across 500 transactions.}
+        \resumeItem{Built a Llama-based FastAPI service on a real-time transcript stream (AWS Kinesis, Apache Flink) generating call summaries and live recommendations for support associates, saving 15 minutes per call for a major U.S. bank.}
+        \resumeItem{Built an internal Gemini (Vertex AI) chatbot that generates dashboard visualizations from natural language queries.}
+      \resumeItemListEnd
+      \vspace{-6pt}
+
+    \resumeSubheadingContinued
+      {Software Engineer - Java, Spring Boot, Python, AWS, Jenkins}{September 2023 -- January 2025}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Led development of microservices integrating with a major U.S. bank's Groovy-based Jenkins pipeline, reducing failing pipelines by 33\% across the bank; deployed on AWS Fargate behind REST APIs.}
+        \resumeItem{Provisioned AWS infrastructure and deployed the microservices as code with AWS CloudFormation and AWS CDK.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Ericsson}{May 2022 -- August 2022}
+      {Full-Stack Developer Intern - Java, Spring Boot, Python, Bash, Docker, Kubernetes}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Built Bash and Python log-analysis tools that reduced PLM production support task time by 50\% for 30+ developers.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+\vspace{-14pt}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {McGill University, in affiliation with MILA (Quebec AI Institute)}{Montreal, Canada}
+      {M.Sc. in Machine Learning (Part time), GPA: 3.85/4.00}{January 2025 -- April 2026}
+    \vspace{1pt}
+    \resumeSubheadingDegree{Bachelor of Software Engineering, GPA: 3.82/4.00}{September 2019 -- April 2023}
+  \resumeSubHeadingListEnd
+\vspace{-12pt}
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+
+      \resumeProjectHeading
+        {\textbf{Cold-Chain Dispatch System} $|$ \emph{Next.js, TypeScript, Postgres (Supabase), GitHub Actions}}{July 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Sole engineer for a paying client: embedded with a non-technical owner to replace WhatsApp-and-paper dispatch with an Arabic-first mobile system of record now run daily for a 5-vehicle refrigerated pharma fleet.}
+          \resumeItem{Owned the production cutover: separate prod and dev Postgres, real data migration, row-level security across 15 tables, CI gating tests, lint, build, and a leaked-key bundle scan, plus ADRs and 5 runbooks.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Clinic Ops Platform: AI Patient Record} $|$ \emph{Next.js, TypeScript, Postgres, Anthropic API, Azure}}{2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Sole engineer for a paying client: customer discovery (84-clinic survey, owner-doctor interviews) disproved my original thesis and reshaped v1; live with a Cairo surgeon who reports roughly 20 minutes saved per visit.}
+          \resumeItem{Shipped four production LLM workflows (handwritten document extraction, history structuring, report drafting, pre-visit brief) on Anthropic structured outputs behind an AI gateway, with a human-in-the-loop accept gate.}
+          \resumeItem{Provisioned Azure as code with Bicep and azd (Container Apps, Postgres, Key Vault with managed identity); 28 reviewed PRs against a 584-test suite, CI gating lint, types, tests, and a Docker build.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{claude-kit: Claude Code Plugin} $|$ \emph{Python, pytest, GitHub Actions} \href{https://github.com/alymo8/claude-kit}{\raisebox{-0.2\height}\ \underline{github.com/alymo8/claude-kit}}}{July 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Built and open-sourced a Claude Code plugin packaging my agentic engineering conventions (ADR log, spec-plan-build flow, test-first merge gate with CI, AI review, human approval), the default across three repos.}
+          \resumeItem{Commands scaffold repos with CI, AI code review, secret scanning, and spec/ADR templates; agent constraints favour reliability over autonomy (evaluation criteria agreed before implementation, git-worktree isolation).}
+        \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+
+\end{document}
