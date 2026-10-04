@@ -1,0 +1,26 @@
+OPEN ITEMS - outreach batch 2026-10-04
+
+1. Censys: Greenhouse emailed an 8-character security code to aly4@outlook.com. Paste it
+   here and I'll submit (the filled form is waiting in its tab). Or enter it yourself in
+   that tab and click "Submit application", then write "done".
+   Answer: 0t6RhzjW
+
+2. Baseten - Lou Zumpano (1st degree): you already messaged him on Sep 14 about the Baseten
+   FDE, AI Developer Productivity, Voice AI and Observability roles, with your resume, and
+   he hasn't replied. Should I send the approved follow-up anyway? Its opening line becomes a
+   gentle bump: "Following up on my note from September: I've now formally applied to the
+   FDE role." Or skip him?
+   Answer (send / send as bump / skip):send as bump
+
+3. Baseten - Kelly Hall: the permission check blocked opening her LinkedIn profile, so
+   I couldn't confirm she's 1st degree, still at Baseten, or whether you've already
+   messaged her. Options: you open https://www.linkedin.com/ (Kelly Hall, Talent at Baseten)
+   and send the approved follow-up yourself; or you allow that navigation and I retry;
+   or skip her.
+   Answer: I allow navigation
+
+4. Premium: write "active" here when Premium is reactivated. I'll then send the approved
+   notes to the remaining people (Artefact 2, Censys 3, GitLab 3, Knak 3, Sardine 3,
+   Banyan 3, Guidepoint 3, Block 3, Velixo 3, Thomson Reuters 3, Scotiabank 3). Each
+   goes out only after that company's application is submitted.
+   Answer: active

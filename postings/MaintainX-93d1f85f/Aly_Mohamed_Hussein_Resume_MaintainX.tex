@@ -1,0 +1,206 @@
+%-------------------------
+% Resume in Latex
+% Based off of: https://github.com/sb2nov/resume
+%------------------------
+ 
+\documentclass[letterpaper,11pt]{article}
+ 
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+ 
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+ 
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+ 
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+ 
+\pdfgentounicode=1
+ 
+%-------------------------
+% Custom commands
+ 
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+ 
+% Standard heading: Company/School + Date | Role/Degree + Location
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Continued role at the SAME company (no repeated company name)
+% Args: {Role | Tech} {Date range} {Location}
+\newcommand{\resumeSubheadingContinued}[3]{
+  \vspace{4pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      & \textbf{\small #2} \\
+      \textit{\small#1} & \textit{\small #3} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Additional degree at the SAME institution (no repeated school name)
+% Arg: {Degree name}
+\newcommand{\resumeSubheadingDegree}[2]{
+  \vspace{2pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+ 
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+ 
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+ 
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Aly Mohamed Hussein} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ 438-993-5035 ~
+    {\raisebox{-0.2\height}\faHome\ {Montreal}}  ~
+    \href{mailto:aly4@outlook.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{aly4@outlook.com}} ~
+    \href{https://linkedin.com/in/aly-mohamed-hussein}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/aly-mohamed-hussein}}  ~
+    \href{https://github.com/alymo8}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/alymo8}}
+    \vspace{-8pt}
+\end{center}
+
+%-----------SUMMARY-----------
+\vspace{+5pt}
+{AI engineer with 3 years of experience building Python backend services and LLM-integrated production systems on AWS, Azure, and GCP, from APIs and async pipelines to observability, evals, and LLM cost optimization. M.Sc. in Machine Learning from McGill University, in affiliation with MILA.}
+\vspace{-8pt}
+
+%-----------SKILLS-----------
+\section{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}] \small{\item{
+    \begin{tabular}{ l @{\hspace{0.3cm}} l } \textbf{Programming Languages}: Python, Java, TypeScript, SQL & \textbf{Languages}: English, French (Bilingual) \\ \end{tabular} \\
+    \textbf{Backend \& Cloud}{: FastAPI, REST APIs, Spring Boot, AWS (Lambda, SQS, Fargate, Kinesis), Azure, GCP} \\
+    \textbf{LLMs \& AI Platform}{: Anthropic / OpenAI / Gemini SDKs, LangGraph, MCP, RAG, Langfuse, caching, model routing} \\
+    \begin{tabular}{ l @{\hspace{0.3cm}} l } \textbf{Infra \& CI/CD}: Docker, GitHub Actions, Jenkins, CloudFormation, CDK, Bicep & \textbf{Databases}: PostgreSQL, DynamoDB \\ \end{tabular} \\
+    \textbf{Certifications}{: AWS Certified Solutions Architect - Associate, Claude Certified Architect} }}
+\end{itemize}
+\vspace{-15pt}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    \resumeSubheading
+      {Accenture}{January 2025 -- Present}
+      {AI Engineer - Python, FastAPI, LangGraph, Langfuse, Apache Flink (KDA), AWS, Azure, GCP}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Built a Llama-based FastAPI LLM service on a real-time transcript stream (AWS Kinesis, Apache Flink) generating call summaries and live recommendations, saving 15 minutes per call for a major U.S. bank.}
+        \resumeItem{Built an agentic billing-automation system on Azure AI Foundry, Azure ML, and Azure Containers, with a router agent orchestrating parallel subagents, and owned its production deployment on Azure.}
+        \resumeItem{Implemented LLM observability with Langfuse (tracing requests, prompts, and outputs) and LLM-as-a-judge evals scoring summaries for completeness and hallucination, detecting performance degradation early.}
+        \resumeItem{Implemented monitoring, logging, alerting, and autoscaling with Splunk, New Relic, and AWS CloudWatch for production workloads.}
+        \resumeItem{Designed a real-time fraud detection agent for a major U.S. bank using LangGraph (plan-execute) with RAG over customer and transaction history, achieving 96\% accuracy across 500 transactions.}
+      \resumeItemListEnd
+      \vspace{-8pt}
+
+    \resumeSubheadingContinued
+      {Software Engineer - Java, Spring Boot, Python, AWS, Jenkins}{September 2023 -- January 2025}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Led development of synchronous and asynchronous microservices for a major U.S. bank's CI/CD pipeline, reducing failing pipelines by 33\% across the bank and cutting run time by roughly 15 minutes per run.}
+        \resumeItem{Deployed Spring Boot microservices on AWS Fargate and Python Lambda services processing SQS events, provisioned as code with AWS CloudFormation and CDK.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Ericsson}{May 2022 -- August 2022}
+      {Full-Stack Developer Intern - Java, Spring Boot, Python, Bash, Docker, Kubernetes}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Built Bash and Python log-analysis tools that reduced PLM production support task time by 50\% for 30+ developers.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+\vspace{-11pt}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+    \resumeSubheading
+      {McGill University, in affiliation with MILA (Quebec AI Institute)}{Montreal, Canada}
+      {M.Sc. in Machine Learning (Part time), GPA: 3.85/4.00}{January 2025 -- April 2026}
+    \vspace{1pt}
+    \resumeSubheadingDegree{Bachelor of Software Engineering, GPA: 3.82/4.00}{September 2019 -- April 2023}
+  \resumeSubHeadingListEnd
+\vspace{-9pt}
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+
+      \resumeProjectHeading
+        {\textbf{Safi: LLM Cost-Optimization Layer} $|$ \emph{Python, FastAPI, Docker} \href{https://alymo8.github.io/safi-ai/}{\raisebox{-0.2\height}\ \underline{alymo8.github.io/safi-ai}}}{June 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Building a layer between applications and LLM providers that cuts token spend (prompt caching, model routing, context compaction) with quality guaranteed by evals; written solo, backed by 448 tests, CI, and 8 ADRs.}
+          \resumeItem{Architected a workload-aware planner (profiler, five detectors, executor, and a scorer reporting cost, quality, and harm separately) behind a provider abstraction spanning Anthropic, OpenAI, and Gemini.}
+          \resumeItem{Shipped a FastAPI pass-through recorder with SSE streaming and a log-ingesting savings audit; a live 48-request trace against Claude showed 61.7\% realized savings at 100\% quality agreement.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Clinic Ops Platform: AI Patient Record} $|$ \emph{TypeScript, Postgres, Anthropic API, MCP, Azure, Bicep}}{2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Sole engineer for a paying client: shipped four production LLM workflows on Anthropic structured outputs behind an AI gateway centralizing payload minimization, audit logging, and provider swap; live with a Cairo surgeon.}
+          \resumeItem{Deployed to Azure as code with Bicep and azd (Container Apps, Postgres, Key Vault with managed identity, private networking), with CI gating lint, types, a 584-test suite, and a Docker image build.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Startup Co-Founder: Leagueware} $|$ \emph{JavaScript, MongoDB, Vue.js} \href{https://kingsleague.ca/}{\raisebox{-0.2\height}\ \underline{kingsleague.ca}}}{}
+        \resumeItemListStart
+          \resumeItem{Co-founded and built a soccer league platform serving 70 teams and 700 players; led the decoupled, scalable back end.}
+        \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+
+\end{document}

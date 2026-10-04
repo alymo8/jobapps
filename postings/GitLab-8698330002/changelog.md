@@ -1,0 +1,12 @@
+# Changelog: GitLab Fullstack Engineer (TypeScript), AI Engineering: Duo Client SDK (8698330002)
+
+- **Emphasis:** this is a TypeScript fullstack role (SDK packages, public API design, Vue 3 components, credential handling, bundle size). The summary leads with full-stack TypeScript (Next.js, React) plus Python, APIs and LLM features. The two solo TypeScript client platforms (Cold-Chain Dispatch, Clinic Ops) get 3 bullets each, ahead of claude-kit. They carry the posting's security and credential signals: tokenized single-trip links, multi-tenant RLS, a leaked-key bundle scan in CI, Key Vault with managed identity, and the AI gateway's payload minimization. The Accenture billing bullet keeps the React/TypeScript operator frontend. Leagueware stays because it is the only Vue.js evidence. Skills get a "Frontend & Backend" line (Next.js, React, Vue.js, Node.js, Express.js, REST APIs).
+- **Close-call cuts:** the Gemini/Vertex dashboard chatbot, the SE inner-source and DynamoDB bullets, the Cold-Chain spec-driven agentic pipeline and DR backup bullets, claude-kit's second bullet, Leagueware's second bullet, Safi (Python), Research, and Stocate (React/.NET; Leagueware's Vue beat it). No age-rule override (the Vodafone Node.js chatbot was not strong enough to justify one).
+- **Gaps (stated plainly):** no Vue 3 or Composition API (Vue.js appears only at Leagueware, version not stated). No explicit monorepo tooling (Turborepo/Nx), ESM packaging, npm package publishing, semantic versioning, or bundle-size optimization work. Node.js backend work is light in the mega resume (Express.js/Node.js are in skills; the TypeScript platforms use Next.js). No CSRF/session-cookie work is documented. No GitLab codebase experience. The application asks for a 0-5 TypeScript backend/Node.js self-rating and a backend vs frontend time split; Aly must answer both.
+- **Sanity-check:** (1) The Cold-Chain "Designed role-specific access" bullet reframes "designed around how users actually work" and folds in the 15-table RLS item from the cutover bullet. (2) The Clinic Ops bullets merge the live-surgeon outcome with the LLM workflows bullet, and the MCP server with the caching item. The third bullet compresses the Azure IaC deployment and the 28 PRs / 584-test CI item and drops azd and Docker build. (3) The summary's "solo-built two production platforms" comes from the mega summary ("two revenue-generating production systems solo").
+
+## Questions for Aly
+None.
+
+- fill: 0.966
+- skills_lines: 5

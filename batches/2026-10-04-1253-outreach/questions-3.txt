@@ -1,0 +1,176 @@
+LinkedIn free accounts cap connection-request notes at 200 characters, and the approved notes ran 210-300. Each person below has a shortened note (counted exactly, spaces included). The posting link is dropped; follow-up (b) carries it. The claim about the application (applied / applying / interested) is unchanged from the original.
+
+How to answer: write "ok" under Answer: to accept a note, or write a replacement note (200 characters or fewer). Writing "ok all" on the first Answer line accepts every note.
+
+People already 1st degree need no note: send follow-up (b) with the resume.
+
+============================================================
+
+1. Artefact - Tom Consolin  [166 chars]
+Hi Tom, I applied to Artefact's Senior AI & Agentic Engineer role (Montreal). AI engineer at Accenture, 3 yrs shipping production LLM/agent systems. Happy to connect.
+Answer:ok all
+
+2. Artefact - Vasilis Christopoulos  [170 chars]
+Hi Vasilis, I applied to Artefact's Senior AI & Agentic Engineer role (Montreal). AI engineer at Accenture, 3 yrs shipping production LLM/agent systems. Happy to connect.
+Answer:
+
+3. Artefact - Ben Catchpole  [166 chars]
+Hi Ben, I applied to Artefact's Senior AI & Agentic Engineer role (Montreal). AI engineer at Accenture, 3 yrs shipping production LLM/agent systems. Happy to connect.
+Answer:
+
+4. Baseten - Lou Zumpano  [1st degree]
+   1st degree: send follow-up (b) with resume, no note
+Answer:
+
+5. Baseten - Kelly Hall  [1st degree]
+   1st degree: send follow-up (b) with resume, no note
+Answer:
+
+6. Baseten - Crystal Warmington-North  [179 chars]
+Hi Crystal, I applied to Baseten's Forward Deployed Engineer role. AI engineer at Accenture, 3 yrs taking production LLM systems from client goals to deployment. Happy to connect.
+Answer:
+
+7. 11x - Lily Chan  [186 chars]
+Hi Lily, I applied to 11x's Forward Deployed Engineer (Canada remote) role. AI engineer at Accenture, 3 yrs building fullstack agent systems in TypeScript/React/Python. Happy to connect.
+Answer:
+
+8. 11x - Evan Timms  [188 chars]
+Hi Evan, I applied to 11x's Forward Deployed Engineer (Canada remote) role. AI engineer at Accenture (Montreal) building fullstack agent systems in TypeScript/React. Would love to connect.
+Answer:
+
+9. Durable - Mohammad Zeinalizadeh  [159 chars]
+Hi Mohammad, I applied to Durable's AI Engineer role (Vancouver). I build AI products in TypeScript/Next.js and ship LLM features with evals. Happy to connect.
+Answer:
+
+10. Durable - Billy Lam  [178 chars]
+Hi Billy, I applied to Durable's AI Engineer role. I build full-stack AI products in TypeScript/Next.js with evals-driven quality. Would love to connect and hear about your work.
+Answer:
+
+11. Durable - James Clift  [179 chars]
+Hi James, I applied to Durable's AI Engineer role. I build AI products end to end in TypeScript/Next.js and care about reliability when models are unpredictable. Happy to connect.
+Answer:
+
+12. Guidepoint - Aniketh Pradhan  [180 chars]
+Hi Aniketh, I applied to Guidepoint's AI Engineer role (Toronto, hybrid). AI engineer at Accenture, 3 yrs shipping RAG and agentic systems to production on Azure. Happy to connect.
+Answer:
+
+13. Guidepoint - Megha Garg  [172 chars]
+Hi Megha, I applied to Guidepoint's AI Engineer role (Toronto). AI engineer at Accenture, 3 yrs shipping RAG, LangGraph agents and LLM evals to production. Glad to connect.
+Answer:
+
+14. Guidepoint - Saarthak Sangamnerkar  [187 chars]
+Hi Saarthak, I applied to Guidepoint's AI Engineer role in Toronto. AI engineer at Accenture (RAG, LangGraph agents, LLM evals on Azure). I'd value connecting and hearing about your team.
+Answer:
+
+15. Censys - Rohan Kanade  [170 chars]
+Hi Rohan, I applied to Censys' Senior AI/LLM Engineer role (SOC/TH team) and I'm also in Montreal. I build production LLM/RAG systems at Accenture. Would love to connect.
+Answer:
+
+16. Censys - Melissa Kiriu  [175 chars]
+Hi Melissa, I applied to Censys' Senior AI/LLM Engineer role (remote, Canada). AI engineer at Accenture, 3 yrs building production LLM/RAG systems in Python. Happy to connect.
+Answer:
+
+17. Censys - Eirik Herskedal  [179 chars]
+Hi Eirik, I applied to Censys' Senior AI/LLM Engineer role (SOC/TH team, remote Canada). AI engineer at Accenture shipping production LLM/RAG systems with evals. Happy to connect.
+Answer:
+
+18. GitLab - Jessica Lacey  [194 chars]
+Hi Jessica, I applied to GitLab's Duo Chat Backend Engineer role (Remote, Canada). I build Python LangGraph agents with LLM evals at Accenture. Could you point me to the recruiter for this role?
+Answer:
+
+19. GitLab - Joyce Wang  [192 chars]
+Hi Joyce, I applied to GitLab's Duo Chat Backend Engineer role (Remote, Canada). I build Python LangGraph agents with LLM evals at Accenture. Could you point me to the recruiter for this role?
+Answer:
+
+20. GitLab - Christopher Fraser  [195 chars]
+Hi Christopher, I applied to GitLab's Duo Chat Backend Engineer role (Remote, Canada). I build Python LangGraph agents with evals at Accenture. Would love to connect and hear how your team works.
+Answer:
+
+21. Knak - Zak Michalyshyn  [180 chars]
+Hi Zak, I applied to Knak's Senior Software Developer, AI Agents role (Remote - Canada). AI engineer at Accenture, 3 yrs building production LLM agents in Python. Happy to connect.
+Answer:
+
+22. Knak - Scott Broschell  [180 chars]
+Hi Scott, I applied to Knak's Senior Software Developer, AI Agents role. AI engineer at Accenture (Montreal), 3 yrs shipping production LLM agents in Python. Would love to connect.
+Answer:
+
+23. Knak - Calvin Smith  [176 chars]
+Hi Calvin, I applied to Knak's Senior Software Developer, AI Agents role. AI engineer at Accenture (Montreal), 3 yrs building production LLM agents in Python. Happy to connect.
+Answer:
+
+24. Sardine - George Cave  [196 chars]
+Hi George, I applied to Sardine's Forward Deployed AI Engineer role (Canada remote). AI engineer at Accenture, 3 yrs taking production LLM agents from client goals to deployment. Happy to connect.
+Answer:
+
+25. Sardine - Chandni Raja  [195 chars]
+Hi Chandni, I applied to Sardine's Forward Deployed AI Engineer role (Canada remote). AI engineer at Accenture (Montreal), 3 yrs shipping production LLM agents for clients. Would love to connect.
+Answer:
+
+26. Sardine - Zhiheng Yi  [197 chars]
+Hi Zhiheng, I applied to Sardine's Forward Deployed AI Engineer role. I'm an AI engineer at Accenture (Montreal) taking production LLM agents from client goals to deployment. Would love to connect.
+Answer:
+
+27. Banyan Software - Charles Duckworth  [191 chars]
+Hi Charles, I applied to Banyan's Forward Deployed AI Engineer role. I'm an AI engineer (3 yrs) who builds agentic and RAG tools with business teams, using Claude Code. Would love to connect.
+Answer:
+
+28. Banyan Software - Trevor Rudd  [178 chars]
+Hi Trevor, I applied to Banyan's Forward Deployed AI Engineer role (Toronto, hybrid). AI engineer at Accenture, 3 yrs shipping production LLM and agentic tools. Happy to connect.
+Answer:
+
+29. Banyan Software - Tom Prendiville  [190 chars]
+Hi Tom, I applied to Banyan's Forward Deployed AI Engineer role (AI tools for internal functions). I'm an AI engineer (3 yrs) working with business teams on LLM tools. Would love to connect.
+Answer:
+
+30. Block / Cash App - Haroon Salimi  [192 chars]
+Hi Haroon, I'm interested in Cash App's AI Evaluation Infrastructure Engineer role. At Accenture (Montreal) I built a Langfuse eval framework for a production agentic system. Happy to connect.
+Answer:
+
+31. Block / Cash App - Aaron Young  [191 chars]
+Hi Aaron, I'm interested in Cash App's AI Evaluation Infrastructure Engineer role. At Accenture (Montreal) I built a Langfuse eval framework for a production agentic system. Happy to connect.
+Answer:
+
+32. Block / Cash App - Jered Davis  [191 chars]
+Hi Jered, I'm interested in Block's AI Evaluation Infrastructure Engineer role. AI engineer at Accenture, 3 yrs taking production LLM systems to deployment; based in Canada. Happy to connect.
+Answer:
+
+33. Velixo - Anna Kosianenko  [178 chars]
+Hi Anna, I'm interested in Velixo's Applied AI Engineer role (Montreal). AI engineer at Accenture, built Langfuse evals and an LLM cost layer. Could you point me to how to apply?
+Answer:
+
+34. Velixo - Gabriel Michaud  [170 chars]
+Hi Gabriel, I'm a Montreal AI engineer interested in Velixo's Applied AI Engineer role (evals and cost per action). I've built both: Langfuse evals and an LLM cost layer.
+Answer:
+
+35. Velixo - Anastasiya Babiy  [176 chars]
+Hi Anastasiya, I'm interested in Velixo's Applied AI Engineer role, which supplies unit cost data for pricing. I build LLM cost tracking and evals (Langfuse). Happy to connect.
+Answer:
+
+36. Thomson Reuters - Garima Kalra  [186 chars]
+Hi Garima, I'm applying to Thomson Reuters' AI Engineer, Product Analytics and CoCounsel FDE roles in Toronto. AI engineer at Accenture, 3 yrs in production LLM agents. Happy to connect.
+Answer:
+
+37. Thomson Reuters - Elvis L.  [197 chars]
+Hi Elvis, I'm applying to Thomson Reuters' AI Engineer, Product Analytics and CoCounsel FDE roles in Toronto. I build LLM agent evals (Langfuse, LLM-as-a-judge) at Accenture. Would love to connect.
+Answer:
+
+38. Thomson Reuters - Mohammad Neisiani  [195 chars]
+Hi Mohammad, I'm applying to Thomson Reuters' CoCounsel FDE and AI Engineer, Product Analytics roles in Toronto. AI engineer at Accenture shipping LLM agents to production. Would love to connect.
+Answer:
+
+39. Scotiabank / Tangerine - Margarita K.  [194 chars]
+Hi Margarita, I am applying to Scotiabank's Software Engineer (AI Engineer) and Tangerine's Senior AI Engineer roles in Toronto. AI engineer (3 yrs, LangGraph/RAG) at Accenture. Glad to connect.
+Answer:
+
+40. Scotiabank / Tangerine - Claudia Jin  [193 chars]
+Hi Claudia, I am applying to Scotiabank's Software Engineer (AI Engineer) and Tangerine's Senior AI Engineer roles in Toronto. I build production LLM agents at Accenture. Would love to connect.
+Answer:
+
+41. Scotiabank / Tangerine - Vipul Malhotra  [195 chars]
+Hi Vipul, I am applying to Tangerine's Senior AI Engineer role (and Scotiabank's Software Engineer, AI Engineer). I build production LLM agents at Accenture for U.S. banks. Would love to connect.
+Answer:
+
+============================================================
+
+Free accounts allow only a limited number of personalized invites per month. If the cap is hit, which companies should be prioritized? Default: the order listed (Artefact first, Scotiabank / Tangerine last).
+Answer:
