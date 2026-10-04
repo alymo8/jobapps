@@ -25,13 +25,17 @@ from Aly in this run's `questions.txt`.**
 
 ## Dates
 
-Business days = Mon–Fri after the send day, up to and including today. Compute, never estimate:
+Business days = Mon–Fri after the date the rule counts from, up to and including today. Each rule
+counts from one date: `silent` / `waiting` after a message → the last outbound message; `done` by
+nudge → the nudge; `stale-pending` / pending `waiting` → the invitation. Compute, never estimate:
 
 ```
-python -c "import datetime as d,sys; a=d.date.fromisoformat(sys.argv[1]); b=d.date.fromisoformat(sys.argv[2]); print(sum(1 for i in range(1,(b-a).days+1) if (a+d.timedelta(i)).weekday()<5))" <send YYYY-MM-DD> <today YYYY-MM-DD>
+python -c "import datetime as d,sys; a=d.date.fromisoformat(sys.argv[1]); b=d.date.fromisoformat(sys.argv[2]); print(sum(1 for i in range(1,(b-a).days+1) if (a+d.timedelta(i)).weekday()<5))" <from YYYY-MM-DD> <today YYYY-MM-DD>
 ```
 
-Calendar days = `(today - send).days`. Use the logged date when there is one. When only LinkedIn's
+Calendar days = `(today - from).days`. Use the logged date when there is one for a send Claude
+confirmed (`## Sent`, `nudge sent`, `reply sent`, `invite sent`). For a `typed, Aly to send`
+message, use the outbound date shown in the LinkedIn thread (Aly may send it days later). When only LinkedIn's
 relative label exists ("1 week ago", "Tuesday"), convert it to an absolute date and mark it `~` in
 the manifest (e.g. `~2026-09-27`).
 
@@ -91,7 +95,7 @@ Exactly one state per person, checked in this order:
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
 | 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; Aly attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, Aly to send` → note `typed <date>, not sent` |
-| 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days, no nudge yet | One nudge, ≤300 characters |
+| 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days since the last outbound message, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Propose the next unused shortlisted person (below) |
 | 6 | `waiting` | Anything else | None |
 
@@ -154,11 +158,15 @@ Approved items only, text verbatim, one at a time:
   and leave it **unsent** in its own tab; list those tabs for Aly, who attaches the PDF and sends.
 - **Replacement invite**: re-check the note is ≤200 characters in code; send the connection
   request with it; confirm it shows as pending.
+- After each confirmed send (or each message typed for Aly), write its action bullet immediately
+  to that posting's `## Follow-up` (format in step 7), before the next item. A run that stops
+  midway then never loses the record of a nudge already sent.
 - A send that fails or hits a warning: stop and tell Aly. No retries.
 
 ## 7. Log
 
-- **`outreach.md`**, `## Follow-up`, one action bullet per person handled:
+- **`outreach.md`**, `## Follow-up`, one action bullet per person handled (sends and typed
+  messages were already logged in step 6; add the rest):
   `- <Name> | <date> | <state> | <action> | text:` + the quoted text if any. Actions:
   `nudge sent`, `reply sent`, `typed, Aly to send`, `invite sent` (the replacement person),
   `replacement sent` / `none left` (the stale person), `none`.
