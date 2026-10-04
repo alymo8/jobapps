@@ -1,0 +1,335 @@
+%-------------------------
+% Mega Resume in Latex
+% Based off of: https://github.com/sb2nov/resume
+% Combined master version (all content included)
+%------------------------
+
+\documentclass[letterpaper,11pt]{article}
+
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+
+\pdfgentounicode=1
+
+%-------------------------
+% Custom commands
+
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+
+% Standard heading: Company/School + Date | Role/Degree + Location
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabularx}{1.0\textwidth}[t]{@{}>{\raggedright\arraybackslash}X@{\hspace{8pt}}r@{}}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabularx}\vspace{-7pt}
+}
+
+% Continued role at the SAME company (no repeated company name)
+% Args: {Role | Tech} {Date range} {Location}
+\newcommand{\resumeSubheadingContinued}[3]{
+  \vspace{4pt}
+    \begin{tabularx}{1.0\textwidth}[t]{@{}>{\raggedright\arraybackslash}X@{\hspace{8pt}}r@{}}
+      & \textbf{\small #2} \\
+      \textit{\small#1} & \textit{\small #3} \\
+    \end{tabularx}\vspace{-7pt}
+}
+
+% Additional degree at the SAME institution (no repeated school name)
+% Arg: {Degree name}
+\newcommand{\resumeSubheadingDegree}[2]{
+  \vspace{2pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{@{}>{\raggedright\arraybackslash}p{0.80\textwidth}@{\extracolsep{\fill}}r@{}}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Aly Mohamed Hussein} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ 438-993-5035 ~
+    {\raisebox{-0.2\height}\faHome\ {Montreal}}  ~
+    \href{mailto:aly4@outlook.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{aly4@outlook.com}} ~
+    \href{https://linkedin.com/in/aly-mohamed-hussein}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/aly-mohamed-hussein}}  ~
+    \href{https://github.com/alymo8}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/alymo8}}
+    \vspace{-8pt}
+\end{center}
+
+%-----------SUMMARY-----------
+\vspace{+5pt}
+{AI engineer with 3 years of experience building production AI agents and LLM-powered systems using Python, LangGraph, AWS, GCP, and Azure. Shipped and operates two revenue-generating production systems solo, end to end. M.Sc. in Machine Learning from McGill University, in affiliation with MILA.}
+\vspace{-8pt}
+
+%-----------SKILLS-----------
+\section{Skills}
+\begin{itemize}[leftmargin=0.15in, label={}] \small{\item{
+    \textbf{Programming Languages}{: Java, Python, Typescript, JavaScript, C\#, Groovy, SQL, Bash} \\
+    \textbf{Frameworks \& Technologies}{: AWS services, GCP (Vertex AI, Gemini), Azure (AI Foundry, Azure ML, Container Apps, Key Vault, Speech, Bicep/azd), Next.js, React, Spring Boot, FastAPI, REST APIs, .NET, Express.js, Node.js, Vercel, Supabase, Prisma} \\
+    \textbf{LLMs \& Agents}{: LangGraph, Anthropic API (structured outputs, tool use, prompt caching), OpenAI and Gemini SDKs, Model Context Protocol (MCP servers and tools), RAG (pgvector), Plan-and-Execute, ReAct, router/subagent orchestration, LLM-as-a-judge evaluation, eval harness design, LLM observability and evals (Langfuse), LLM cost optimization (caching, model routing, context compaction), prompt-injection hardening, agentic development workflows (Claude Code plugins, hooks, skills)} \\
+    \textbf{Data \& ML}{: NumPy, Pandas, PyTorch, AWS Kinesis} \\
+    \textbf{Databases}{: PostgreSQL (RLS, triggers, advisory locks), DynamoDB, MongoDB, Firebase} \\
+    \textbf{DevOps \& IaC}{: Git, Maven, Jenkins, Docker, Kubernetes, GitHub Actions, AWS CloudFormation, AWS CDK, AWS Step Functions, Azure Bicep} \\
+    \textbf{Certifications}{: AWS Certified Solutions Architect - Associate, Claude Certified Architect, AWS Certified ML Engineer - Associate (in progress)} \\
+    \textbf{Languages}{: English (Bilingual), French (Bilingual), Arabic (Native), Spanish (Intermediate)} }}
+\end{itemize}
+\vspace{-18pt}
+
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+
+    % --- Accenture: one company header, multiple role blocks ---
+    \resumeSubheading
+      {Accenture}{January 2025 -- Present}
+      {AI Engineer - Java, Python, FastAPI, Apache Flink (KDA), AWS, GCP, Azure, LangGraph, Langfuse, LLM}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Built an agentic AI system using Azure AI Foundry, Azure ML, and Azure Containers to automate the billing process of an engineering consulting client, designing a router agent that orchestrates parallel subagents to decide on and automate the previously manual billing verification steps, plus an operator-facing React/TypeScript frontend.}
+        \resumeItem{Created an evaluation framework on Langfuse that measures and evaluates the agentic billing system and benchmarks it against the manual process, making it possible to quantify how well the solution performs.}
+        \resumeItem{Partnered with enterprise stakeholders to translate ambiguous billing requirements into measurable success criteria, drove development of the agentic system end-to-end, and owned its production deployment on Azure infrastructure.}
+        \resumeItem{Designed a real-time fraud detection agent for a major U.S. bank using LangGraph with a plan-execute pattern, augmenting fraud alerts via RAG with customer and transaction history, achieving 96\% accuracy across 500 transactions.}
+        \resumeItem{Built a Llama-based LLM FastAPI application linked to a real-time transcript streaming pipeline (AWS Kinesis Data Analytics, Apache Flink) to generate customer support call summaries and real-time recommendations to customer support associates, saving 15 minutes per call for a major U.S. banking client.}
+        \resumeItem{Implemented LLM observability for the call summarization application with Langfuse, tracing requests, prompts, and model outputs to give the team visibility into the LLM's behavior.}
+        \resumeItem{Delivered a framework to evaluate generated summaries against source transcripts for completeness, hallucination, and readability using an LLM-as-a-judge approach, enabling early detection of performance degradation in our summarization service and integrating the summary evaluations into a feedback loop that improves our generated summaries.}
+        \resumeItem{Built an end-to-end internal chatbot using Gemini on Vertex AI that enables users to generate dashboard visualizations through natural language queries, eliminating the need for manual chart configuration.}
+        \resumeItem{Designed a fully automated proof of concept of the call summarization process using Google's Gemini 2.5 Pro as the support agent, implementing a text-to-speech layer that makes the LLM fully conversational with customers.}
+        \resumeItem{Implemented monitoring, logging, alerting, and autoscaling with Splunk, New Relic, and AWS CloudWatch to improve the reliability and scalability of production workloads.}
+      \resumeItemListEnd
+      \vspace{-8pt}
+
+    % Second role at Accenture -- company name NOT repeated
+    \resumeSubheadingContinued
+      {Software Engineer - Java, Spring Boot, Groovy, Python, AWS, Jenkins}{September 2023 -- January 2025}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Led the development of microservices for a major U.S. bank's CI/CD pipeline, enabling early error detection ('shift left'). Built microservices that integrate with the bank's Groovy-based Jenkins pipeline, reducing failing pipelines by 33\% across the bank.}
+        \resumeItem{Created synchronous and asynchronous microservices linked to the pipeline, reducing pipeline run time by roughly 15 minutes per run.}
+        \resumeItem{Built and deployed Java Spring Boot microservices on AWS Fargate using object-oriented design principles, exposing and managing functionality through REST APIs.}
+        \resumeItem{Designed and deployed Python AWS Lambda microservices to production to pull and process SQS events.}
+        \resumeItem{Improved AWS DynamoDB query efficiency and reduced cost by introducing secondary indexes and index-based queries over a 100k+ entry table, replacing full-table scans.}
+        \resumeItem{Designed and implemented a proof of concept for the team's ecosystem using AWS Step Functions for workflow orchestration across the microservices.}
+        \resumeItem{Provisioned AWS infrastructure and deployed the microservices as code using AWS CloudFormation and AWS CDK.}
+        \resumeItem{Led the team's contribution to an inner source project for the bank's pipeline, integrating it with our microservices architecture, specifically establishing the connection between the pipeline and the orchestrator microservice.}
+        \resumeItem{Implemented JUnit unit tests covering 500+ lines of code, working in a fast-paced Agile delivery environment.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Ericsson}{May 2022 -- August 2022}
+      {Full-Stack Developer Intern - Java, Spring Boot, Python, Bash, Docker, Kubernetes, Gerrit}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Contributed to a Java Spring Boot PLM (Product Lifecycle Management) project enabling cloud-native transformation and digitalization of product lifecycle workflows serving teams across the company.}
+        \resumeItem{Built Bash and Python log-analysis tools that reduced PLM production support task time by 50\% for 30+ developers through advanced search and sort features, locating the origin of bugs far faster than native Linux commands and making production support 2x faster.}
+        \resumeItem{Refactored a microservice to meet new requirements and improve stability and readability, redesigning it around Java object-oriented design principles to ease future implementations.}
+        \resumeItem{Designed, wrote, and refactored unit tests and function tests for several microservices of the PLMS project.}
+        \resumeItem{Deployed tooling on Kubernetes clusters with Docker containers in an agile environment, using Jenkins for CI/CD.}
+      \resumeItemListEnd
+
+    \resumeSubheading
+      {Vodafone}{August 2021 -- September 2021}
+      {Chatbot Developer Intern - Node.js, Microsoft Bot Framework, Microsoft LUIS, GitLab}{Cairo, Egypt}
+      \resumeItemListStart
+        \resumeItem{Directly contributed to the development of a chatbot available to 43 million customers of Vodafone Egypt.}
+        \resumeItem{Implemented natural language understanding in the internal Microsoft Bot Framework chatbot to make it responsive to user questions using Microsoft Azure's LUIS (Language Understanding) framework.}
+        \resumeItem{Extended the internal cognitive chatbot journey by 50\% using Node.js and the Microsoft Bot Framework.}
+        \resumeItem{Worked on unit testing and integration testing.}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+\vspace{-14pt}
+
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+
+    % --- McGill: one institution header, two degree blocks ---
+    \resumeSubheading
+      {McGill University, in affiliation with MILA (Quebec AI Institute)}{Montreal, Canada}
+      {M.Sc. in Machine Learning (Part time)}{January 2025 -- April 2026}
+      \resumeItemListStart
+        \resumeItem{GPA: 3.85/4.00}
+        \resumeItem{Research areas: NLP, reinforcement learning}
+        \resumeItem{Relevant coursework: Machine Learning, Reinforcement Learning, Responsible AI, Natural Language Processing}
+      \resumeItemListEnd
+
+    % Second degree at McGill -- school name NOT repeated
+    \resumeSubheadingDegree{Bachelor of Software Engineering} {September 2019 -- April 2023}
+      \resumeItemListStart
+        \resumeItem{GPA: 3.82/4.00}
+        \resumeItem{Awards: McGill Dean's Honour List (2021), Vigilant Global Scholarship in Engineering, McGill Golden Key member}
+      \resumeItemListEnd
+
+  \resumeSubHeadingListEnd
+\vspace{-12pt}
+
+%-----------RESEARCH-----------
+\section{Research}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+
+      \resumeProjectHeading
+        {\textbf{AI Research: LLM medical data accuracy across languages} $|$ \emph{Python, Machine Learning, Responsible AI} \href{https://github.com/alymo8/medical-llm-persona-audit}{\raisebox{-0.2\height}\ \underline{github.com/alymo8/medical-llm-persona-audit}}}{}
+        \resumeItemListStart
+          \resumeItem{Developed a framework to evaluate LLM performance on a medical dataset, examining accuracy variation across languages. \href{https://www.linkedin.com/posts/aly-mohamed-hussein_examining-personas-in-medical-ai-hallucinations-activity-7329515803769249795-t55B}{\raisebox{-0.2\height}\ \underline{Examining Personas In Medical AI Hallucinations}}}
+          \resumeItem{Found GPT-4o to be 13 percentage points more accurate in English than Arabic, with higher accuracy when prompted to translate medical queries prior to answering.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{AI Research: Privacy-Preserving NLP Performance Estimation} $|$ \emph{Python, PyTorch, DistilBERT, LLM Synthetic Data} \href{https://github.com/alymo8/privacy-proxy-eval}{\raisebox{-0.2\height}\ \underline{github.com/alymo8/privacy-proxy-eval}}}{}
+        \resumeItemListStart
+          \resumeItem{Built an LLM-based synthetic data generation pipeline using GPT-3.5 with privacy-oriented prompt engineering to produce clinical text that preserves label distribution while preventing PII leakage, evaluated on 9,000+ medical records.}
+          \resumeItem{Benchmarked three privacy-preserving approaches (LLM synthesis, keyword extraction, and local differential privacy) against membership inference attacks and entity leakage metrics, finding keyword extraction reduced PERSON entity leakage from 100\% to 2.4\% while retaining 72\% classification accuracy.}
+        \resumeItemListEnd
+
+    \resumeSubHeadingListEnd
+\vspace{-12pt}
+
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+      
+%----- Cold-Chain Dispatch System -----
+      \resumeProjectHeading
+        {\textbf{Cold-Chain Dispatch System: Refrigerated Pharmaceutical Transport (Egypt)} $|$ \emph{Sole engineer, paying client · Next.js 16, TypeScript, Postgres (Supabase, RLS), Vercel, GitHub Actions}}{July 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Embedded with a non-technical business owner to replace a manual WhatsApp-and-paper dispatch operation with an Arabic-first (RTL) mobile system of record, now used daily to run a 5-vehicle refrigerated pharmaceutical fleet across Egypt; built solo in roughly four weeks.}
+          \resumeItem{Designed around how users actually work: login-free drivers get a tokenized single-trip WhatsApp link with four Arabic status buttons, clients get read-only tracking and self-serve order intake, and a 30-second order form removed the owner's 24/7 phone-switchboard role.}
+          \resumeItem{Ran a spec-driven agentic development pipeline (spec, plan, parallel subagent implementation, AI and human review gate), with 11 design specs and plans written to be executed cold by a fresh agent and per-feature git worktrees for isolation.}
+          \resumeItem{Treated agent output as untrusted until proven: 116 unit tests across 23 suites pinning the correctness core (trip state machine, billing, payroll), and fixed AI-introduced bugs such as a check-then-insert race, moved to a Postgres trigger with an advisory lock.}
+          \resumeItem{Owned the production cutover solo: separate prod and dev Postgres, real data migration, multi-tenant row-level security across 15 tables, CI gating tests, lint, build, and a leaked-key bundle scan, plus ADRs and 5 runbooks so the customer is not dependent on me.}
+          \resumeItem{Closed the customer's disaster-recovery gap at zero cost with a nightly encrypted pg\_dump GitHub Action, hardened with row-count and truncation checks after discovering it had been failing silently while reporting green.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      %----- Clinic Ops Platform -----
+      \resumeProjectHeading
+        {\textbf{Clinic Ops Platform: AI-Documented Patient Record (Cairo clinics)} $|$ \emph{Sole engineer, paying client · Next.js, TypeScript, Postgres, Prisma, Anthropic API, MCP, Azure}}{2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Ran customer discovery (an 84-clinic survey plus interviews with owner-doctors) that disproved my original booking thesis, and repositioned v1 around the AI-documented patient record the doctors actually wanted.}
+          \resumeItem{Took the product to a live deployment with a practicing Cairo chest surgeon, who reports roughly 20 minutes saved per patient visit on report writing and administrative work.}
+          \resumeItem{Shipped four production LLM workflows (handwritten document extraction, patient-history structuring, clinical report drafting, pre-visit brief) on Anthropic structured outputs, behind an AI gateway that centralizes payload minimization, audit logging, and provider swap.}
+          \resumeItem{Built an MCP (Model Context Protocol) server and its tools for the platform, exposing its capabilities to LLM agents through a standard protocol.}
+          \resumeItem{Mitigated hallucination and prompt injection in a clinical setting: illegible fields flagged rather than inferred, clinic instructions isolated in the system channel, strict response schemas, and a human-in-the-loop gate where every output is a draft the doctor accepts.}
+          \resumeItem{Removed a per-page-view model call by caching AI briefs against a SHA-256 fingerprint of the prompt, and added a typed provider-failure taxonomy plus a real-API smoke harness run on genuine clinical handwriting.}
+          \resumeItem{Deployed to Azure UAE North for data residency under Egypt's PDPL, provisioned as code with Bicep and azd (Container Apps, Postgres, Key Vault with managed identity, private networking), with fail-closed multi-tenant isolation enforced in the data layer and gated in CI.}
+          \resumeItem{Owned delivery solo with a spec-first agentic workflow and TDD: 28 reviewed PRs and 246 commits against a 584-test suite, CI gating lint, types, tests, and a Docker image build.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      %----- Safi (standalone product; NOT part of claude-kit) -----
+      \resumeProjectHeading
+        {\textbf{Safi: LLM Cost-Optimization Layer for MENA AI Startups} $|$ \emph{Founding engineer · Python, FastAPI, Anthropic / OpenAI / Gemini SDKs, Docker, GitHub Actions} \href{https://alymo8.github.io/safi-ai/}{\raisebox{-0.2\height}\ \underline{alymo8.github.io/safi-ai}}}{June 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Building a layer between applications and LLM providers that cuts token spend (prompt caching, model routing, context trimming and compaction, Arabic-specific tokenization) with quality guaranteed by evals; wrote essentially all of it solo, backed by 448 tests, CI, and 8 ADRs.}
+          \resumeItem{Architected a workload-aware planner (profiler, five detectors, a planner that declines risky optimizations, executor, and a scorer reporting cost, quality, and harm separately) behind a provider abstraction spanning Anthropic, OpenAI, and Gemini.}
+          \resumeItem{Shipped a savings-audit tool that ingests LLM logs (OpenAI/Anthropic, LiteLLM, Helicone, Portkey) and a FastAPI pass-through recorder with SSE streaming; a live 48-request trace against Claude showed 61.7\% realized savings at 100\% quality agreement.}
+          \resumeItem{Used evals as the honesty mechanism: when the first live audit missed its thresholds, diagnosed rather than tuned, and a revised LLM judge lifted agreement from 77\% to 96\% on identical outputs while still catching the one genuine routing regression.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      %----- claude-kit (standalone open-source tooling; NOT related to Safi) -----
+      \resumeProjectHeading
+        {\textbf{claude-kit: Open-Source Agentic Engineering Workspace for Claude Code} $|$ \emph{Open source (MIT) · Python, Claude Code plugin (commands, hooks, skills), pytest, GitHub Actions} \href{https://github.com/alymo8/claude-kit}{\raisebox{-0.2\height}\ \underline{github.com/alymo8/claude-kit}}}{July 2026 -- Present}
+        \resumeItemListStart
+          \resumeItem{Built and open-sourced a Claude Code plugin packaging my agentic engineering conventions (knowledge base, ADR log, spec-plan-build flow, test-first merge gate with CI, AI review, and human approval), now the default setup across three active project repos.}
+          \resumeItem{Commands scaffold or retrofit repos with CI, AI code review, secret scanning, and spec/ADR templates; hooks re-render edited specs to HTML and audit leftover worktrees at session start; a skill encodes the Supabase migration workflow.}
+          \resumeItem{Engineered agent constraints for reliability over autonomy (decision-verification gate, evaluation criteria agreed before implementation, cold-executable handoff plans, git-worktree isolation), dogfooded with 64 test-first tests and CI on Ubuntu and Windows.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+      \resumeProjectHeading
+        {\textbf{Startup Co-Founder: Leagueware} $|$ \emph{JavaScript, MongoDB, Vue.js}}{}
+        \resumeItemListStart
+          \resumeItem{Co-founded and built a soccer league platform that connects leagues and players, serving 70 teams and 700 players while delivering league games, results, statistics, and operational data. \href{https://kingsleague.ca/}{\raisebox{-0.2\height}\ \underline{kingsleague.ca}}}
+          \resumeItem{Built player, referee, and admin modes tracking game time, score, stats, and league tables.}
+          \resumeItem{Led the back-end work and designed a clean, scalable architecture that decoupled dependencies and improved maintainability as the product evolved.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Developer at startup: Stocate} $|$ \emph{Stripe, .NET, C\#, React, PostgreSQL}}{}
+        \resumeItemListStart
+          \resumeItem{Implemented the Stripe payment system for Stocate, an application that connects clients with local sustainable restaurants and shops. \href{https://stocate.com/}{\raisebox{-0.2\height}\ \underline{stocate.com}}}
+          \resumeItem{Developed the payment back end in C\# and the Stripe API, and created an ordering, subscription system, and cart.}
+          \resumeItem{Built the payment front end using React (React Native) and the Stripe API to create a scalable payment processing system.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Social Media Data Analysis at McGill} $|$ \emph{Python, NumPy, Scikit-learn, SciPy, Matplotlib, Pandas}}{}
+        \resumeItemListStart
+          \resumeItem{Performed data cleaning to remove stop words and punctuation using NumPy and Pandas.}
+          \resumeItem{Created several ML models for social media sentiment analysis, including logistic regression, neural networks, decision tree, and SGD, using Scikit-learn.}
+          \resumeItem{Selected linear analysis as the best model for the test data after comparing model accuracies using k-fold cross-validation.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+      \resumeProjectHeading
+        {\textbf{Tweet Classification using Machine Learning Algorithms} $|$ \emph{Python, NumPy, Scikit-learn}}{}
+        \resumeItemListStart
+          \resumeItem{Developed a machine learning model using NumPy and Scikit-learn to classify tweets into various subjects.}
+          \resumeItem{Implemented and compared multiple algorithms, including logistic regression, K-nearest neighbors, and neural networks, achieving 96\% accuracy on test data while optimizing model performance.}
+        \resumeItemListEnd
+        \vspace{-13pt}
+
+    \resumeSubHeadingListEnd
+\vspace{-12pt}
+
+\end{document}

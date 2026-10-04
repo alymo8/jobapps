@@ -1,0 +1,213 @@
+%-------------------------
+% Resume in Latex
+% Based off of: https://github.com/sb2nov/resume
+%------------------------
+ 
+\documentclass[letterpaper,11pt]{article}
+ 
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+ 
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+ 
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+ 
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+ 
+\pdfgentounicode=1
+ 
+%-------------------------
+% Custom commands
+ 
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+ 
+% Standard heading: Company/School + Date | Role/Degree + Location
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Continued role at the SAME company (no repeated company name)
+% Args: {Role | Tech} {Date range} {Location}
+\newcommand{\resumeSubheadingContinued}[3]{
+  \vspace{4pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      & \textbf{\small #2} \\
+      \textit{\small#1} & \textit{\small #3} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Additional degree at the SAME institution (no repeated school name)
+% Arg: {Degree name}
+\newcommand{\resumeSubheadingDegree}[2]{
+  \vspace{2pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabular*}{1.001\textwidth}{l@{\extracolsep{\fill}}r}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+ 
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+ 
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+ 
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\begin{document}
+ 
+%----------HEADING----------
+\begin{center}
+    {\Huge \scshape Aly Mohamed Hussein} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ 438-993-5035 ~
+    {\raisebox{-0.2\height}\faHome\ {Montreal}}  ~
+    \href{mailto:aly4@outlook.com}{\raisebox{-0.2\height}\faEnvelope\  \underline{aly4@outlook.com}} ~ 
+    \href{https://linkedin.com/in/aly-mohamed-hussein}{\raisebox{-0.2\height}\faLinkedin\ \underline{linkedin.com/in/aly-mohamed-hussein}}  ~
+    \href{https://github.com/alymo8}{\raisebox{-0.2\height}\faGithub\ \underline{github.com/alymo8}}
+    \vspace{-8pt}
+\end{center}
+ 
+%-----------SUMMARY-----------
+\vspace{+5pt}
+{AI engineer with 3 years of experience building production AI agents and LLM-powered systems using Python, LangGraph, AWS, and GCP. M.Sc. in Machine Learning from McGill University, in affiliation with MILA.}
+\vspace{-8pt}
+ 
+%-----------SKILLS-----------
+\section{Skills} 
+\begin{itemize}[leftmargin=0.15in, label={}] \small{\item{ 
+    \textbf{Programming Languages}{: Java, Python, Typescript, SQL, Bash} \\ \textbf{Frameworks \& Technologies}{: AWS services, GCP (Vertex AI, Gemini), Spring Boot, React} \\ \begin{tabular}{ l @{\hspace{0.3cm}} l @{\hspace{0.3cm}} l } \textbf{Data \& ML}: NumPy, Pandas, PyTorch, AWS Kinesis & \textbf{Databases}: PostgreSQL, DynamoDB & \textbf{DevOps}: Git, Maven, Jenkins \\ \end{tabular} % 
+    \textbf{Certifications}{: AWS Certified Solutions Architect - Associate} \\ 
+    \textbf{Languages}{: English (Bilingual), French (Bilingual), Arabic (Native), Spanish (Intermediate)} }} 
+\end{itemize}
+\vspace{-18pt}
+ 
+%-----------EXPERIENCE-----------
+\section{Experience}
+  \resumeSubHeadingListStart
+ 
+    % --- Accenture: one company header, two role blocks ---
+    \resumeSubheading
+      {Accenture}{January 2025 -- Present}
+      {AI Engineer - Java, Python, FastAPI, Apache Flink (KDA), AWS, LangGraph, LLM}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Designed a real-time fraud detection agent using LangGraph with a plan-execute pattern, augmenting fraud alerts via RAG with customer and transaction history, achieving 96\% accuracy across 500 transactions.}
+        \resumeItem{Built a Llama-based LLM FastAPI application linked to a real-time transcript streaming pipeline (AWS Kinesis Data Analytics, Apache Flink) to generate customer support call summaries and real-time recommendations to customer support associates, saving 15 minutes per call for a major U.S. banking client.}
+        \resumeItem{Delivered a framework to evaluate generated summaries against source transcripts for completeness, hallucination, and readability using an LLM-as-a-judge approach, enabling early detection of performance degradation in our summarization service and integrating the summary evaluations into a feedback loop that improves our generated summaries.}
+        \resumeItem{Built an end-to-end internal chatbot using Gemini on Vertex AI that enables users to generate dashboard visualizations through natural language queries, eliminating the need for manual chart configuration.}
+        \resumeItem{Implemented monitoring, logging, alerting, and autoscaling with Splunk, New Relic and AWS CloudWatch to improve the reliability and scalability of production workloads.}
+      \resumeItemListEnd
+      \vspace{-8pt}
+ 
+ 
+    % Second role at Accenture — company name NOT repeated
+    \resumeSubheadingContinued
+      {Software Engineer - Java, Spring Boot, Python, AWS, Jenkins}{September 2023 -- January 2025}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Led the development of microservices for a major U.S bank's CI/CD pipeline, enabling early error detection. Built microservices that integrate with the bank's Jenkins pipeline, reducing failing pipelines by 33\% across the bank.}
+        \resumeItem{Built and deployed Java Spring Boot microservices on AWS Fargate and Python Lambda services to process SQS events in production.}
+      \resumeItemListEnd
+ 
+    \resumeSubheading
+      {Ericsson}{May 2022 -- August 2022}
+      {Full-Stack Developer Intern - Java, Spring Boot, Python, Bash, Gerrit}{Montreal, Canada}
+      \resumeItemListStart
+        \resumeItem{Contributed to a Java Spring Boot project enabling cloud-native transformation of product lifecycle data at Ericsson.}
+        \resumeItem{Built Bash and Python tools that reduced PLM production support task time by 50\% for 30+ developers.}
+      \resumeItemListEnd
+ 
+  \resumeSubHeadingListEnd
+\vspace{-14pt}
+ 
+%-----------EDUCATION-----------
+\section{Education}
+  \resumeSubHeadingListStart
+ 
+    % --- McGill: one institution header, two degree blocks ---
+    \resumeSubheading
+      {McGill University, in affiliation with MILA (Quebec AI Institute)}{Montreal, Canada}
+      {M.Sc. in Machine Learning (Part time)}{January 2025 - April 2026}
+      \resumeItemListStart
+        \resumeItem{GPA: 3.85/4.00}
+        \resumeItem{Research areas: NLP, reinforcement learning}
+      \resumeItemListEnd
+ 
+    % Second degree at McGill — school name NOT repeated
+    \resumeSubheadingDegree{Bachelor of Software Engineering} {September 2019 - April 2023}
+      \resumeItemListStart
+        \resumeItem{GPA: 3.82/4.00}
+        \resumeItem{Awards: McGill Dean's Honour List (2021), Vigilant Global Scholarship in Engineering, McGill Golden Key member}
+      \resumeItemListEnd
+ 
+  \resumeSubHeadingListEnd
+\vspace{-12pt}
+ 
+%-----------PROJECTS-----------
+\section{Research}
+    \vspace{-5pt}
+    \resumeSubHeadingListStart
+ 
+      \resumeProjectHeading
+        {\textbf{AI Research: LLM medical data accuracy across languages} $|$ \emph{Python, Machine Learning, Responsible AI}}{}
+        \resumeItemListStart
+          \resumeItem{Developed a framework to evaluate LLM performance on a medical dataset, examining accuracy variation across languages. \href{https://www.linkedin.com/posts/aly-mohamed-hussein_examining-personas-in-medical-ai-hallucinations-activity-7329515803769249795-t55B}{\raisebox{-0.2\height}\ \underline{Examining Personas In Medical AI Hallucinations}}}
+          \resumeItem{Found GPT-4o to be 13 percentage points more accurate in English than Arabic, with higher accuracy when prompted to translate medical queries prior to answering.}
+        \resumeItemListEnd
+        \vspace{-17pt}
+ 
+      \resumeProjectHeading
+        {\textbf{AI Research: Privacy-Preserving NLP Performance Estimation} $|$ \emph{Python, PyTorch, DistilBERT}}{}
+        \resumeItemListStart
+          \resumeItem{Built an LLM-based synthetic data generation pipeline using GPT-3.5 with privacy-oriented prompt engineering to produce clinical text that preserves label distribution while preventing PII leakage, evaluated on 9,000+ medical records.}
+          \resumeItem{Benchmarked three privacy-preserving approaches (LLM synthesis, keyword extraction, and local differential privacy) against membership inference attacks and entity leakage metrics, finding keyword extraction reduced PERSON entity leakage from 100\% to 2.4\% while retaining 72\% classification accuracy.}
+        \resumeItemListEnd
+ 
+    \resumeSubHeadingListEnd
+    \vspace{-3pt}
+ 
+\end{document}

@@ -1,0 +1,98 @@
+[
+ {
+  "rank": 13,
+  "company": "US Mobile",
+  "title": "AI/ML Engineer",
+  "location": "Montreal",
+  "url": "https://jobs.lever.co/USMobile/7800a658-f3a0-4e5f-a023-4dcf23a6b449",
+  "eligibility": "Confirmed",
+  "new": true,
+  "flag": "",
+  "status": "",
+  "dlq": ""
+ },
+ {
+  "rank": 14,
+  "company": "Spellbook",
+  "title": "Forward Deployed Engineer",
+  "location": "Not stated (Toronto HQ)",
+  "url": "https://jobs.ashbyhq.com/spellbook.com/d92285f3-73a5-4ad1-8b1a-df1d2ab034df",
+  "eligibility": "Unverified",
+  "new": true,
+  "flag": "1. Included with unverified Canada eligibility: Not stated (Toronto HQ)",
+  "status": "",
+  "dlq": ""
+ },
+ {
+  "rank": 15,
+  "company": "Google DeepMind",
+  "title": "Research Developer, Frontier AI Incubation",
+  "location": "Montreal, QC",
+  "url": "https://www.google.com/about/careers/applications/jobs/results/115400405273191110-research-developer-frontier-ai-incubation-deepmind",
+  "eligibility": "Confirmed",
+  "new": false,
+  "flag": "",
+  "status": "",
+  "dlq": ""
+ },
+ {
+  "rank": 16,
+  "company": "EY Canada",
+  "title": "AI and Data - Senior Consultant - AI/ML Engineer",
+  "location": "Montreal, QC",
+  "url": "https://careers.ey.com/ey/job/Montr%C3%A9al-AI-and-Data-Senior-Consultant-AIML-Engineer-Queb-H3A-0A8/1168571801/",
+  "eligibility": "Confirmed",
+  "new": false,
+  "flag": "",
+  "status": "",
+  "dlq": ""
+ },
+ {
+  "rank": 17,
+  "company": "Durable",
+  "title": "AI Engineer",
+  "location": "Vancouver, BC",
+  "url": "https://job-boards.greenhouse.io/durable/jobs/5156304008",
+  "eligibility": "Confirmed",
+  "new": false,
+  "flag": "",
+  "status": "resume",
+  "dlq": ""
+ },
+ {
+  "rank": 18,
+  "company": "Dialpad",
+  "title": "AI Engineer, Agentic Voice (TTS)",
+  "location": "Vancouver, BC",
+  "url": "https://job-boards.greenhouse.io/dialpad/jobs/8597852002",
+  "eligibility": "Confirmed",
+  "new": false,
+  "flag": "",
+  "status": "",
+  "dlq": ""
+ },
+ {
+  "rank": 19,
+  "company": "Xsolla",
+  "title": "Full Stack AI Engineer / Applied AI Engineer",
+  "location": "Montreal, QC",
+  "url": "https://jobs.lever.co/xsolla/ebb74747-c739-4247-bafc-a088c10fa643",
+  "eligibility": "Confirmed",
+  "new": false,
+  "flag": "",
+  "status": "",
+  "dlq": ""
+ },
+ {
+  "rank": 20,
+  "company": "Autodesk",
+  "title": "Software Developer, MCP/AI",
+  "location": "Canada",
+  "url": "https://autodesk.wd1.myworkdayjobs.com/en-US/Ext/job/Software-Developer--MCP-AI_26WD99364-1",
+  "eligibility": "Confirmed",
+  "new": true,
+  "flag": "",
+  "status": "",
+  "dlq": ""
+ }
+]
