@@ -25,9 +25,11 @@ for this specific application in this session.**
    `label | answer | source` where source is `profile`, `mega_resume`, `answers`, `stories`,
    `posting` or `ASK`.
    - Contact fields: `profile.md`. Resume upload: the posting's PDF (`file_upload`).
-   - Cover letter: skip if optional. If required, draft one from `mega-resume-v1.5.tex` facts plus
-     the 1-2 `stories.md` stories that best match the posting, in the voice of `answers.md`; save it
-     as `postings/<dir>/cover_letter.md`/`.pdf`, and mark it for the user's review.
+   - Cover letter: **whenever the form offers one, optional or required**, run the `cover-letter`
+     skill (`postings/<dir>/cover_letter.md`; reuse it if it exists). Paste the text into the cover
+     letter text box when there is one (Greenhouse: "Enter manually"); if the form only takes a file,
+     run it with `--pdf` and upload `the user_Cover_Letter_<Company>.pdf`. Row in
+     `application.md`: `Cover letter | pasted text / <pdf name> | cover_letter.md, **draft**`.
    - "Why this company/role" free text: draft 2–4 sentences from the posting + mega resume facts,
      mark `draft` so the user sees it.
    - Other free text (LLM/AI experience, "most interesting thing you've built", "what should we
@@ -41,9 +43,10 @@ for this specific application in this session.**
    - Never invent facts (dates, employers, degrees, authorization, salary).
 5. **Fill the form** in Chrome (`form_input`/`computer`; React selects need clicking the option).
    Upload the resume. Then re-read the form and confirm each field shows the intended value and the
-   upload shows the right filename.
+   upload shows the right filename (and the cover letter box holds the full letter, not truncated).
 6. **Stop for approval.** Show the user a compact summary: role, company, resume filename, and the table
-   from `application.md` (highlight `draft` and newly-answered rows). Update `applications.md` to
+   from `application.md` (highlight `draft` and newly-answered rows), plus the full cover letter
+   text verbatim if there is one. Update `applications.md` to
    `ready`. Ask: "Submit? (ok / edits)".
 
 ## Phase 2: submit (on the user's "ok" only)
@@ -78,5 +81,6 @@ report: posting dir, number of `ASK` fields, blockers. **Never submit in a batch
 Run only when `application.md` contains `APPROVED <date>: submit`. Open the application in your own
 new tab (the earlier tab may be gone), fill it from the `application.md` table (which now holds
 the user's answers and edits, no `ASK` left; if one is left, stop and report it), upload the resume,
+paste or upload the cover letter from `cover_letter.md` (approved text, verbatim) if the table has one,
 re-verify every field, then run Phase 2 steps 2–3 (the orchestrator updates `applications.md`; never write it in batch). CAPTCHA or email code → stop and reply
 `NEEDS USER: ...` with the tab URL instead of asking.

@@ -123,9 +123,25 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
 4. A **reply format** at the top, e.g.
    `answers: salary=150k CAD, ... | approve: all | except: 3, 7 | edit 5: <text> | outreach 2: ann, bob`.
 
-Open it for the user (`Invoke-Item batches/<id>/review.md`) and post a 5-line summary in chat (counts:
-ready, ASKs, dead-lettered by reason). Wait. Nothing is approved by silence or by an approval given for a
-different posting or an earlier batch.
+**Questions go in a separate text file, which is what the user answers** (the user's preference, 2026-10-04).
+Write `batches/<id>/questions.txt`: plain text, numbered questions, each followed by an `Answer:`
+line, with a suggested answer where there is an obvious one ("leave blank to accept"). Use these
+parts, in this order:
+1. Reusable answers, deduplicated, each with the postings that ask it.
+2. One-off form questions.
+3. Drafted free-text answers to OK or edit, each pasted **in full, verbatim**: exactly the text that will go into the form. Never show a summary or a shorthand note. If `application.md` holds only a note for a free-text field, write the full answer first. A note in a free-text cell is not an approvable draft, and the execute subagent must never type a note into a form (Censys, 2026-10-04). Cover letters belong here too: the full `cover_letter.md` text, verbatim.
+4. Decisions: which applications to submit, blocked or odd postings, retries.
+5. LinkedIn picks per company: the suggested top 3 plus the other names; "ok" accepts the top 3.
+
+**Apply `profile.md` first:** never ask a question it already answers or has a standing rule for
+(salary from the posted range, sponsorship by role location, relocation, start date, EEO, and so
+on). review.md is the reference with the full texts; questions.txt is the only thing the user fills in.
+Open questions.txt for the user (`Invoke-Item`), not review.md. When the user says it's done, re-read it,
+save every answer that could come up again to `profile.md` (as a rule when the answer carries
+"always" or a condition), and ask any follow-ups in a short `questions-2.txt`.
+
+Post a 5-line summary in chat (counts: ready, ASKs, dead-lettered by reason). Wait. Nothing is
+approved by silence or by an approval given for a different posting or an earlier batch.
 
 ## 4. Record approvals
 
