@@ -1,0 +1,25 @@
+# Compiled resumes are rebuilt from their .tex sources.
+*.pdf
+*.png
+# PDFs with no .tex source can't be rebuilt, so they stay tracked.
+!archive/mega_resume_sep_2026.pdf
+!postings/Artefact-8731229002/Aly_Mohamed_Hussein_Resume_Artefact.pdf
+!postings/Artefact-8731948002/Aly_Mohamed_Hussein_Resume_Artefact.pdf
+!postings/Cresta-4595480008/Aly_Mohamed_Hussein_Resume_Cresta.pdf
+!postings/HingeHealth-b0583044/Aly_Mohamed_Hussein_Resume_HingeHealth.pdf
+
+# LaTeX build output
+*.log
+*.aux
+*.out
+*.fls
+*.fdb_latexmk
+*.synctex.gz
+*.toc
+
+# OS / Python
+desktop.ini
+Thumbs.db
+__pycache__/
+*.pyc
+.env
