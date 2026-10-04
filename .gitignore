@@ -23,3 +23,7 @@ Thumbs.db
 __pycache__/
 *.pyc
 .env
+
+# Claude Code worktrees and plan-execution scratch
+.claude/worktrees/
+.superpowers/
