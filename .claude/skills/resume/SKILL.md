@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from mega_resume.tex, following Resume_prompt_v4.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
+description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from mega-resume-v1.5.tex, following Resume_prompt_v4.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
 argument-hint: <posting URL or pasted posting>
 ---
 
@@ -12,8 +12,8 @@ All paths are relative to the `jobapps/` folder (the project root).
 
 - `$ARGUMENTS`: a posting URL or pasted posting text. If empty, ask for it.
 - `Resume_prompt_v4.md`: **the rules. Read it in full every run and follow it exactly.** Where it says
-  `mega_resume.txt` / `latex_resume.txt`, use `mega_resume.tex` / `latex_resume.tex`.
-- `mega_resume.tex`: the only source of facts. `latex_resume.tex`: format reference.
+  `mega_resume.txt` / `latex_resume.txt`, use `mega-resume-v1.5.tex` / `latex_resume.tex`.
+- `mega-resume-v1.5.tex`: the only source of facts. `latex_resume.tex`: format reference.
 
 ## Steps
 
@@ -23,7 +23,9 @@ All paths are relative to the `jobapps/` folder (the project root).
    and the job ID from the URL if present.
 2. **Make the posting folder** `postings/<Company>-<JobID or short-title-slug>/` (Company in PascalCase,
    as in the filename rule). If it already exists with a resume in it, say so and ask whether to rebuild.
-   Save the posting there as `posting.md`: URL, company, title, location, date fetched, then the full text.
+   Save the posting there as `posting.md`: a `# <Company>: <Title>` heading, then one `- Key: value`
+   line each for URL (exactly `- URL: <posting url>`; `tools/read_postings.py` matches on it),
+   Company, Title, Location, Fetched (date), then the full text.
 3. **Write the resume** `postings/<dir>/the user_Resume_<Company>.tex` per the prompt's
    Hard rules, Content selection, Skills section and Fitting the page.
 4. **Compile and verify:** `python tools/build_resume.py <that .tex>`. It prints JSON:
@@ -32,7 +34,7 @@ All paths are relative to the `jobapps/` folder (the project root).
    no collisions, no orphan words, dates and rules aligned). Iterate until `ok` is true and the
    page looks right. Never hand over a version whose PNG you have not looked at.
 5. **Truth check.** Before delivering, go bullet by bullet: each claim (metric, tech, scope, date)
-   must appear in `mega_resume.tex`. Fix or flag anything that doesn't.
+   must appear in `mega-resume-v1.5.tex`. Fix or flag anything that doesn't.
 6. **Write `postings/<dir>/changelog.md`** with the prompt's "What to report" items, plus the final
    `fill` and `skills_lines` numbers.
 7. **Log it:** append a row to `applications.md` (create it with the header from that file's format

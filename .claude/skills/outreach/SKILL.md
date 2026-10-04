@@ -24,7 +24,7 @@ flags automated-looking activity, and the account is the user's.
      and one line on why they fit. Check they still work at the company (current position).
 3. **Draft one message per person** (save all in `postings/<dir>/outreach.md`):
    - InMail subject (≤ 60 chars) + body of 500–800 characters: role title and that the user applied, 1–2
-     concrete facts from the tailored resume that match the posting (from `mega_resume.tex` only),
+     concrete facts from the tailored resume that match the posting (from `mega-resume-v1.5.tex` only),
      a low-friction ask (a short chat or forwarding to the hiring team), sign-off with name.
    - Tailor to the reader: recruiter → fit + availability; hiring manager → the most relevant work.
    - No flattery filler, no claims beyond the resume.

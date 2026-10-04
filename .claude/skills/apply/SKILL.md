@@ -15,20 +15,29 @@ for this specific application in this session.**
 
 1. **Resume.** If `postings/<dir>/` already has a resume PDF that passed verification (its
    `changelog.md` exists), reuse it. Otherwise run the full `/resume` skill steps first.
-2. **Answers source.** Read `profile.md` (reusable answers) and `mega_resume.tex` (facts).
+2. **Answers source.** Read `profile.md` (reusable answers) and `mega-resume-v1.5.tex` (facts).
+   When the form has free-text or cover letter fields, also read `answers.md` (the user's past free-text
+   answers) and `stories.md` (STAR behavioral stories, indexed by leadership principle).
 3. **Open the application** in a new Chrome tab (the posting URL; on Greenhouse the form is on the
    same page under "Apply"). Read the whole form first with `read_page`/`get_page_text` and list
    every field: label, type, required or optional, options for selects.
 4. **Answer every field**, writing `postings/<dir>/application.md`: one line per field,
-   `label | answer | source` where source is `profile`, `mega_resume`, `posting` or `ASK`.
+   `label | answer | source` where source is `profile`, `mega_resume`, `answers`, `stories`,
+   `posting` or `ASK`.
    - Contact fields: `profile.md`. Resume upload: the posting's PDF (`file_upload`).
-   - Cover letter: skip if optional. If required, draft one from `mega_resume.tex` facts only, save
-     it as `postings/<dir>/cover_letter.md`/`.pdf`, and mark it for the user's review.
+   - Cover letter: skip if optional. If required, draft one from `mega-resume-v1.5.tex` facts plus
+     the 1-2 `stories.md` stories that best match the posting, in the voice of `answers.md`; save it
+     as `postings/<dir>/cover_letter.md`/`.pdf`, and mark it for the user's review.
    - "Why this company/role" free text: draft 2–4 sentences from the posting + mega resume facts,
      mark `draft` so the user sees it.
+   - Other free text (LLM/AI experience, "most interesting thing you've built", "what should we
+     know about you"): start from the closest `answers.md` answer, tailor it to the posting and the
+     field's length limit, mark `draft`.
+   - Behavioral ("tell me about a time..."): pick the story from the `stories.md` index, write it as
+     a short STAR paragraph, mark `draft`. Never state an item under a story's **Open** as fact.
    - Voluntary EEO questions: use `profile.md`; if `ASK`, ask the user (never guess these).
-   - Anything not answerable from `profile.md` or `mega_resume.tex`: **ask the user**, all such questions
-     at once, in one message. Save each answer that is reusable into `profile.md` under the right heading.
+   - Anything not answerable from `profile.md`, `mega-resume-v1.5.tex`, `answers.md` or `stories.md`:
+     **ask the user**, all such questions at once, in one message. Save each answer that is reusable into `profile.md` under the right heading.
    - Never invent facts (dates, employers, degrees, authorization, salary).
 5. **Fill the form** in Chrome (`form_input`/`computer`; React selects need clicking the option).
    Upload the resume. Then re-read the form and confirm each field shows the intended value and the
