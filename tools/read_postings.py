@@ -29,6 +29,10 @@ DLQ = ROOT / "dlq.md"
 DLQ_COLS = ["date", "batch", "rank", "company", "title", "url", "stage", "reason", "detail",
             "needs", "status"]  # fmt: skip
 NEVER_RETRY = {"CLOSED", "INELIGIBLE"}
+# posting.md URL lines: "- URL: u" (current), "apply_url: u", "posting_url: u", "**Apply URL:** u".
+POSTING_URL = re.compile(
+    r"^(?:- URL:|apply_url:|posting_url:|\*\*Apply URL:\*\*)\s*(https?://\S+)", re.M | re.I
+)
 
 
 def dlq_rows() -> list[dict]:
@@ -190,10 +194,10 @@ def main(argv: list[str]) -> None:
     # Posting dirs record their URL in posting.md; map URL -> status through them.
     st = statuses()
     for d in (ROOT / "postings").glob("*/posting.md"):
-        m = re.search(r"- URL: (\S+)", d.read_text(encoding="utf-8"))
         rel = f"postings/{d.parent.name}"
-        if m and rel in st:
-            st[m.group(1)] = st[rel]
+        if rel in st:
+            for u in POSTING_URL.findall(d.read_text(encoding="utf-8")):
+                st[u] = st[rel]
     dlq = {r["url"]: r for r in dlq_rows()}
     for x in postings:
         x["status"] = st.get(x["url"], "")
