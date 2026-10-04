@@ -38,8 +38,12 @@ flags automated-looking activity, and the account is Aly's.
    - If attaching isn't possible in that flow, tell Aly before sending and ask whether to send
      without it (with the posting link) or skip.
    - After sending, confirm the message appears in the sent thread with the attachment.
-6. **Log** each send in `postings/<dir>/outreach.md` (name, profile URL, channel, date, text sent)
-   and set the `applications.md` row to `outreach-sent` (or `outreach-ready` if waiting on Aly).
+6. **Log** each send in `postings/<dir>/outreach.md` under `## Sent`, one bullet per send in exactly
+   this format (the `/followup` skill parses it):
+   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the text sent as a
+   `>` quote on the next line(s). Set the `applications.md` row to `outreach-sent` (or
+   `outreach-ready` if waiting on Aly). Later follow-ups (accepted connections, nudges, replies)
+   are handled by `/followup`.
 
 ## InMail credits
 
