@@ -34,6 +34,7 @@ flags automated-looking activity, and the account is the user's.
 5. **Send**, one approved person at a time:
    - 1st-degree connection: regular message with the resume PDF attached.
    - Otherwise: InMail (Message button on the profile, Premium) with the resume PDF attached.
+   - Known (2026-10-04): the LinkedIn message composer is in a cross-origin iframe, so `file_upload` cannot attach there. For 1st-degree messages with the resume, the user prefers this: type the approved text, leave it unsent in its own tab, and let the user attach the PDF and send. Connection requests need no attachment, so keep sending them.
    - If attaching isn't possible in that flow, tell the user before sending and ask whether to send
      without it (with the posting link) or skip.
    - After sending, confirm the message appears in the sent thread with the attachment.
@@ -45,8 +46,8 @@ flags automated-looking activity, and the account is the user's.
 Premium includes a limited number of InMail credits per month. Before drafting InMails, check the
 remaining credits (LinkedIn shows them in the InMail compose window or Premium page) and note the
 count in `outreach.md`. If there are fewer credits than proposed InMails, say so at the approval
-gate and offer the fallback: a connection request with a note (≤ 300 characters, no attachment,
-posting link instead), drafted and approved like any other message.
+gate and offer the fallback: a connection request with a note (≤ 200 characters: the free-account limit, measured in code; 300 only with active Premium; no attachment,
+posting link only if it fits; the follow-up carries it), drafted and approved like any other message. A free account also gets only about 3 personalized invitations per month (seen 2026-10-04), so ask the user how to prioritize before sending more than that.
 
 ## Running as a batch subagent
 
