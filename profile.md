@@ -63,3 +63,14 @@ but approved phrasings go here as a starting point).
 
 Long free-text answers Aly has written live in [answers.md](answers.md); behavioral STAR stories
 live in [stories.md](stories.md).
+
+## Career goals and cover letters
+
+- Looking for next: moving from consulting to building one product in depth; ownership and career growth; genuine interest in the specific company (Aly, 2026-10-04)
+- Excited by: AI products (Aly, 2026-10-04)
+- 3-5 years: a subject matter expert and a leader (Aly, 2026-10-04)
+- Accenture framing: "promoted and specialized as an applied AI engineer" (Software Engineer → AI Engineer, Jan 2025); clients always anonymized ("a major U.S. bank", "an engineering consulting firm") (Aly, 2026-10-04)
+- Solo client projects (Cold-Chain Dispatch, Clinic Ops): OK to mention alongside the full-time job (Aly, 2026-10-04)
+- Personality line (squash, route timing, Claude enthusiast / claude-kit author): yes, at most one line, only for startups / culture-heavy postings (Aly, 2026-10-04)
+- Cover letter tone: adapt to the company (formal for banks / large enterprises, warm and direct for startups) (Aly, 2026-10-04)
+- Cover letter: always write one when the form offers it, optional or required; rules in [CoverLetter_prompt_v1.md](CoverLetter_prompt_v1.md) (Aly, 2026-10-04)

@@ -57,9 +57,9 @@ LP: Insist on the highest standards · Ownership
 - Moved from "ship and hope" to a data-driven quality gate
 - Gave the banking client measurable confidence in AI output accuracy
 - The eval framework became reusable for future LLM workstreams
+- About 1 month from idea to production (Aly, 2026-10-04)
 
 **Open**
-- How long from idea to production?
 - Why LLM-as-a-judge over rule-based or human-only review?
 
 ## 1b. LLM-as-a-judge: validating with human labels and a feedback loop
@@ -85,9 +85,9 @@ LP: Dive deep · Are right, a lot
 - Proved the judge was reliable, which gave the team confidence to act on its scores
 - The feedback loop meant quality issues surfaced automatically, not manually
 - Turned a static eval tool into a living quality system
+- The judge agreed with human labels more than 90% of the time (Aly, 2026-10-04)
 
 **Open**
-- Agreement rate between the judge and human labels (a number here is very strong)
 - Did the feedback loop ever trigger a real retraining cycle?
 
 ## 2a. KDA Flink deployment fix
@@ -200,9 +200,9 @@ LP: Ownership · Insist on the highest standards
 - The team could respond to incidents before clients reported them
 - GenAI cost tracking enabled optimization discussions with stakeholders
 - The dashboard is used daily by ~10 engineers for alert checks, error rates and latency
+- Alerts regularly caught real incidents and prevented many production issues (Aly, 2026-10-04)
 
 **Open**
-- Did an alert catch a real incident?
 - Approximate GenAI cost reduction from optimizing on the data?
 - Why three tools; what did CloudWatch, Splunk and New Relic each cover?
 
@@ -451,8 +451,8 @@ LP: Customer obsession · Think big · Invent and simplify
 - Another team is now building it into a real product
 - Going directly to the end users, not just the POs, made the POC credible and grounded in the
   real workflow rather than assumptions
+- Built in 4 weeks; very good feedback, and it was approved as a production application to
+  implement (Aly, 2026-10-04)
 
 **Open**
-- How long did the POC take to build?
-- How did the fraud detection agents react? Their buy-in is the customer-obsession proof point.
 - "What would the POC have looked like without talking to the agents?"

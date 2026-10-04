@@ -1,7 +1,7 @@
 # Free-text answer bank
 
 Answers Aly has written for past applications, in Aly's own voice. `/apply` starts from the closest
-one when a posting asks a similar free-text question (or needs a cover letter paragraph), tailors
+one when a posting asks a similar free-text question (cover letters: `/cover-letter`, rules in CoverLetter_prompt_v1.md), tailors
 it to the posting, and marks the result `draft` for Aly's review. Reuse the facts and the voice;
 don't paste an answer that doesn't fit the question. Behavioral "tell me about a time" questions use
 [stories.md](stories.md).
