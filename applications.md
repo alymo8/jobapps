@@ -1,7 +1,7 @@
 # Applications log
 
 One row per posting; update the row in place as it moves through the stages.
-Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent`.
+Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`.
 Per-posting detail lives in `postings/<dir>/`.
 
 | Date | Company | Role | Location | Posting dir | Status | Notes |
