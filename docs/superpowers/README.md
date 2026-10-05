@@ -12,4 +12,4 @@
 
 | Date | Plan | Status |
 |---|---|---|
-| 2026-10-04 | [/followup skill Implementation Plan](plans/2026-10-04-followup-skill.md) | draft |
+| 2026-10-04 | [/followup skill Implementation Plan](plans/2026-10-04-followup-skill.md) | approved |
