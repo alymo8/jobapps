@@ -1,12 +1,18 @@
-# Compiled resumes are rebuilt from their .tex sources.
+# Personal data and application records stay local only (the repo holds the setup).
+/postings/
+/batches/
+/archive/
+/applications.md
+/dlq.md
+/profile.md
+/stories.md
+/answers.md
+/mega-resume-v1.5.tex
+/latex_resume.tex
+
+# Built output
 *.pdf
 *.png
-# PDFs with no .tex source can't be rebuilt, so they stay tracked.
-!archive/mega_resume_sep_2026.pdf
-!postings/Artefact-8731229002/the user_Resume_Artefact.pdf
-!postings/Artefact-8731948002/the user_Resume_Artefact.pdf
-!postings/Cresta-4595480008/the user_Resume_Cresta.pdf
-!postings/HingeHealth-b0583044/the user_Resume_HingeHealth.pdf
 
 # LaTeX build output
 *.log
