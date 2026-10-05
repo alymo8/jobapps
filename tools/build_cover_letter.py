@@ -47,15 +47,20 @@ PREAMBLE = r"""\documentclass[letterpaper,11pt]{article}
 \pdfgentounicode=1
 \begin{document}
 \begin{center}
-    {\Huge \scshape the user} \\ \vspace{1pt}
-    \small \raisebox{-0.1\height}\faPhone\ REDACTED-PHONE ~
-    {\raisebox{-0.2\height}\faHome\ {Montreal}}  ~
-    \href{mailto:REDACTED-EMAIL}{\raisebox{-0.2\height}\faEnvelope\  \underline{REDACTED-EMAIL}} ~
-    \href{REDACTED-LINKEDIN}{\raisebox{-0.2\height}\faLinkedin\ \underline{REDACTED-LINKEDIN}}  ~
-    \href{REDACTED-GITHUB}{\raisebox{-0.2\height}\faGithub\ \underline{REDACTED-GITHUB}}
+    {\Huge \scshape <<name>>} \\ \vspace{1pt}
+    \small \raisebox{-0.1\height}\faPhone\ <<phone>> ~
+    {\raisebox{-0.2\height}\faHome\ {<<city>>}}  ~
+    \href{mailto:<<email>>}{\raisebox{-0.2\height}\faEnvelope\  \underline{<<email>>}} ~
+    \href{<<linkedin>>}{\raisebox{-0.2\height}\faLinkedin\ \underline{<<linkedin_bare>>}}  ~
+    \href{<<github>>}{\raisebox{-0.2\height}\faGithub\ \underline{<<github_bare>>}}
 \end{center}
 \vspace{10pt}
 """
+
+# Contact details live in the gitignored profile.md, not in the repo.
+PROFILE = Path(__file__).resolve().parent.parent / "profile.md"
+CONTACT_KEYS = {"name": "Full name", "phone": "Phone", "email": "Email",
+                "city": "Location", "linkedin": "LinkedIn", "github": "GitHub"}  # fmt: skip
 
 SPECIALS = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#",
             "_": r"\_", "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\^{}"}
@@ -76,6 +81,25 @@ def check(lines: list[str]) -> dict:
     }
 
 
+def contact() -> dict:
+    """Header fields from the "## Contact" bullets ("- Key: value") of profile.md."""
+    text = PROFILE.read_text(encoding="utf-8")
+    section = text.split("## Contact", 1)[1].split("\n## ", 1)[0]
+    fields = dict(re.findall(r"^- ([^:\n]+): *(\S.*?) *$", section, re.M))
+    c = {k: fields[v] for k, v in CONTACT_KEYS.items()}
+    c["city"] = c["city"].split(",")[0]
+    for k in ("linkedin", "github"):
+        c[f"{k}_bare"] = re.sub(r"^https?://", "", c[k])
+    return c
+
+
+def preamble() -> str:
+    out = PREAMBLE
+    for k, v in contact().items():
+        out = out.replace(f"<<{k}>>", v)
+    return out
+
+
 def to_tex(text: str) -> str:
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text.strip())]
     body = []
@@ -83,7 +107,7 @@ def to_tex(text: str) -> str:
         body.append(r" \\ ".join(escape(line.strip()) for line in p.splitlines()))
     today = date.today()
     dated = f"{today:%B} {today.day}, {today.year}"
-    return PREAMBLE + dated + "\n\n" + "\n\n".join(body) + "\n\\end{document}\n"
+    return preamble() + dated + "\n\n" + "\n\n".join(body) + "\n\\end{document}\n"
 
 
 def main(argv: list[str]) -> int:
