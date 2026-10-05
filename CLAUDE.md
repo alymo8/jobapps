@@ -1,0 +1,49 @@
+# jobapps
+
+Project memory file: how to navigate and work in this repo. Keep it to about a
+screen; update it in the same change that makes it stale. Workspace-wide rules live
+in the workspace `CLAUDE.md` one level up.
+
+## Setup / prerequisites
+
+- Python 3 for `tools/` (stdlib plus PDF rendering libs used by the build scripts).
+- `pdflatex` on PATH, or MiKTeX installed via scoop (`build_resume.py` falls back to it).
+- Chrome with the Claude-in-Chrome extension for `/apply`, `/outreach`, `/followup`.
+
+## Build, run, check
+
+```
+python tools/build_resume.py postings/<dir>/<name>.tex          # compile + JSON checks (1 page, fill, skills lines)
+python tools/build_cover_letter.py postings/<dir>/cover_letter.md [--check]
+python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all]
+python -m py_compile tools/*.py                                  # what CI runs
+```
+
+## Architecture in brief
+
+- Sources of truth: `mega-resume-v1.5.tex` (all experience), `profile.md`, `stories.md`,
+  `answers.md`; prompts `Resume_prompt_v4.md`, `CoverLetter_prompt_v1.md`.
+- Skills in `.claude/skills/`: `/resume` → `/apply` → `/outreach` → `/followup`;
+  `/cover-letter` when a form offers one; `/batch` fans these out over many postings.
+- Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`,
+  `application.md`, `cover_letter.md`, `outreach.md`, `changelog.md`.
+- Trackers: `applications.md` (one row per posting, updated in place), `dlq.md`
+  (postings that couldn't be processed), `batches/<timestamp>-<mode>/manifest.md`.
+
+## Conventions
+
+- Never submit an application or send a LinkedIn message without the user's explicit OK.
+- Everything written about the user must be truth-checked against the source files above.
+- Track `.tex`, ignore built `.pdf`/`.png` (rebuild from source); the few PDFs with
+  no `.tex` are whitelisted in `.gitignore`.
+
+## Gotchas
+
+- `tools/` scripts aren't ruff-clean at the default 88-column limit; CI only byte-compiles them.
+
+## Pointers
+
+- Knowledge base: [`knowledge/`](knowledge/README.md)
+- Decisions: [`knowledge/decisions/`](knowledge/decisions/README.md)
+- Specs and plans: [`docs/superpowers/`](docs/superpowers/README.md)
+- Session hygiene: use `claude-kit:lean-context` when exploring; `/handoff` before `/clear`.

@@ -22,8 +22,12 @@ desktop.ini
 Thumbs.db
 __pycache__/
 *.pyc
-.env
+.env*
 
-# Claude Code worktrees and plan-execution scratch
+# Claude Code worktrees, handoffs and plan-execution scratch
 .claude/worktrees/
+.claude/handoffs/
 .superpowers/
+
+# Rendered spec/plan views (the .md is the source of truth)
+docs/superpowers/**/*.html
