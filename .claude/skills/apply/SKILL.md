@@ -42,6 +42,8 @@ for this specific application in this session.**
      **ask Aly**, all such questions at once, in one message. Save each answer that is reusable into `profile.md` under the right heading.
    - Never invent facts (dates, employers, degrees, authorization, salary).
 5. **Fill the form** in Chrome (`form_input`/`computer`; React selects need clicking the option).
+   **Never press Enter in any form field, dropdown or input**: Enter can submit the form (it did,
+   2026-10-04, OpenTable). Pick dropdown options by clicking the option, then re-read the field.
    Upload the resume. Then re-read the form and confirm each field shows the intended value and the
    upload shows the right filename (and the cover letter box holds the full letter, not truncated).
 6. **Stop for approval.** Show Aly a compact summary: role, company, resume filename, and the table
