@@ -40,6 +40,8 @@ python -m py_compile tools/*.py                                  # what CI runs
 
 ## Gotchas
 
+- `build_cover_letter.py` reads the letter header (name, phone, email, links) from the
+  `## Contact` bullets in the local `profile.md`; keep those keys when editing it.
 - `tools/` scripts aren't ruff-clean at the default 88-column limit; CI only byte-compiles them.
 
 ## Pointers
