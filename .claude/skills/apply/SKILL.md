@@ -74,7 +74,7 @@ filled or submitted after a retry, or Aly decides to skip it, add or update its 
 (reason `BLOCKED` / `FAILED` / `SKIPPED`, with what would unblock it under `Needs`, status `open`)
 and tell Aly. The resume stays in the posting folder for a manual application.
 
-Workday: no usable saved login → `BLOCKED`, Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...`,
+Workday: no usable saved login, if Aly can't sign in now or skips it (`workday.md` section 3) → `BLOCKED`, Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...`,
 `Needs` "Aly signs in / creates the account at <tenant> and lets Chrome save the password";
 playbook failures → `FAILED` (see `workday.md`).
 

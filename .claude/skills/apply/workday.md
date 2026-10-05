@@ -37,6 +37,10 @@ other field → `ASK`. Re-read the field after picking.
 ## 3. Sign in
 
 If the header already shows Aly's email, skip. Otherwise click **Sign In** and take a screenshot.
+Judge "filled" from the screenshot (email text and masked password dots visible), not from field
+values read from the page: Chrome hides an autofilled password from the page until a click. If
+unsure, treat it as filled and let a Sign In error decide. Never pick a credential from Chrome's
+suggestion dropdown (it may belong to another tenant); accept only what Chrome fills on its own.
 
 - Email **and** password both filled by Chrome → click the dialog's **Sign In** button, wait 3
   seconds, confirm the header shows the email.
@@ -143,7 +147,8 @@ label (or "no consent checkbox") and the `After approval` rows.
 ## Work history section
 
 `profile.md` `## Workday work history`, local-only. Built once from `mega-resume-v1.5.tex` (every
-value traceable to it), shown to Aly in full, saved only after Aly approves. Missing in a normal
+value traceable to it; when it gives only a year for a job date, ask Aly for the month, never
+infer it), shown to Aly in full, saved only after Aly approves. Missing in a normal
 run → build, show, wait for approval. Missing in a batch subagent → report blocker
 `NO-WORKDAY-HISTORY` (recorded as `BLOCKED`). Format:
 
