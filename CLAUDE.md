@@ -34,8 +34,9 @@ python -m py_compile tools/*.py                                  # what CI runs
 
 - Never submit an application or send a LinkedIn message without Aly's explicit OK.
 - Everything written about Aly must be truth-checked against the source files above.
-- Track `.tex`, ignore built `.pdf`/`.png` (rebuild from source); the few PDFs with
-  no `.tex` are whitelisted in `.gitignore`.
+- The repo holds only the setup (skills, tools, prompts, docs). Personal sources,
+  `postings/`, `batches/`, `archive/` and the trackers are local-only and gitignored;
+  never commit them.
 
 ## Gotchas
 
