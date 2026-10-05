@@ -46,6 +46,12 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    (unverified Canada eligibility; recommend skipping or keeping), and the rough cost: subagents
    per stage and model (e.g. "4 haiku pre-screens, ~20 opus resumes, ~20 sonnet form fills"). Wait for Aly's go. A reply that trims the list (e.g. "skip 14, 97") is
    the go for the rest.
+   **Workday history:** in `apply` or `outreach` mode, if any picked posting is Workday (URL host
+   `myworkdayjobs.com` / `myworkdaysite.com`, or its `dlq.md` Detail or `postings/<dir>/posting.md`
+   contains one of those or `Workday (`) and `profile.md` has no `## Workday work history`, build
+   that section from `mega-resume-v1.5.tex` (format in `.claude/skills/apply/workday.md`, "Work
+   history section"), show it in full in this same message, and save it on Aly's approval before
+   any prepare subagent.
 
 ## 1a. Pre-screen (every mode) — `haiku`, up to 4 subagents at a time, 5 postings each
 
@@ -90,7 +96,8 @@ to the dead-letter queue** and drops out of the later stages.
 
 ## 2. Prepare stage (apply / outreach) — Chrome, at most 2 subagents at a time
 
-All subagents share Aly's one Chrome window, so **never more than 2** run at once. For each posting
+All subagents share Aly's one Chrome window, so **never more than 2** run at once. Never run two postings of the same Workday tenant at once
+(shared session and candidate profile); queue the second. For each posting
 with an ok resume, launch a background `general-purpose` subagent with `model: sonnet` (a failed
 fill escalates to `opus`):
 
@@ -100,9 +107,9 @@ fill escalates to `opus`):
 > Load the `claude-in-chrome` skill first. Create your **own new tab** and use only that tab id;
 > never touch, navigate or close other tabs. Never click Submit/Send/Connect. Do not ask the user
 > anything. Final reply, at most 5 lines: posting dir, tab URL, number of ASK fields, blockers
-> (e.g. needs an account login, CAPTCHA before the form, closed), outreach drafts path if any.
+> (e.g. needs an account login (non-Workday), NO-WORKDAY-LOGIN <tenant> <workday url>, CAPTCHA before the form, closed), outreach drafts path if any.
 
-Blockers (needs an account login/sign-up, CAPTCHA before the form, unsupported site) go to the
+Blockers (needs an account login/sign-up (non-Workday), NO-WORKDAY-LOGIN / NO-WORKDAY-HISTORY from a Workday posting, CAPTCHA before the form, unsupported site) go to the
 dead-letter queue as `BLOCKED` with what would unblock them; a form fill that fails at `sonnet`
 and again at `opus` goes as `FAILED`. Either way the posting drops out of the review's approval list (its resume is still
 listed there, so Aly can apply by hand).
@@ -117,9 +124,17 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
 2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the
    changelog's gaps and "please sanity-check" lines (one line each), `draft` free-text answers
    verbatim, posting-specific ASKs, blockers. For outreach: the shortlist (name, title, location, why)
-   and each drafted message verbatim.
+   and each drafted message verbatim. For Workday postings: the tenant, the step the fill stopped on,
+   the consent checkbox label quoted (or "no consent checkbox"), and the "After approval" rows;
+   their ASKs join item 1.
 3. **Dead-lettered in this run**: a short table (company, title, reason, needs), not mixed into
    the approval list.
+   - **Workday logins needed**: every `open` row in `dlq.md` whose Detail starts with
+     `NO-WORKDAY-LOGIN` (not only this run's), grouped by tenant; rows from this run marked
+     `(this run)`. Per tenant: one sign-in URL (the `<workday url>` from the Detail of its first such
+     row) and the posting dirs it would unblock. After signing in or creating the accounts (Chrome
+     saves the passwords), re-run `/batch <apply|outreach> dlq.md --reason BLOCKED` in each row's
+     original mode.
 4. A **reply format** at the top, e.g.
    `answers: salary=150k CAD, ... | approve: all | except: 3, 7 | edit 5: <text> | outreach 2: ann, bob`.
 
@@ -154,7 +169,7 @@ get Stage `held` in the manifest instead.
 
 ## 5. Execute stage — Chrome, at most 2 subagents at a time
 
-Only for postings with a recorded approval. Launch with `model: haiku`; a failed submit or send
+Only for postings with a recorded approval. Same-tenant Workday postings run one at a time, as in stage 2. Launch with `model: haiku`; a failed submit or send
 (not `NEEDS ALY`) escalates to `sonnet`. Subagent prompt:
 
 > You are a batch execute subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
@@ -185,7 +200,7 @@ top of `dlq.md`:
 
 - `Detail`: the subagent's evidence in one line (HTTP status, the page's "no longer accepting"
   text, which login wall).
-- `Needs`: what would unblock it, concretely ("Aly creates a Workday account at <tenant>",
+- `Needs`: what would unblock it, concretely ("Aly signs in / creates the account at <tenant> (Chrome saves the password)",
   "re-check next week", "nothing, closed").
 - A retried posting that now succeeds: set its row to `resolved`. Aly can mark rows `dropped`.
 
