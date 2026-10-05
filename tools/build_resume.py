@@ -2,13 +2,14 @@
 
 Usage: python tools/build_resume.py <path/to/resume.tex>
 
-Writes <name>.pdf and <name>.png next to the .tex and prints a JSON report:
+Writes <name>.pdf next to the .tex (only the .tex and .pdf are kept there), renders a
+preview PNG into the temp dir, and prints a JSON report:
   errors          LaTeX errors (compile failed if non-empty)
   overfull        Overfull \\hbox warnings (fix any that push text into the margin)
   pages           page count (must be 1)
   fill            bottom of the last text line / page height (target 0.95-0.98)
   skills_lines    rendered lines in the Skills section (must be <= 5)
-  png             rendered page, to look at before delivering
+  png             rendered page (temp dir), to look at before delivering
   ok              all hard checks pass (the visual check is still on you)
 """
 
@@ -17,6 +18,7 @@ import re
 import shutil
 import subprocess
 import sys
+import tempfile
 from pathlib import Path
 
 import fitz  # PyMuPDF
@@ -33,9 +35,16 @@ def compile_tex(tex: Path) -> tuple[list[str], list[str]]:
     log = tex.with_suffix(".log").read_text(errors="replace")
     errors = [m.group(0).strip() for m in re.finditer(r"^! .*$", log, re.M)]
     overfull = [m.group(0).strip() for m in re.finditer(r"^Overfull \\hbox.*$", log, re.M)]
-    for ext in (".aux", ".out"):
+    for ext in (".aux", ".out", ".log"):
         tex.with_suffix(ext).unlink(missing_ok=True)
     return errors, overfull
+
+
+def preview_png(pdf: Path) -> Path:
+    """Where to render the page-1 preview: the temp dir, so postings/ keeps only .tex and .pdf."""
+    out = Path(tempfile.gettempdir()) / "jobapps-preview" / pdf.parent.name
+    out.mkdir(parents=True, exist_ok=True)
+    return out / pdf.with_suffix(".png").name
 
 
 def text_lines(page) -> list[tuple[float, float, str]]:
@@ -80,7 +89,7 @@ def main(tex_path: str) -> int:
     doc = fitz.open(pdf)
     page = doc[0]
     lines = text_lines(page)
-    png = tex.with_suffix(".png")
+    png = preview_png(pdf)
     page.get_pixmap(dpi=110).save(png)
     report.update(
         pages=doc.page_count,
