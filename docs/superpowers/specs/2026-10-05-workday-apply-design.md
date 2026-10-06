@@ -1,7 +1,7 @@
 # Workday applications in /apply and /batch: design
 
 - **Date:** 2026-10-05
-- **Status:** approved
+- **Status:** implemented
 
 ## Purpose
 

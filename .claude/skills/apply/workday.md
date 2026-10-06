@@ -58,8 +58,12 @@ values read from the page: Chrome hides an autofilled password from the page unt
 unsure, treat it as filled and let a Sign In error decide. Never pick a credential from Chrome's
 suggestion dropdown (it may belong to another tenant); accept only what Chrome fills on its own.
 
-- Email **and** password both filled by Chrome → click the dialog's **Sign In** button, wait 3
-  seconds, confirm the header shows the email.
+- Email **and** password both filled by Chrome, and the filled email matches the `Email` in
+  `profile.md` `## Contact` → click the dialog's **Sign In** button, wait 3 seconds, confirm the
+  header shows the email.
+- Filled with a different email (another saved login, e.g. a school address) → don't click Sign
+  In: a wrong login is a failed attempt and can lock the account. Treat it as no usable saved
+  login (next bullet), and name the email Chrome offered in the report.
 - Either field empty, Sign In returns an error (wrong credentials, account not found), or Workday
   asks for a verification code → no usable saved login. **Never type into the password field.
   Never fill or submit Create Account.**
