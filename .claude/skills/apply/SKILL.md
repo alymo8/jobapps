@@ -21,6 +21,11 @@ for this specific application in this session.**
 3. **Open the application** in a new Chrome tab (the posting URL; on Greenhouse the form is on the
    same page under "Apply"). Read the whole form first with `read_page`/`get_page_text` and list
    every field: label, type, required or optional, options for selects.
+
+   **Workday** (`*.myworkdayjobs.com`, `*.myworkdaysite.com`, or an Apply button leading there):
+   read `.claude/skills/apply/workday.md` and follow it instead of steps 3–6 here and Phase 2
+   (sign-in through Chrome's saved password, Apply Manually, step-by-step fill, stop before the
+   consent checkbox).
 4. **Answer every field**, writing `postings/<dir>/application.md`: one line per field,
    `label | answer | source` where source is `profile`, `mega_resume`, `answers`, `stories`,
    `posting` or `ASK`.
@@ -69,13 +74,20 @@ filled or submitted after a retry, or Aly decides to skip it, add or update its 
 (reason `BLOCKED` / `FAILED` / `SKIPPED`, with what would unblock it under `Needs`, status `open`)
 and tell Aly. The resume stays in the posting folder for a manual application.
 
+Workday: no usable saved login, if Aly can't sign in now or skips it (`workday.md` section 3) → `BLOCKED`, Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...`,
+`Needs` "Aly signs in / creates the account at <tenant> and lets Chrome save the password";
+playbook failures → `FAILED` (see `workday.md`).
+
 ## Running as a batch subagent
 
 When the prompt says you are a batch subagent (orchestrated by the `batch` skill): run Phase 1
 steps 1–5 **without asking Aly anything**, in your own Chrome tab only. Put every unanswerable field
 in `application.md` as `ASK` with the exact question and options, leave that field empty, and record
-the tab URL at the top of `application.md`. If the site needs an account login or sign-up, or a
-CAPTCHA blocks the form, stop and report it as a blocker (don't create accounts). End with a short
+the tab URL at the top of `application.md`. Workday postings follow `workday.md`: sign in through Chrome's autofill and fill up to the consent
+checkbox; only `NO-WORKDAY-LOGIN <tenant> <workday url>` (no usable saved login) or
+`NO-WORKDAY-HISTORY` (no `## Workday work history` in `profile.md`) blocks. On any other site, if
+it needs an account login or sign-up, or a CAPTCHA blocks the form, stop and report it as a
+blocker. Never create accounts or type passwords. End with a short
 report: posting dir, number of `ASK` fields, blockers. **Never submit in a batch subagent.**
 
 ## Batch execute mode
@@ -86,3 +98,7 @@ Aly's answers and edits, no `ASK` left; if one is left, stop and report it), upl
 paste or upload the cover letter from `cover_letter.md` (approved text, verbatim) if the table has one,
 re-verify every field, then run Phase 2 steps 2–3 (the orchestrator updates `applications.md`; never write it in batch). CAPTCHA or email code → stop and reply
 `NEEDS ALY: ...` with the tab URL instead of asking.
+
+Workday: sign in per `workday.md` section 3, resume the saved draft (section 4), check every saved
+step against `application.md`, then run section 11 (which never writes `applications.md` in
+batch). No usable saved login → reply `NEEDS ALY: sign in at <tenant>` with the tab URL.

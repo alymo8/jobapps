@@ -6,10 +6,12 @@
 
 | Date | Spec | Status |
 |---|---|---|
+| 2026-10-05 | [Workday applications in /apply and /batch: design](specs/2026-10-05-workday-apply-design.md) | approved |
 | 2026-10-04 | [/followup skill: design](specs/2026-10-04-followup-skill-design.md) | approved |
 
 ## Plans
 
 | Date | Plan | Status |
 |---|---|---|
+| 2026-10-05 | [Workday applications in /apply and /batch Implementation Plan](plans/2026-10-05-workday-apply.md) | draft |
 | 2026-10-04 | [/followup skill Implementation Plan](plans/2026-10-04-followup-skill.md) | approved |
