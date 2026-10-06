@@ -27,12 +27,28 @@ Still unavailable → `FAILED`, Detail "Workday maintenance page".
 ## 2. Clicking rule
 
 Click buttons, links and options through element refs from `find` (fallback: `read_page` with
-`filter: interactive`), never screen coordinates. **Never press Enter.** Cookie banner: **Decline**.
+`filter: interactive`). **Never press Enter.** Cookie banner: **Decline**.
 
-Prompt pickers (How Did You Hear, Degree, Field of Study, Skills): click the field, type the search
-text, wait 2 seconds, click the matching option. No list → click the field's list/prompt icon and
-browse the categories. Still no match: Skills → `skipped (no option)` in `application.md`; any
-other field → `ASK`. Re-read the field after picking.
+Exceptions, seen on Manulife (2026-10-05), where a ref click lands on the wrong item or nothing:
+- Dropdown and picker options: lists re-render under the click, so a ref often selects a
+  neighbour. Open the list, take a screenshot, then click the option by position. Re-read the
+  field (`get_page_text` or the button text) after every pick.
+- Long lists (Language, Field of Study): typing the name while the list is open (type-ahead)
+  scrolls to and highlights it; then screenshot and click it by position. Virtualized lists
+  (Field of Study, Certification) can also be scrolled from `javascript_tool` by setting the
+  listbox's `scrollTop` and dispatching a `scroll` event.
+- **Save and Continue by position:** if a ref click on Save and Continue leaves the step unchanged
+  with no errors, take a screenshot and click the button by position (it moves when the page is
+  scrolled to the bottom). Confirm with `get_page_text` that the current step advanced.
+
+Prompt pickers (How Did You Hear, Degree, Field of Study): click the field and browse the list
+(typing does not filter it without Enter). No match: `ASK`, or the approved fallback in
+`profile.md` (e.g. Field of Study → Computer Science). Re-read the field after picking.
+
+**Search-only fields** (Skills, Certifications on Manulife): options appear only after an
+Enter-triggered search, and the browse icon lists just the first 100 alphabetically. Don't try
+them: record `skipped (search-only field)` in `application.md` and mention it at the approval
+point (the resume carries skills and certifications).
 
 ## 3. Sign in
 
@@ -96,9 +112,12 @@ first).
   typed as MM/YYYY, Role Description pasted from the section.
 - Education, per degree: School, Degree (closest option; none fits → `ASK`), Field of Study
   (closest option), dates when asked.
-- Skills: each skill from the section (section 2 picker rule).
+- Skills: search-only on most tenants (section 2): record `skipped (search-only field)`.
+- Certifications, Languages (optional sections): Languages from `profile.md` (bilingual / native →
+  Fluent, intermediate → Intermediate). Certifications are search-only on most tenants: skip.
 - Resume/CV: upload the posting's tailored resume PDF (`file_upload`); confirm the filename shows.
-- Websites: LinkedIn and GitHub from `profile.md` `## Contact`.
+- Websites: LinkedIn and GitHub from `profile.md` `## Contact`. Workday rejects
+  `linkedin.com/in/...`: always type `https://www.linkedin.com/in/<handle>`.
 - Any field the section doesn't cover → `ASK`.
 
 ## 8. Application Questions
