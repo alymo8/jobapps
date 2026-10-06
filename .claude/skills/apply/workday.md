@@ -46,9 +46,14 @@ Prompt pickers (How Did You Hear, Degree, Field of Study): click the field and b
 `profile.md` (e.g. Field of Study → Computer Science). Re-read the field after picking.
 
 **Search-only fields** (Skills, Certifications on Manulife): options appear only after an
-Enter-triggered search, and the browse icon lists just the first 100 alphabetically. Don't try
-them: record `skipped (search-only field)` in `application.md` and mention it at the approval
-point (the resume carries skills and certifications).
+Enter-triggered search, and the browse icon lists just the first 100 alphabetically.
+- Optional: don't try them: record `skipped (search-only field)` in `application.md` and mention
+  it at the approval point (the resume carries skills and certifications).
+- **Required** (e.g. Skills on Thomson Reuters, which blocks Save and Continue): pressing Enter
+  **inside that field's search box only** is allowed, to run the search (the user, 2026-10-06; in a
+  Workday search box Enter searches, it does not submit). Search each skill from `profile.md`
+  `### Skills`, click the matching suggestion, confirm it shows as selected; skip skills with no
+  true match and note them. Enter stays forbidden everywhere else.
 
 ## 3. Sign in
 
@@ -78,6 +83,11 @@ suggestion dropdown (it may belong to another tenant); accept only what Chrome f
 Click **Apply**, then **Apply Manually**. Never Autofill with Resume or Use My Last Application. If
 Workday offers to continue an existing draft for this posting, or the wizard opens on a later step,
 continue it.
+
+the user approved (2026-10-06) clicking **Apply Manually** and **Save and Continue** in every Workday
+run, batch subagents included: they only save a draft. The consent checkbox and **Submit** still
+need the user's explicit OK. If a permission check blocks one of these clicks, don't retry or work
+around it: stop and report it.
 
 ## 5. Each step
 
@@ -116,7 +126,8 @@ first).
   typed as MM/YYYY, Role Description pasted from the section.
 - Education, per degree: School, Degree (closest option; none fits → `ASK`), Field of Study
   (closest option), dates when asked.
-- Skills: search-only on most tenants (section 2): record `skipped (search-only field)`.
+- Skills: search-only on most tenants (section 2): skip when optional; when required, use the
+  section 2 Enter-in-search exception.
 - Certifications, Languages (optional sections): Languages from `profile.md` (bilingual / native →
   Fluent, intermediate → Intermediate). Certifications are search-only on most tenants: skip.
 - Resume/CV: upload the posting's tailored resume PDF (`file_upload`); confirm the filename shows.
