@@ -1,7 +1,7 @@
 ---
 name: batch
 description: Run /resume, /apply or /outreach over many job postings at once (an Excel or CSV target list, a text file of URLs, or URLs), using subagents so the main context stays small; all submits and LinkedIn sends still wait for Aly's approval, collected in one review sheet. Use when the user runs /batch or asks to do several postings at once.
-argument-hint: resume|apply|outreach <file.xlsx|file.csv|file.txt|dlq.md|url ...> [--rows 1-20] [--new] [--limit N] [--all] [--reason BLOCKED]
+argument-hint: resume|apply|outreach <file.xlsx|file.csv|file.txt|dlq.md|url ...> [--rows 1-20] [--new] [--limit N] [--all] [--reason BLOCKED] [--min-score N]
 ---
 
 # /batch — many postings, subagents, one review
@@ -18,6 +18,7 @@ default. Pick by how much judgment the step needs:
 | Stage | Task | Model | Why |
 |-------|------|-------|-----|
 | 1a | Pre-screen: live? Canada-eligible? save `posting.md` | `haiku` | mechanical fetch and check |
+| 1a.5 | Fit, pay and legitimacy score (`scoring.md`) | `sonnet` | judgment, but no writing |
 | 1b | Resume tailoring | `opus` | truthfulness, content selection, page fit |
 | 2 | Form fill + drafted free-text answers | `sonnet` | multi-step Chrome work, React selects |
 | 2 | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
@@ -37,14 +38,14 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    filters. Missing mode or sources → ask.
 2. `python tools/read_postings.py <sources> [--rows ..] [--new] [--all] [--reason ..]` → JSON
    list. It skips postings already `applied` or later in `applications.md`, and postings held in
-   the dead-letter queue `dlq.md` (see "Dead-letter queue" below), unless `--all`. Apply `--limit N`
+   the dead-letter queue `dlq.md` (see "Dead-letter queue" below), unless `--all`. `--limit N` and `--min-score N` are handled here, not passed to `read_postings.py`. Apply `--limit N`
    (first N by rank) yourself. When the source is `dlq.md` (a retry run), set each picked row's
    Status to `retried` in `dlq.md` before launching.
 3. Create `batches/<YYYY-MM-DD-HHMM>-<mode>/` with `postings.json` (the list) and `manifest.md`:
-   a table `# | Rank | Company | Title | Posting dir | Stage | Result`, one row per posting.
+   a table `# | Rank | Company | Title | Posting dir | Stage | Score | Result`, one row per posting.
 4. **Confirm before launching** in one message: mode, number of postings, ranks, the flagged ones
    (unverified Canada eligibility; recommend skipping or keeping), and the rough cost: subagents
-   per stage and model (e.g. "4 haiku pre-screens, ~20 opus resumes, ~20 sonnet form fills"). Wait for Aly's go. A reply that trims the list (e.g. "skip 14, 97") is
+   per stage and model (e.g. "4 haiku pre-screens, 4 sonnet scorers, ~20 opus resumes, ~20 sonnet form fills"). Wait for Aly's go. A reply that trims the list (e.g. "skip 14, 97") is
    the go for the rest.
    **Workday history:** in `apply` or `outreach` mode, if any picked posting is Workday (URL host
    `myworkdayjobs.com` / `myworkdaysite.com`, or its `dlq.md` Detail or `postings/<dir>/posting.md`
@@ -52,6 +53,14 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    that section from `mega-resume-v1.5.tex` (format in `.claude/skills/apply/workday.md`, "Work
    history section"), show it in full in this same message, and save it on Aly's approval before
    any prepare subagent.
+   **Targeting:** if `profile.md` has no `## Targeting` section, say so in this message and offer to
+   add it with these keys: `Pay floor: skip when the top of the posted range is below <amount> CAD`,
+   `USD to CAD rate`, `Score threshold`, `Years of experience`, `Target roles`, `Deal-breakers` (ask
+   Aly for the values). If Aly declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
+   says so.
+   **Threshold:** `--min-score N` if given, else `Score threshold` from `## Targeting`. Without
+   `## Targeting`, `--min-score` is ignored and this message says so.
+   `--min-score 0` turns off all skipping, `PAY-FLOOR` included.
 
 ## 1a. Pre-screen (every mode) — `haiku`, up to 4 subagents at a time, 5 postings each
 
@@ -75,9 +84,48 @@ the rest into chunks of 5 and launch background `general-purpose` subagents with
 `UNREADABLE` escalates (re-run that posting alone with `sonnet`); CLOSED and INELIGIBLE go straight
 to the dead-letter queue. LIVE postings move on.
 
+## 1a.5. Score (every mode) — `sonnet`, up to 4 subagents at a time, 5 postings each
+
+Which postings: every LIVE posting (including those that skipped 1a because `posting.md` was
+already there) that has no `postings/<dir>/changelog.md`. Those with a `score.md` aren't rescored.
+Split the rest into chunks of 5 and launch background `general-purpose` subagents with
+`model: sonnet`:
+
+> You are a batch scoring subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
+> `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
+> `postings/<dir>/posting.md`, `mega-resume-v1.5.tex`, `profile.md` section `## Targeting`, and
+> `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write
+> `postings/<dir>/score.md` for each. Do not ask the user anything. Final reply: one line per
+> posting, `<rank> <dir> <score> | fit <f> | pay <p> | legit <tier> | <reason>`, or
+> `<rank> <dir> PAY-FLOOR <top of range in CAD> | <reason>`. Posting dirs: <rank. dir — one per line>
+
+A garbled or incomplete line gets one retry at `opus` for that posting; still bad → dead-letter it
+`FAILED`, stage `score`.
+
+**Gate.** Every posting that reaches the gate with a `score.md` (read its `- Overall:` line), scored
+in this run or earlier, is compared with the threshold, except postings with `changelog.md` (Score
+`-`) and override postings; write its overall into the manifest's Score column (`PAY-FLOOR` for a pay-floor miss).
+Below threshold, or `PAY-FLOOR`:
+
+- `dlq.md` row: Reason `LOW-SCORE`, Stage `score`, Detail `<score>: <reason>` (or
+  `PAY-FLOOR <amount> CAD: <reason>`), Needs `nothing, or /batch <mode> dlq.md --reason LOW-SCORE
+  to override`, Status `open`.
+- Manifest Result `DLQ: LOW-SCORE 2.8` or `DLQ: LOW-SCORE PAY-FLOOR 95900`. The posting drops out
+  of later stages; don't wait for Aly.
+
+With `--min-score 0`, nothing is skipped: `PAY-FLOOR` postings keep Score `PAY-FLOOR` (the flag
+lives in the Score column; later stages overwrite Result) and go on.
+
+**Override.** In a run whose source is `dlq.md` with `--reason LOW-SCORE`, skip the gate: keep each
+posting's `score.md`, set Result `override <score>`, and go on to 1b. That covers every open
+`LOW-SCORE` row (narrow with `--rows`). One posting: `/batch <mode> <url> --min-score 0 --all`.
+When an overridden posting ends 1b with an ok resume, set its `dlq.md` row to `resolved` (either
+override path; a single-URL override is a posting whose `read_postings.py` JSON has
+`dlq == "LOW-SCORE"` in a `--min-score 0` run), so later normal runs pick it up.
+
 ## 1b. Resume stage (every mode) — `opus`, up to 4 subagents at a time
 
-For each LIVE posting without a verified resume (no `postings/<dir>/changelog.md`), launch a
+For each LIVE posting that passed the gate (or every LIVE posting when 1a.5 was skipped) and has no verified resume (no `postings/<dir>/changelog.md`), launch a
 background `general-purpose` subagent with `model: opus`, keeping **at most 4 running**; when one
 finishes, launch the next. Prompt:
 
@@ -121,7 +169,7 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
 1. **Questions, deduplicated across postings.** The same question asked by several forms (salary,
    work authorization, relocation, EEO, "how did you hear") appears once, listing the postings that
    ask it. Reusable answers go to `profile.md` once Aly answers.
-2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the
+2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the score line from `score.md` (`<overall> | fit | pay | legit`, for a pay-floor miss `PAY-FLOOR | fit <f> | pay PAY-FLOOR | legit <tier>`; prefixed `override` when the posting came through a `--reason LOW-SCORE` retry or a `--min-score 0` URL override) and its real gaps, any contractor-wording note, the
    changelog's gaps and "please sanity-check" lines (one line each), `draft` free-text answers
    verbatim, posting-specific ASKs, blockers. For outreach: the shortlist (name, title, location, why)
    and each drafted message verbatim. For Workday postings: the tenant, the step the fill stopped on,
@@ -129,6 +177,10 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
    their ASKs join item 1.
 3. **Dead-lettered in this run**: a short table (company, title, reason, needs), not mixed into
    the approval list.
+   - **Skipped on score**: a separate table (company, title, score or `PAY-FLOOR <amount>`, reason)
+     for this run's `LOW-SCORE` rows (listed here only, not again in the dead-lettered table), with
+     the override command
+     `/batch <mode> dlq.md --reason LOW-SCORE` (or one URL with `--min-score 0 --all`).
    - **Workday logins needed**: every `open` row in `dlq.md` whose Detail starts with
      `NO-WORKDAY-LOGIN` (not only this run's), grouped by tenant; rows from this run marked
      `(this run)`. Per tenant: one sign-in URL (the `<workday url>` from the Detail of its first such
@@ -202,6 +254,7 @@ top of `dlq.md`:
   text, which login wall).
 - `Needs`: what would unblock it, concretely ("Aly signs in / creates the account at <tenant> (Chrome saves the password)",
   "re-check next week", "nothing, closed").
+- `LOW-SCORE` (stage `score`) is written only by the 1a.5 gate; `read_postings.py` never retries it unless `--reason LOW-SCORE` is given.
 - A retried posting that now succeeds: set its row to `resolved`. Aly can mark rows `dropped`.
 
 Mirror each dead-lettered posting in the manifest (Result `DLQ: <reason>`) and in `applications.md`
