@@ -1,10 +1,10 @@
 # Gate: Score gate in /batch and posting discovery: design
 
 - **Spec:** docs/superpowers/specs/2026-10-10-score-gate-and-discovery-design.md
-- **Spec SHA-256:** 9d1fe2f1fcea50a79339e76cc9b946c2e4d7617af5e5d2dc26d54d6e4375df04
+- **Spec SHA-256:** 976da917ea9bba5c47f012cc24c76eb567cde69a6dc04069e88ebf37e9610db9
 - **Verdict:** pass
 - **Date:** 2026-10-10
-- **Rounds:** 3 discovery + 2 verification
+- **Rounds:** 3 discovery + 2 verification (first run); rerun after a scope change: 3 discovery + 2 verification
 
 ## Key decisions
 
@@ -22,6 +22,15 @@
 - Missing `## Targeting` that Aly declines to add → run continues without 1a.5 (Score `n/a`).
 - Both parts ship in one change: Aly's accepted override of one-subsystem-per-spec.
 - New stdlib `unittest` tests run in CI.
+- `CLAUDE.md` and `README.md` are updated in this change (repo rule: update `CLAUDE.md` in the change that makes it stale).
+- Postings with `changelog.md` are neither scored nor gated; the gate applies to every other posting reaching it with a `score.md`, from this run or earlier, except overrides.
+- A `PAY-FLOOR` posting still gets fit and legitimacy; `score.md` shows `PAY-FLOOR (<capped display score>)`.
+- An override that reaches 1b with an ok resume sets its `dlq.md` row to `resolved`; `dlq_skip` uses its own `{CLOSED, INELIGIBLE}` set so resolved `LOW-SCORE` rows aren't held.
+- Role-type check: core responsibilities outside `Target roles` cap fit at 2. Seniority uses the lower end of a range. Fit 3 = exactly one real gap (any minor gaps) or no real gap and 2+ minor gaps.
+- Bare `$` currency from labels, else location, else USD; with several ranges, the posting's Canadian location (Montreal first), else any Canadian range, else the first.
+- Repeats: `applications.md` row with a different `Posting dir`, or `dlq.md` row with a different URL.
+- Discovery collapses `added` rows to the earliest per URL before the cut-off.
+- `--min-score` is ignored without `## Targeting`; `- Posted:`/`- Published:`/`- Updated:` headers count for age, measured to the scoring date.
 
 ## Findings fixed
 
@@ -48,6 +57,22 @@
 - round 3 [minor] Criterion 3 URL extraction: "URLs extracted with `POSTING_URL`".
 - verify 1 [blocking] Wrong YAML-frontmatter count: 7, with `apply_url:` in all and `posting_url:` in some.
 
+- rerun round 1 [blocking] CLAUDE.md/README edits out of scope (from the plan gate): added to Scope In.
+- rerun round 1 [blocking] Overridden LOW-SCORE stays blocked: `resolved` on success; `dlq_skip` own set.
+- rerun round 1 [blocking] PAY-FLOOR score.md undefined: exact lines, Score column and review line.
+- rerun round 1 [blocking] changelog postings scored?: neither scored nor gated.
+- rerun round 1 [minor] Published/Updated headers; `--min-score` without Targeting.
+- rerun round 2 [blocking] DeepMind can't score low: role-type check with `Target roles`.
+- rerun round 2 [blocking] bare `$` and several ranges: currency and range-choice rules.
+- rerun round 2 [blocking] seniority range: lower end.
+- rerun round 2 [minor] URL-less posting.md files noted; dry run outside `/batch` noted.
+- rerun round 3 [blocking] repeats self-match: defined per file.
+- rerun round 3 [blocking] gate scope for earlier scores: stated.
+- rerun round 3 [blocking] cut-off vs collapse order: collapse first.
+- rerun round 3 [blocking] fit band one real + minor gaps: defined.
+- rerun round 3 [minor] `pay <p>`; PAY-FLOOR cap; Scope lists all read_postings changes; dlq_skip wording.
+- rerun verify 1 [blocking] accepted-gap rationale false: reworded to the step-0 confirmation safeguard.
+
 ## Plan questions
 
 - Does the gate re-apply an existing `score.md` to the current threshold in a non-override run (e.g. `--all` or a different `--min-score`)? (Gate)
@@ -55,10 +80,16 @@
 - Which postings enter 1a.5: those that skipped 1a because `posting.md` existed, and those that already have a `changelog.md`? (Stage 1a.5)
 - How do the tests point `read_postings.py`'s `ROOT`/`DLQ` and `discover.py` at fixture files: patched module constants, or a root argument? (Tests and CI)
 - Does the CSV `URL` column hold the raw scan-history URL or the normalized one? (Discovery)
-- Is "keep the earliest row per URL" applied before or after the `first_seen` cut-off? (Discovery step 3)
 - What date does `discovered/.last-run` hold, and is it updated when nothing new is found? (Discovery step 6)
 - Which URLs in `applications.md` count for dedupe: any URL in any row, or only the column `statuses()` reads? (Discovery step 4)
 - How is criterion 3 checked if the real run finds no new postings (e.g. a larger `--since`)? (Success criteria)
+- How are `--exclude` files read, and what about unsupported extensions? (Discovery step 4)
+- What order do CSV rows go in? (Discovery step 6)
+- Does an empty status count as `added`? (Discovery step 3)
+- What happens to a `retried` `LOW-SCORE` row when a run is abandoned before 1b? (Gate)
+- What does the Score column show for postings that are not scored? (Gate)
+- How is the single-URL override detected so its row gets resolved? (Gate)
+- Are `LOW-SCORE` postings listed in both review tables? (`/batch` changes)
 
 ## Open
 
