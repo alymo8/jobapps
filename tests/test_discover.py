@@ -148,5 +148,37 @@ class DiscoverTest(unittest.TestCase):
         self.assertFalse((self.root / "discovered").exists())
 
 
+    def test_location_filter(self):
+        self.history(
+            row("https://l.example/1", "2026-10-09", location="Montreal, QC"),
+            row("https://l.example/2", "2026-10-09", location="San Francisco, CA"),
+            row("https://l.example/3", "2026-10-09", location=""),
+            row("https://l.example/4", "2026-10-09", location="Remote - Canada"),
+        )
+        self.run_main("--since", "7", "--location", "canada", "Montreal")
+        urls = [x["url"] for x in rp.from_csv(self.csvs()[0])]
+        self.assertEqual(urls, ["https://l.example/1", "https://l.example/3", "https://l.example/4"])
+
+    def test_missing_exclude_file(self):
+        self.history(row("https://a.example/1", "2026-10-09"))
+        with self.assertRaises(SystemExit) as cm:
+            self.run_main("--since", "7", "--exclude", str(self.root / "nope.csv"))
+        self.assertIn("exclude", str(cm.exception.code))
+        self.assertFalse((self.root / "discovered").exists())
+
+    def test_applications_url_trailing_punctuation(self):
+        self.history(row("https://p.example/1", "2026-10-09"), row("https://p.example/2", "2026-10-09"))
+        (self.root / "applications.md").write_text(
+            "| x | Applied via https://p.example/1. Thanks |\n", encoding="utf-8")
+        self.run_main("--since", "7")
+        self.assertEqual([x["url"] for x in rp.from_csv(self.csvs()[0])], ["https://p.example/2"])
+
+    def test_scan_history_env_override(self):
+        other = self.root.parent / "elsewhere.tsv"
+        other.write_text(HEADER + row("https://e.example/1", "2026-10-09"), encoding="utf-8")
+        with mock.patch.dict(discover.os.environ, {"CAREER_OPS_SCAN_HISTORY": str(other)}):
+            self.run_main("--since", "7")
+        self.assertEqual([x["url"] for x in rp.from_csv(self.csvs()[0])], ["https://e.example/1"])
+
 if __name__ == "__main__":
     unittest.main()

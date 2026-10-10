@@ -2,13 +2,15 @@
 
 Usage:
   python tools/discover.py [--career-ops PATH] [--since N] [--exclude FILE ...] [--no-scan]
-                           [--root PATH]
+                           [--location KEYWORD ...] [--root PATH]
 
 Runs `node scan.mjs --quiet` in the career-ops checkout (--career-ops, else CAREER_OPS_DIR),
 then reads its data/scan-history.tsv: rows with status `added` first seen on or after the
 cut-off (--since N days, else the date in discovered/.last-run, else 7 days). Drops URLs
 already in applications.md, dlq.md, postings/*/posting.md, earlier discovered/*.csv and every
---exclude file (compared with normalize_url). Writes discovered/<date>.csv
+--exclude file (compared with normalize_url). --location keeps rows whose location contains
+one of the keywords (case-insensitive) or is empty. The history file is
+CAREER_OPS_SCAN_HISTORY when set, else <career-ops>/data/scan-history.tsv. Writes discovered/<date>.csv
 (Rank,Company,Title,Location,URL) for `/batch <mode> <csv>`. --root points at another
 jobapps folder (tests, or running from a worktree).
 """
@@ -66,7 +68,7 @@ def known_urls(root: Path, excludes: list[Path]) -> set[str]:
     urls: set[str] = set()
     log = root / "applications.md"
     if log.exists():
-        urls.update(URL_RE.findall(log.read_text(encoding="utf-8")))
+        urls.update(u.rstrip(".,;:") for u in URL_RE.findall(log.read_text(encoding="utf-8")))
     urls.update(r["url"] for r in dlq_rows(root / "dlq.md"))
     for f in (root / "postings").glob("*/posting.md"):
         urls.update(POSTING_URL.findall(f.read_text(encoding="utf-8")))
@@ -124,6 +126,7 @@ def main(argv: list[str] | None = None, today: dt.date | None = None) -> int:
     ap.add_argument("--since", type=int)
     ap.add_argument("--exclude", action="extend", nargs="+", default=[])
     ap.add_argument("--no-scan", action="store_true")
+    ap.add_argument("--location", action="extend", nargs="+", default=[])
     ap.add_argument("--root")
     args = ap.parse_args(argv)
     root = Path(args.root).resolve() if args.root else ROOT
@@ -133,14 +136,20 @@ def main(argv: list[str] | None = None, today: dt.date | None = None) -> int:
     career_ops = Path(career_ops)
     if not career_ops.is_dir():
         raise SystemExit(f"discover: career-ops folder not found: {career_ops}")
+    excludes = [Path(x) for x in args.exclude]
+    for f in excludes:
+        if not f.is_file():
+            raise SystemExit(f"discover: --exclude file not found: {f}")
     if not args.no_scan:
         run_scan(career_ops)
-    history = career_ops / "data" / "scan-history.tsv"
+    history = Path(os.environ.get("CAREER_OPS_SCAN_HISTORY") or career_ops / "data" / "scan-history.tsv")
     if not history.exists():
         raise SystemExit(f"discover: no scan history at {history}")
     today = today or dt.date.today()
-    rows = select(history_rows(history), cutoff(root, args.since, today),
-                  known_urls(root, [Path(x) for x in args.exclude]))  # fmt: skip
+    rows = select(history_rows(history), cutoff(root, args.since, today), known_urls(root, excludes))
+    if args.location:
+        keys = [k.lower() for k in args.location]
+        rows = [r for r in rows if not r["location"] or any(k in r["location"].lower() for k in keys)]
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     if not rows:

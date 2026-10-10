@@ -38,7 +38,7 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    filters. Missing mode or sources → ask.
 2. `python tools/read_postings.py <sources> [--rows ..] [--new] [--all] [--reason ..]` → JSON
    list. It skips postings already `applied` or later in `applications.md`, and postings held in
-   the dead-letter queue `dlq.md` (see "Dead-letter queue" below), unless `--all`. Apply `--limit N`
+   the dead-letter queue `dlq.md` (see "Dead-letter queue" below), unless `--all`. `--limit N` and `--min-score N` are handled here, not passed to `read_postings.py`. Apply `--limit N`
    (first N by rank) yourself. When the source is `dlq.md` (a retry run), set each picked row's
    Status to `retried` in `dlq.md` before launching.
 3. Create `batches/<YYYY-MM-DD-HHMM>-<mode>/` with `postings.json` (the list) and `manifest.md`:
@@ -113,7 +113,8 @@ Below threshold, or `PAY-FLOOR`:
 - Manifest Result `DLQ: LOW-SCORE 2.8` or `DLQ: LOW-SCORE PAY-FLOOR 95900`. The posting drops out
   of later stages; don't wait for Aly.
 
-With `--min-score 0`, nothing is skipped: `PAY-FLOOR` postings get Result `PAY-FLOOR` and go on.
+With `--min-score 0`, nothing is skipped: `PAY-FLOOR` postings keep Score `PAY-FLOOR` (the flag
+lives in the Score column; later stages overwrite Result) and go on.
 
 **Override.** In a run whose source is `dlq.md` with `--reason LOW-SCORE`, skip the gate: keep each
 posting's `score.md`, set Result `override <score>`, and go on to 1b. That covers every open

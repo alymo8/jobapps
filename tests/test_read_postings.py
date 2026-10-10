@@ -101,6 +101,7 @@ class ReadPostingsTest(unittest.TestCase):
         self.assertEqual(n("https://x.example/jobs?gh_jid=42&utm=1"), "https://x.example/jobs?gh_jid=42")
         self.assertEqual(n("https://x.example/a#frag"), "https://x.example/a")
         self.assertEqual(n(" https://x.example/a/ "), "https://x.example/a")
+        self.assertEqual(n("http://www.X.example/a"), "https://x.example/a")
 
 
 if __name__ == "__main__":

@@ -16,7 +16,7 @@ in the workspace `CLAUDE.md` one level up.
 python tools/build_resume.py postings/<dir>/<name>.tex          # compile + JSON checks (1 page, fill, skills lines)
 python tools/build_cover_letter.py postings/<dir>/cover_letter.md [--check]
 python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all]
-python tools/discover.py [--since N] [--exclude <list>] [--career-ops <dir>]  # new postings -> discovered/<date>.csv
+python tools/discover.py [--since N] [--exclude <list>] [--location <kw> ...] [--career-ops <dir>]  # -> discovered/<date>.csv
 python -m unittest discover -s tests -v                                     # unit tests (CI runs them)
 python -m py_compile tools/*.py                                  # CI runs this and the tests
 ```

@@ -63,11 +63,12 @@ def parse_rows(spec: str) -> set[int]:
 
 
 def normalize_url(url: str) -> str:
-    """Comparison key for a posting URL: lowercase scheme and host, no fragment, no trailing
-    slash, and no query string except `gh_jid` (Greenhouse job ids on company career pages)."""
+    """Comparison key for a posting URL: https, lowercase host without `www.`, no fragment, no
+    trailing slash, and no query string except `gh_jid` (Greenhouse job ids on career pages)."""
     parts = urlsplit(url.strip())
+    host = parts.netloc.lower().removeprefix("www.")
     query = urlencode([(k, v) for k, v in parse_qsl(parts.query) if k == "gh_jid"])
-    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), query, ""))
+    return urlunsplit(("https", host, parts.path.rstrip("/"), query, ""))
 
 
 COLS = {
