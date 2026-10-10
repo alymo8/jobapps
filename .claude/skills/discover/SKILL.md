@@ -10,7 +10,7 @@ All paths are relative to `jobapps/`. This supplements Aly's external target lis
 replace them.
 
 1. Run `python tools/discover.py $ARGUMENTS`. Unless the arguments already have `--location`, add
-   `--location Canada Montreal Toronto Vancouver Ottawa Quebec Calgary Waterloo Remote` (rows with
+   `--location Canada Montreal Toronto Vancouver Ottawa Quebec Calgary Waterloo` (rows with
    an empty location are kept too): the scanner's own location filter lets most foreign postings
    through, and Aly is looking in Canada. The career-ops folder comes from `--career-ops` or
    the `CAREER_OPS_DIR` environment variable; if neither is set, ask Aly for the path (career-ops
