@@ -12,8 +12,8 @@ are skipped; --all keeps them. --rows filters by the sheet's Rank; --new keeps
 "New This Week" = Yes. Excel: the "Postings" sheet (or the first sheet), header row with
 a URL column; ranks listed on a "Flags & Exclusions" sheet get their reason in "flag".
 CSV/TSV: same header names (delimiter and UTF-8/BOM/cp1252 detected); "flag" is empty.
-Passing dlq.md as the source retries its `open` rows except CLOSED/INELIGIBLE (--reason
-selects exactly one reason, including those two).
+Passing dlq.md as the source retries its `open` rows except CLOSED/INELIGIBLE/LOW-SCORE
+(--reason selects exactly one reason, including those three).
 """
 
 import csv
@@ -22,24 +22,27 @@ import json
 import re
 import sys
 from pathlib import Path
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 DONE = {"applied", "outreach-ready", "outreach-sent"}
 DLQ = ROOT / "dlq.md"
 DLQ_COLS = ["date", "batch", "rank", "company", "title", "url", "stage", "reason", "detail",
             "needs", "status"]  # fmt: skip
-NEVER_RETRY = {"CLOSED", "INELIGIBLE"}
+NEVER_RETRY = {"CLOSED", "INELIGIBLE", "LOW-SCORE"}
+ALWAYS_HELD = {"CLOSED", "INELIGIBLE"}
 # posting.md URL lines: "- URL: u" (current), "apply_url: u", "posting_url: u", "**Apply URL:** u".
 POSTING_URL = re.compile(
     r"^(?:- URL:|apply_url:|posting_url:|\*\*Apply URL:\*\*)\s*(https?://\S+)", re.M | re.I
 )
 
 
-def dlq_rows() -> list[dict]:
-    if not DLQ.exists():
+def dlq_rows(path: Path | None = None) -> list[dict]:
+    path = path or DLQ
+    if not path.exists():
         return []
     out = []
-    for line in DLQ.read_text(encoding="utf-8").splitlines():
+    for line in path.read_text(encoding="utf-8").splitlines():
         cells = [x.strip() for x in line.strip().strip("|").split("|")]
         if len(cells) == len(DLQ_COLS) and cells[5].startswith("http"):
             out.append(dict(zip(DLQ_COLS, cells)))
@@ -48,7 +51,7 @@ def dlq_rows() -> list[dict]:
 
 def dlq_skip(row: dict) -> bool:
     """A DLQ row keeps its URL out of normal runs until resolved."""
-    return row["status"] == "open" or row["status"] == "dropped" or row["reason"] in NEVER_RETRY
+    return row["status"] in ("open", "dropped") or row["reason"] in ALWAYS_HELD
 
 
 def parse_rows(spec: str) -> set[int]:
@@ -57,6 +60,14 @@ def parse_rows(spec: str) -> set[int]:
         a, _, b = part.partition("-")
         out.update(range(int(a), int(b or a) + 1))
     return out
+
+
+def normalize_url(url: str) -> str:
+    """Comparison key for a posting URL: lowercase scheme and host, no fragment, no trailing
+    slash, and no query string except `gh_jid` (Greenhouse job ids on company career pages)."""
+    parts = urlsplit(url.strip())
+    query = urlencode([(k, v) for k, v in parse_qsl(parts.query) if k == "gh_jid"])
+    return urlunsplit((parts.scheme.lower(), parts.netloc.lower(), parts.path.rstrip("/"), query, ""))
 
 
 COLS = {
@@ -136,6 +147,21 @@ def from_csv(path: Path) -> list[dict]:
     return from_table(rows) if rows else []
 
 
+def read_source(path: Path, start_rank: int = 1) -> list[dict]:
+    """Postings of an xlsx, csv/tsv or txt target list; txt ranks count up from start_rank.
+    dlq.md and bare URLs are handled in main()."""
+    suffix = path.suffix.lower()
+    if suffix in (".xlsx", ".xlsm"):
+        return from_xlsx(path)
+    if suffix in (".csv", ".tsv"):
+        return from_csv(path)
+    out = []
+    for line in path.read_text(encoding="utf-8").splitlines():
+        if line.strip().startswith("http"):
+            out.append(dict(rank=start_rank + len(out), url=line.strip()))
+    return out
+
+
 def statuses() -> dict[str, str]:
     log = ROOT / "applications.md"
     if not log.exists():
@@ -179,14 +205,8 @@ def main(argv: list[str]) -> None:
                                          url=r["url"], flag=""))  # fmt: skip
         elif a.startswith("http"):
             postings.append(dict(rank=len(postings) + 1, url=a))
-        elif p.suffix.lower() in (".xlsx", ".xlsm"):
-            postings += from_xlsx(p)
-        elif p.suffix.lower() in (".csv", ".tsv"):
-            postings += from_csv(p)
         else:
-            for line in p.read_text(encoding="utf-8").splitlines():
-                if line.strip().startswith("http"):
-                    postings.append(dict(rank=len(postings) + 1, url=line.strip()))
+            postings += read_source(p, start_rank=len(postings) + 1)
     if rows:
         postings = [x for x in postings if x["rank"] in rows]
     if new_only:
@@ -206,7 +226,8 @@ def main(argv: list[str]) -> None:
         postings = [x for x in postings if x["status"] not in DONE]
         if not from_dlq:
             postings = [x for x in postings if not (x["url"] in dlq and dlq_skip(dlq[x["url"]]))]
-    sys.stdout.reconfigure(encoding="utf-8")
+    if hasattr(sys.stdout, "reconfigure"):
+        sys.stdout.reconfigure(encoding="utf-8")
     print(json.dumps(postings, indent=1, ensure_ascii=False))
 
 

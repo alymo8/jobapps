@@ -5,7 +5,7 @@ on:
   pull_request:
 
 # The repo is Markdown/LaTeX plus a few helper scripts in tools/.
-# No tests yet; this only checks the scripts still parse.
+# Byte-compiles the scripts and runs the stdlib unittest suite in tests/.
 jobs:
   check-tools:
     runs-on: ubuntu-latest
@@ -15,3 +15,4 @@ jobs:
         with:
           python-version: "3.12"
       - run: python -m py_compile tools/*.py
+      - run: python -m unittest discover -s tests -v
