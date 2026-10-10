@@ -27,7 +27,7 @@ All paths are relative to the `jobapps/` folder (the project root).
    line each for URL (exactly `- URL: <posting url>`; `tools/read_postings.py` matches on it),
    Company, Title, Location, Fetched (date), then the full text.
 3. **Write the resume** `postings/<dir>/the user_Resume_<Company>.tex` per the prompt's
-   Hard rules, Content selection, Skills section and Fitting the page.
+   Hard rules, Content selection, Skills section and Fitting the page. If `postings/<dir>/score.md` exists (from `/batch` scoring), read its Must-haves table first: lead with the evidenced must-haves and steer around the real gaps it lists (never claim them).
 4. **Compile and verify:** `python tools/build_resume.py <that .tex>`. It prints JSON:
    `errors`, `overfull`, `pages` (must be 1), `fill` (target 0.95–0.98; this overrides the prompt's "roughly 95%" and "below roughly 90%" underfill threshold: below 0.95 is underfilled), `skills_lines` (≤ 5), `png`.
    Then **Read the PNG and look at it** for the prompt's visual checks (no wrapped skill category,

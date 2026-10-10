@@ -6,12 +6,14 @@
 
 | Date | Spec | Status |
 |---|---|---|
-| 2026-10-05 | [Workday applications in /apply and /batch: design](specs/2026-10-05-workday-apply-design.md) | approved |
+| 2026-10-10 | [Score gate in /batch and posting discovery: design](specs/2026-10-10-score-gate-and-discovery-design.md) | approved |
+| 2026-10-05 | [Workday applications in /apply and /batch: design](specs/2026-10-05-workday-apply-design.md) | implemented |
 | 2026-10-04 | [/followup skill: design](specs/2026-10-04-followup-skill-design.md) | approved |
 
 ## Plans
 
 | Date | Plan | Status |
 |---|---|---|
-| 2026-10-05 | [Workday applications in /apply and /batch Implementation Plan](plans/2026-10-05-workday-apply.md) | draft |
+| 2026-10-10 | [Score gate in /batch and posting discovery Implementation Plan](plans/2026-10-10-score-gate-and-discovery.md) | approved |
+| 2026-10-05 | [Workday applications in /apply and /batch Implementation Plan](plans/2026-10-05-workday-apply.md) | implemented |
 | 2026-10-04 | [/followup skill Implementation Plan](plans/2026-10-04-followup-skill.md) | approved |
