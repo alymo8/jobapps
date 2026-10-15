@@ -154,7 +154,7 @@ fill escalates to `opus`):
 > section for posting dir `postings/<dir>` (URL <url>). The resume is already built; reuse it.
 > Load the `claude-in-chrome` skill first. Create your **own new tab** and use only that tab id;
 > never touch, navigate or close other tabs. Never click Submit/Send/Connect. Do not ask the user
-> anything. Final reply, at most 5 lines: posting dir, tab URL, number of ASK fields, blockers
+> anything. Final reply, at most 5 lines: posting dir, tab id and URL, number of ASK fields, blockers
 > (e.g. needs an account login (non-Workday), NO-WORKDAY-LOGIN <tenant> <workday url>, CAPTCHA before the form, closed), outreach drafts path if any.
 
 Blockers (needs an account login/sign-up (non-Workday), NO-WORKDAY-LOGIN / NO-WORKDAY-HISTORY from a Workday posting, CAPTCHA before the form, unsupported site) go to the
@@ -230,6 +230,11 @@ Only for postings with a recorded approval. Same-tenant Workday postings run one
 > If you hit a CAPTCHA, an email verification code, or anything needing Aly, stop and reply
 > `NEEDS ALY: <what, which tab>`. Final reply, at most 5 lines: what was submitted/sent, and proof
 > (confirmation text or screenshot path).
+
+The execute subagent closes its own tabs after a confirmed submit (`/apply` Phase 2 step 4). When
+it reports a confirmed submit, close that posting's prepare-stage tab too, if it is still open
+(`tabs_context_mcp`, then `tabs_close_mcp` on the tab id or URL its prepare subagent reported).
+Close no other tab. Leave tabs open for anything held, `NEEDS ALY`, failed or dead-lettered.
 
 On `NEEDS ALY`, ask Aly (batch these too if several arrive together), then continue that posting
 with `SendMessage` to the same subagent. If Aly can't resolve it now, or the submit/send fails

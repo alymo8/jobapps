@@ -65,7 +65,11 @@ for this specific application in this session.**
    - Validation errors: fix and re-show only what changed before submitting again.
 3. **Verify:** the confirmation page/message is shown. Screenshot it to
    `postings/<dir>/confirmation.png` if possible, otherwise record its text in `application.md`.
-4. Update `applications.md` row to `applied` with the date. Report done.
+4. **Close the application's tabs** (`tabs_close_mcp`), only once step 3 has verified the
+   confirmation: every tab you opened for this posting (the form, the posting page, sign-in or
+   other pop-up tabs). Never close a tab you didn't open. On a CAPTCHA, a code, an error, a
+   failure or a skip, leave them open for Aly.
+5. Update `applications.md` row to `applied` with the date. Report done.
 
 ## Postings that can't be applied to
 
@@ -96,7 +100,8 @@ Run only when `application.md` contains `APPROVED <date>: submit`. Open the appl
 new tab (the earlier tab may be gone), fill it from the `application.md` table (which now holds
 Aly's answers and edits, no `ASK` left; if one is left, stop and report it), upload the resume,
 paste or upload the cover letter from `cover_letter.md` (approved text, verbatim) if the table has one,
-re-verify every field, then run Phase 2 steps 2–3 (the orchestrator updates `applications.md`; never write it in batch). CAPTCHA or email code → stop and reply
+re-verify every field, then run Phase 2 steps 2–4 (step 4 closes only the tabs this execute run
+opened; the orchestrator closes the prepare tab and updates `applications.md`; never write it in batch). CAPTCHA or email code → stop and reply
 `NEEDS ALY: ...` with the tab URL instead of asking.
 
 Workday: sign in per `workday.md` section 3, resume the saved draft (section 4), check every saved
