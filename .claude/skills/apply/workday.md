@@ -175,7 +175,9 @@ label (or "no consent checkbox") and the `After approval` rows.
 5. `get_page_text` the Review page; check every value against `application.md`; fix mismatches.
 6. Click **Submit**. Confirm the "submitted" message or the application listed in Candidate Home.
    Screenshot to `postings/<dir>/confirmation.png`.
-7. Normal run: `/apply` Phase 2 step 4 (update `applications.md` to `applied`). Batch execute mode:
+7. Close the tabs you opened for this posting (`/apply` Phase 2 step 4), only after step 6
+   confirmed the submit.
+8. Normal run: `/apply` Phase 2 step 5 (update `applications.md` to `applied`). Batch execute mode:
    never write `applications.md` (the orchestrator does).
 
 ## Work history section
