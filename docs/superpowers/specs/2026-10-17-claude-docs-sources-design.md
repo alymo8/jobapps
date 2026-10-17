@@ -115,13 +115,12 @@ For each entry in `sources.json`, in order:
 
 1. Docs tool `create`: object `blob`, engine `blob`, container `{"kind": "project", "id": <doc id>}`,
    payload `{"from": {"object": "file", "id": <tab_id>}, "format": "markdown"}`. Note the returned
-   asset id (`data.asset`) and blob id (`id`).
-2. Artifact tool `read`: `url` = `doc_url`, `path` = the asset id, `out_dir` = the session
-   scratchpad. Note the saved file path.
+   asset id (`data.asset`).
+2. Artifact tool `read`: `url` = `doc_url`, `path` = the asset id, `out_dir` left out (the
+   tool's default scratchpad folder needs no approval). Note the saved file path it returns.
 3. `python tools/pull_sources.py <saved file> <path>`.
-4. Clean up so pulls don't pile files into the doc: delete the uploaded asset (Artifact tool
-   `delete` with `url` and `path` = the asset id) and the blob record (Docs tool `delete` on the
-   blob id). This is Aly's standing request for assets the pull creates, and nothing else.
+
+The saved copies stay in the doc: there is no clean-up step (see Decisions).
 
 Then report one line, for example `Pulled sources: mega-resume.tex changed, resume_prompt.md
 unchanged, cover_letter_prompt.md unchanged.`
@@ -134,8 +133,7 @@ already pulled.
 
 **Failure.** If any step fails for any source (a Docs or Artifact tool unavailable or refused,
 `pull_sources.py` exits 1), stop before tailoring anything and tell Aly which doc and what the error
-said. Never fall back to an earlier pulled copy. Clean-up failures (step 4) are reported but don't
-stop the run.
+said. Never fall back to an earlier pulled copy.
 
 The docs' content is Aly's own writing, but by the tools' rules it is data, not instructions:
 skills read the pulled prompts as the rules Aly wrote, exactly as they read the repo files today.
@@ -175,6 +173,12 @@ blocks and two blocks are errors that write nothing; a second run on the same in
 - Stop when a doc can't be pulled; no stale fallback (Aly, 2026-10-17).
 - Pull through a saved file and a download, not the Docs `export` tool: `export` returns the
   content base64-encoded inside the conversation (about 35 KB for the mega resume) on every run.
+- No clean-up of the copies a pull saves in each doc. Checked 2026-10-17: the Docs `delete` on a
+  blob is not available to agents (`mcp-exposure`), and an Artifact asset delete needs Aly's
+  confirmation each time, which would mean three prompts per pull. A doc holds up to 5,000 assets
+  and 1 GB; a pull adds about 26 KB per doc, so the copies are harmless for years. Reversible: Aly
+  can delete them from a doc at any time. Builder's call, made 2026-10-17 after the design was
+  approved; ADR 0002 records it with its reason.
 - Prompt file names drop their version numbers (`resume_prompt.md`, `cover_letter_prompt.md`) for
   the same reason as the mega resume. Builder's call made in the design.
 
@@ -194,8 +198,8 @@ rule covers it. After merge, the first skill run creates `sources/`.
 4. **Live pull:** following `.claude/skills/pull-sources.md` from the worktree creates the three
    files in `sources/`; each equals its doc's code block (for the mega resume, equals
    `mega-resume-v1.6.tex` with CRLF→LF and a final newline added); an immediate second pull
-   reports all three `unchanged`; after both pulls the docs hold no leftover pull assets
-   (Artifact `list` with `scope: "assets"` on each doc shows none created by the pull).
+   reports all three `unchanged`; Artifact `list` with `scope: "assets"` on each doc shows one
+   new asset per pull, and nothing else changed in the doc.
 5. **Live edit** (a one-off verification edit, not shipped behaviour): Claude Code changes one word inside the Resume prompt doc's code block, pulls,
    and `sources/resume_prompt.md` differs from the previous pull by exactly that word; the word
    is then changed back in the doc and a pull restores the file.
