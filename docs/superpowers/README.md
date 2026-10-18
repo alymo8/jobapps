@@ -7,6 +7,7 @@
 | Date | Spec | Status |
 |---|---|---|
 | 2026-10-18 | [Profile, stories and answers in Claude Docs: design](specs/2026-10-18-claude-docs-profile-design.md) | implemented |
+| 2026-10-18 | [Job shortlist skill: design](specs/2026-10-18-job-shortlist-design.md) | draft |
 | 2026-10-17 | [Claude Docs as the source of the resume and prompts: design](specs/2026-10-17-claude-docs-sources-design.md) | implemented |
 | 2026-10-10 | [Score gate in /batch and posting discovery: design](specs/2026-10-10-score-gate-and-discovery-design.md) | approved |
 | 2026-10-05 | [Workday applications in /apply and /batch: design](specs/2026-10-05-workday-apply-design.md) | implemented |
