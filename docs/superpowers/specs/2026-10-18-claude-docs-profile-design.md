@@ -1,7 +1,7 @@
 # Profile, stories and answers in Claude Docs: design
 
 - **Date:** 2026-10-18
-- **Status:** approved
+- **Status:** implemented
 
 ## Purpose
 
