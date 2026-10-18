@@ -1,0 +1,7 @@
+{
+  "sources": [
+    {"path": "sources/mega-resume.tex", "doc_url": "https://claude.ai/code/artifact/2d814730-1e3a-476b-8907-513ce73180c9", "tab_id": "958ab5d7-5d85"},
+    {"path": "sources/resume_prompt.md", "doc_url": "https://claude.ai/code/artifact/74f55490-bd25-435e-a000-8409aeefe485", "tab_id": "bf5ae186-02f7"},
+    {"path": "sources/cover_letter_prompt.md", "doc_url": "https://claude.ai/code/artifact/20c152e4-070a-4203-9bfa-14663ed5ef74", "tab_id": "9c169abe-1e8c"}
+  ]
+}

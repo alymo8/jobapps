@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Tailor Aly's one-page LaTeX resume to a job posting (URL or pasted text) from mega-resume-v1.5.tex, following Resume_prompt_v4.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
+description: Tailor Aly's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
 argument-hint: <posting URL or pasted posting>
 ---
 
@@ -11,12 +11,14 @@ All paths are relative to the `jobapps/` folder (the project root).
 ## Inputs
 
 - `$ARGUMENTS`: a posting URL or pasted posting text. If empty, ask for it.
-- `Resume_prompt_v4.md`: **the rules. Read it in full every run and follow it exactly.** Where it says
-  `mega_resume.txt` / `latex_resume.txt`, use `mega-resume-v1.5.tex` / `latex_resume.tex`.
-- `mega-resume-v1.5.tex`: the only source of facts. `latex_resume.tex`: format reference.
+- `sources/resume_prompt.md`: **the rules. Read it in full every run and follow it exactly.** Where it says
+  `mega_resume.txt` / `latex_resume.txt`, use `sources/mega-resume.tex` / `latex_resume.tex`.
+- `sources/mega-resume.tex`: the only source of facts. `latex_resume.tex`: format reference.
 
 ## Steps
 
+0. **Pull the sources.** Follow `.claude/skills/pull-sources.md`, unless the skill that ran this one
+   already pulled them in this run.
 1. **Get the posting.** For a URL, read it with WebFetch (Greenhouse, Lever and Ashby pages render
    server-side). If WebFetch returns no posting body, open the URL in Chrome (claude-in-chrome skill)
    and use `get_page_text`. Extract: company, title, location(s), work model, requirements, nice-to-haves,
@@ -34,7 +36,7 @@ All paths are relative to the `jobapps/` folder (the project root).
    no collisions, no orphan words, dates and rules aligned). Iterate until `ok` is true and the
    page looks right. Never hand over a version whose PNG you have not looked at.
 5. **Truth check.** Before delivering, go bullet by bullet: each claim (metric, tech, scope, date)
-   must appear in `mega-resume-v1.5.tex`. Fix or flag anything that doesn't.
+   must appear in `sources/mega-resume.tex`. Fix or flag anything that doesn't.
 6. **Write `postings/<dir>/changelog.md`** with the prompt's "What to report" items, plus the final
    `fill` and `skills_lines` numbers.
 7. **Log it:** append a row to `applications.md` (create it with the header from that file's format
@@ -44,7 +46,7 @@ All paths are relative to the `jobapps/` folder (the project root).
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent: do steps 1–6 (the orchestrator owns `applications.md`; never write it), don't open the PDF, and **don't ask
+When the prompt says you are a batch subagent: skip step 0 (the orchestrator has already pulled the sources), then do steps 1–6 (the orchestrator owns `applications.md`; never write it), don't open the PDF, and **don't ask
 the user anything**. If the posting dir already has a verified resume (`changelog.md`), don't
 rebuild; report it as done. If `posting.md` is already there (the pre-screen saved it), use it
 and skip steps 1–2. Otherwise fetch postings with WebFetch or the ATS's public JSON API (Greenhouse:

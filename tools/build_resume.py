@@ -1,4 +1,4 @@
-"""Compile a tailored resume .tex and report the checks Resume_prompt_v4.md requires.
+"""Compile a tailored resume .tex and report the checks sources/resume_prompt.md requires.
 
 Usage: python tools/build_resume.py <path/to/resume.tex>
 

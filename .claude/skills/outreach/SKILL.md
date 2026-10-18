@@ -13,6 +13,8 @@ flags automated-looking activity, and the account is Aly's.
 
 ## Steps
 
+0. **Pull the sources.** Follow `.claude/skills/pull-sources.md`, unless the skill that ran this one
+   already pulled them in this run.
 1. **Apply first.** Run the full `/apply` skill (both phases). If `applications.md` already shows
    this posting as `applied`, skip to step 2. If Aly decides not to submit, stop here.
 2. **Find people** (LinkedIn search in a new tab; people search filtered to the company):
@@ -24,7 +26,7 @@ flags automated-looking activity, and the account is Aly's.
      and one line on why they fit. Check they still work at the company (current position).
 3. **Draft one message per person** (save all in `postings/<dir>/outreach.md`):
    - InMail subject (≤ 60 chars) + body of 500–800 characters: role title and that Aly applied, 1–2
-     concrete facts from the tailored resume that match the posting (from `mega-resume-v1.5.tex` only),
+     concrete facts from the tailored resume that match the posting (from `sources/mega-resume.tex` only),
      a low-friction ask (a short chat or forwarding to the hiring team), sign-off with name.
    - Tailor to the reader: recruiter → fit + availability; hiring manager → the most relevant work.
    - No flattery filler, no claims beyond the resume.
@@ -55,7 +57,7 @@ posting link only if it fits; the follow-up carries it), drafted and approved li
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (orchestrated by the `batch` skill): run `/apply`
+When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the orchestrator has already pulled the sources), then run `/apply`
 Phase 1 under its batch rules, then steps 2–3 in your own tab, **send nothing, submit nothing,
 connect with no one**. End with: posting dir, `ASK` count, blockers, and the `outreach.md` path.
 
