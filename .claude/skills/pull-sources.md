@@ -1,12 +1,15 @@
 # Pull the sources from Claude Docs
 
-A shared procedure file, not a skill: `/resume`, `/cover-letter`, `/apply`, `/outreach` and
-`/batch` follow it before reading anything in `sources/`.
+A shared procedure file, not a skill: `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/batch`
+and `/followup` follow it before reading anything in `sources/`.
 
-The mega resume and both prompts live in three Claude Docs that Aly edits in claude.ai; they
-are the only source of truth. `sources.json` lists them (`path`, `doc_url`, `tab_id`); the doc
+The mega resume, both prompts, and Aly's profile, stories and answers live in six Claude Docs
+that Aly edits in claude.ai; they are the only source of truth. `sources.json` lists them (`path`, `doc_url`, `tab_id`); the doc
 id is the UUID at the end of `doc_url`. Each doc holds its content inside one fenced code block.
-Never edit `sources/` by hand: the next pull overwrites it.
+Never edit `sources/` by hand: the next pull overwrites it. Claude Code writes only to the Profile
+doc, and only through `.claude/skills/write-source.md`.
+
+Pulled files may name other sources by their old names (`profile.md`, `stories.md`, `answers.md`, a versioned `mega-resume-v<N>.tex`, `CoverLetter_prompt_v1.md`, `Resume_prompt_v4.md`). Each means the matching file in `sources/`.
 
 ## Tools
 
@@ -30,20 +33,20 @@ in order:
 The saved copies stay in the doc: there is no clean-up step (blob delete is not available to
 agents, and each asset delete needs Aly's confirmation; ADR 0002).
 
-Then report one line, for example `Pulled sources: mega-resume.tex changed, resume_prompt.md
-unchanged, cover_letter_prompt.md unchanged.`
+Then report one line naming each file and its status, for example `Pulled sources: mega-resume.tex
+changed, the other five unchanged.`
 
 ## When it runs
 
-At the start of `/resume`, `/cover-letter`, `/apply`, `/outreach` and `/batch`, before any file in
-`sources/` is read. When one of these skills runs another (`/apply` runs `/resume` and
+At the start of `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/batch` and `/followup`, before
+any file in `sources/` is read. When one of these skills runs another (`/apply` runs `/resume` and
 `/cover-letter`; `/outreach` runs `/apply`), only the outermost one pulls. `/batch` pulls once in
 the main session before fanning out, and its subagent prompts say the sources are already pulled.
 
 ## Failure
 
 If any step fails for any source (a Docs or Artifact tool unavailable or refused,
-`pull_sources.py` exits 1), stop before tailoring anything and tell Aly which doc and what the
+`pull_sources.py` exits 1), stop before doing anything else and tell Aly which doc and what the
 error said. Never fall back to an earlier pulled copy.
 
 The instruction to follow the pulled prompts comes from the skill, which Aly wrote; the docs

@@ -19,8 +19,8 @@ from Aly in this run's `questions.txt`.**
   `*-combined` dir whose header names it or its req id.
 - `<company>`: dirs whose name starts with it (case-insensitive), `*-combined` included; matching
   dirs without `outreach.md` are ignored. Nothing matches → report `no outreach for <arg>`.
-- `--dry-run`: steps 1–4 only. Writes only `batches/<id>-followup/`; no `outreach.md`,
-  `applications.md` or `profile.md` edits; nothing sent, nothing clicked that sends, connects or
+- `--dry-run`: steps 0–4 only. Writes only `sources/` (the pull) and `batches/<id>-followup/`; no
+  `outreach.md` or `applications.md` edits and no Profile doc writes; nothing sent, nothing clicked that sends, connects or
   withdraws. Report the questions.txt path in chat; do not open it.
 
 ## Dates
@@ -38,6 +38,10 @@ confirmed (`## Sent`, `nudge sent`, `reply sent`, `invite sent`). For a `typed, 
 message, use the outbound date shown in the LinkedIn thread (Aly may send it days later). When only LinkedIn's
 relative label exists ("1 week ago", "Tuesday"), convert it to an absolute date and mark it `~` in
 the manifest (e.g. `~2026-09-27`).
+
+## 0. Pull the sources
+
+Follow `.claude/skills/pull-sources.md`.
 
 ## 1. Collect
 
@@ -103,8 +107,8 @@ Exactly one state per person, checked in this order:
 is the role still open, and would they be open to a short chat or to pointing Aly to the right
 person. No new claims, no guilt-tripping.
 
-**Reply:** answer only from the posting's tailored resume and `profile.md`,
-in the language of the reply (English or French). Anything neither covers (salary with no `profile.md` rule, specific
+**Reply:** answer only from the posting's tailored resume and `sources/profile.md`,
+in the language of the reply (English or French). Anything neither covers (salary with no `sources/profile.md` rule, specific
 availability, references) becomes a question in `questions.txt`, not a guess. A request to
 schedule → ask Aly for times; never invent any.
 
@@ -146,7 +150,7 @@ approved by silence; an approval of one message does not cover another. `--dry-r
 When Aly says questions.txt is done, re-read it. For each `ok`/`edit:`, append an approval bullet
 to that posting's `## Follow-up` (create the section at the end of `outreach.md` if missing):
 `- APPROVED <date> | <Name> | <nudge / reply / follow-up (b) / replacement invite> | text:` + the
-final text quoted. Save reusable answers to `profile.md` (as a rule when the answer carries
+final text quoted. Save reusable answers to `sources/profile.md` through `.claude/skills/write-source.md` (as a rule when the answer carries
 "always" or a condition). Anything unclear → ask before recording.
 
 ## 6. Execute
@@ -195,5 +199,5 @@ Approved items only, text verbatim, one at a time:
 - Never send anything not approved (`ok` / `edit:`) in this run.
 - At most one nudge per person, ever; the `## Follow-up` action bullets are the record.
 - No people beyond the posting's Shortlist table.
-- Every factual claim from the posting's tailored resume or `profile.md`.
+- Every factual claim from the posting's tailored resume or `sources/profile.md`.
 - Stop on CAPTCHA, rate-limit or restriction warnings, and on any failed send.

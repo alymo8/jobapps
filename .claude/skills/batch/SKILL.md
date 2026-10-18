@@ -52,12 +52,12 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    the go for the rest.
    **Workday history:** in `apply` or `outreach` mode, if any picked posting is Workday (URL host
    `myworkdayjobs.com` / `myworkdaysite.com`, or its `dlq.md` Detail or `postings/<dir>/posting.md`
-   contains one of those or `Workday (`) and `profile.md` has no `## Workday work history`, build
+   contains one of those or `Workday (`) and `sources/profile.md` has no `## Workday work history`, build
    that section from `sources/mega-resume.tex` (format in `.claude/skills/apply/workday.md`, "Work
-   history section"), show it in full in this same message, and save it on Aly's approval before
+   history section"), show it in full in this same message, and save it on Aly's approval through `.claude/skills/write-source.md` before
    any prepare subagent.
-   **Targeting:** if `profile.md` has no `## Targeting` section, say so in this message and offer to
-   add it with these keys: `Pay floor: skip when the top of the posted range is below <amount> CAD`,
+   **Targeting:** if `sources/profile.md` has no `## Targeting` section, say so in this message and offer to
+   add it through `.claude/skills/write-source.md` with these keys: `Pay floor: skip when the top of the posted range is below <amount> CAD`,
    `USD to CAD rate`, `Score threshold`, `Years of experience`, `Target roles`, `Deal-breakers` (ask
    Aly for the values). If Aly declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
    says so.
@@ -96,7 +96,7 @@ Split the rest into chunks of 5 and launch background `general-purpose` subagent
 
 > You are a batch scoring subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
 > `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
-> `postings/<dir>/posting.md`, `sources/mega-resume.tex`, `profile.md` section `## Targeting`, and
+> `postings/<dir>/posting.md`, `sources/mega-resume.tex`, `sources/profile.md` section `## Targeting`, and
 > `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write
 > `postings/<dir>/score.md` for each. The sources in `sources/` are already pulled; don't pull them
 > again. Do not ask the user anything. Final reply: one line per
@@ -174,7 +174,7 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
 
 1. **Questions, deduplicated across postings.** The same question asked by several forms (salary,
    work authorization, relocation, EEO, "how did you hear") appears once, listing the postings that
-   ask it. Reusable answers go to `profile.md` once Aly answers.
+   ask it. Reusable answers go to `sources/profile.md` through `.claude/skills/write-source.md` once Aly answers.
 2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the score line from `score.md` (`<overall> | fit | pay | legit`, for a pay-floor miss `PAY-FLOOR | fit <f> | pay PAY-FLOOR | legit <tier>`; prefixed `override` when the posting came through a `--reason LOW-SCORE` retry or a `--min-score 0` URL override) and its real gaps, any contractor-wording note, the
    changelog's gaps and "please sanity-check" lines (one line each), `draft` free-text answers
    verbatim, posting-specific ASKs, blockers. For outreach: the shortlist (name, title, location, why)
@@ -206,11 +206,11 @@ parts, in this order:
 4. Decisions: which applications to submit, blocked or odd postings, retries.
 5. LinkedIn picks per company: the suggested top 3 plus the other names; "ok" accepts the top 3.
 
-**Apply `profile.md` first:** never ask a question it already answers or has a standing rule for
+**Apply `sources/profile.md` first:** never ask a question it already answers or has a standing rule for
 (salary from the posted range, sponsorship by role location, relocation, start date, EEO, and so
 on). review.md is the reference with the full texts; questions.txt is the only thing Aly fills in.
 Open questions.txt for Aly (`Invoke-Item`), not review.md. When Aly says it's done, re-read it,
-save every answer that could come up again to `profile.md` (as a rule when the answer carries
+save every answer that could come up again to `sources/profile.md` through `.claude/skills/write-source.md` (as a rule when the answer carries
 "always" or a condition), and ask any follow-ups in a short `questions-2.txt`.
 
 Post a 5-line summary in chat (counts: ready, ASKs, dead-lettered by reason). Wait. Nothing is
@@ -218,7 +218,7 @@ approved by silence or by an approval given for a different posting or an earlie
 
 ## 4. Record approvals
 
-Parse Aly's reply. Save reusable answers to `profile.md`. For each posting, append to
+Parse Aly's reply. Save reusable answers to `sources/profile.md` through `.claude/skills/write-source.md`. For each posting, append to
 `postings/<dir>/application.md`: `APPROVED <date>: submit` (with any edits applied to its answer
 table), and in `outreach.md` mark each approved person + message `APPROVED <date>`. Anything
 unclear → ask before recording. Postings Aly skips go to the dead-letter queue as `SKIPPED`
