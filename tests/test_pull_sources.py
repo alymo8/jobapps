@@ -102,6 +102,10 @@ class PullSourcesTest(unittest.TestCase):
             capture_output=True, text=True)
         self.assertEqual(good.returncode, 0)
         self.assertEqual(json.loads(good.stdout)["status"], "created")
+        target = self.dir.as_posix() + "/sub/c.tex"
+        named = subprocess.run(
+            [sys.executable, script, str(self.doc(LATEX_DOC)), target], capture_output=True, text=True)
+        self.assertEqual(json.loads(named.stdout)["path"], target)
         bad = subprocess.run(
             [sys.executable, script, str(self.doc("no code\n", "bad.md")), str(self.dir / "b.tex")],
             capture_output=True, text=True)

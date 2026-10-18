@@ -73,6 +73,7 @@ def main(argv: list[str]) -> int:
         print(__doc__, file=sys.stderr)
         return 1
     report = pull(Path(argv[0]), Path(argv[1]))
+    report["path"] = argv[1]  # as given, not as Path renders it (backslashes on Windows)
     print(json.dumps(report))
     return 1 if "error" in report else 0
 
