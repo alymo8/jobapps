@@ -92,6 +92,23 @@ class KeysAndInputsTest(Base):
         self.assertFalse(out["ok"])
         self.assertIn("doc_id", out["error"])
 
+    def test_load_keys_broken_module(self):
+        sources = ("def norm_url(:\n", "raise SystemExit('boom')\n", "import not_a_module_xyz\n")
+        for i, src in enumerate(sources):
+            p = self.dir / f"broken{i}.py"
+            p.write_text(src, encoding="utf-8")
+            with self.assertRaises(shortlist.KeysError):
+                shortlist.load_keys(p)
+
+    def test_bad_decision_file_skipped(self):
+        d = self.dir / "dump" / "decisions"
+        d.mkdir(parents=True)
+        (d / "u-bad.json").write_text("{not json", encoding="utf-8")
+        (d / "u-b.json").write_text(json.dumps(body("https://b.com/1", "B", "T")))
+        with contextlib.redirect_stderr(io.StringIO()):
+            got = shortlist.load_decisions(self.dir / "dump")
+        self.assertEqual([x["doc_id"] for x in got], ["u-b"])
+
     def test_load_rows_json(self):
         week, rows = shortlist.load_rows(self.week([row(1, "A", "T", "https://a.com/1")]))
         self.assertEqual(week, "2026-10-17")
@@ -169,6 +186,7 @@ class ListTest(Base):
         self.assertEqual(self.ranks(self.list("--title", "engineer", "--tab", "main")[1]), [50, 3, 4])
         self.assertEqual(self.ranks(self.list("--tab", "below_cut")[1]), [2])
         self.assertEqual(self.ranks(self.list("--top", "2")[1]), [80, 50])
+        self.assertEqual(self.ranks(self.list("--top", "0")[1]), [])
 
     def test_chips(self):
         rows = {r["rank"]: r["chips"] for r in self.list()[1]["rows"]}
@@ -191,6 +209,7 @@ class FindDocDecisionsTest(Base):
             row(3, "RBC", "Senior AI Engineer (Toronto)", "https://rbc.com/3"),
             row(4, "Stripe", "Backend", "https://stripe.com/4"),
             row(5, "Stripe", "Frontend", "https://stripe.com/5"),
+            row(6, "Brokta Inc", "Engineer", "https://brokta.com/6"),
         ])
         older = self.week([row(9, "Okta", "Engineer", "https://okta.com/9")], week="2026-10-10")
         f = ("find", "--keys", FIXTURE_KEYS, "--rows", newer, older)
@@ -199,7 +218,8 @@ class FindDocDecisionsTest(Base):
         self.assertEqual(len(self.run_cli(*f, "--company", "RBC", "--title", "Senior AI Engineer")[1]), 1)
         self.assertEqual(self.run_cli(*f, "--company", "rbc", "--title", "ai engineer")[1][0]["rank"], 3)
         self.assertEqual([m["rank"] for m in self.run_cli(*f, "--company", "stripe")[1]], [4, 5])
-        okta = self.run_cli(*f, "--company", "okta")[1]
+        self.assertEqual(self.run_cli(*f, "--company", "brokta")[1][0]["rank"], 6)
+        okta = self.run_cli(*f, "--company", "okta")[1]  # "okta" is not a word of "brokta"
         self.assertEqual((okta[0]["rank"], okta[0]["week"]), (9, "2026-10-10"))
         self.assertNotIn("decided", okta[0])
         d = self.decisions_dir([body("https://stripe.com/4", "Stripe", "Backend")])
@@ -253,6 +273,7 @@ class FindDocDecisionsTest(Base):
         self.assertEqual(companies(self.run_cli(*base, "--match", "stripe")[1]), ["Stripe"])
         self.assertEqual(companies(self.run_cli(*base, "--url", "https://www.rbc.com/4/")[1]), ["RBC"])
         self.assertEqual(companies(self.run_cli(*base, "--company", "Okta Inc", "--title", "Engineer")[1]), ["Okta"])
+        self.assertEqual(companies(self.run_cli(*base, "--company", "rbc")[1]), ["RBC"])
         first = self.run_cli(*base)[1][0]
         self.assertEqual(first["doc_id"], KEYS.doc_id("https://okta.com/3"))
         self.assertIsNotNone(first["version"])
@@ -302,6 +323,16 @@ class PendingTest(Base):
         self.run_cli("pending-clear", "--file", pending)
         self.assertTrue(pending.exists())
         self.assertEqual(pending.stat().st_size, 0)
+
+    def test_plan_dedupes_and_merges_notes(self):
+        pending = self.dir / "pending.jsonl"
+        self.add(pending, "--note", "first", decision="not_interested")
+        self.add(pending, "--note", "applied on site")
+        d = self.decisions_dir([body("https://a.com/1", "A", "T", decision="not_interested", note="too senior")])
+        _, plan = self.run_cli("pending-plan", "--keys", FIXTURE_KEYS, "--file", pending, "--decisions", d)
+        self.assertEqual(len(plan), 1)
+        self.assertEqual((plan[0]["action"], plan[0]["data"]["decision"]), ("write", "applied"))
+        self.assertEqual(plan[0]["data"]["note"], "too senior; applied on site")
 
     def test_plan_missing_file(self):
         code, plan = self.run_cli("pending-plan", "--keys", FIXTURE_KEYS, "--file", self.dir / "nope.jsonl",

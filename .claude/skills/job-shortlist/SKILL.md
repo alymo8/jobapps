@@ -33,7 +33,7 @@ published `data/*` files, the weekly run) is built and owned elsewhere; this ski
 
 1. Artifact `read`, `url` = the artifact, `paths: ["data/decision_keys.py", "data/index.json",
    "data/latest.json"]` (saved under `<S>`; note each saved path). Copy `decision_keys.py` to the
-   keys cache (overwrite). `<keys>` = the downloaded copy, `<latest>` = `latest.json`.
+   keys cache (create `~/.job-shortlist/` if missing; overwrite). `<keys>` = the downloaded copy, `<latest>` = `latest.json`.
 2. `ArtifactData list`, `collection: "decisions"`, `query: {"limit": 1000}`,
    `out_dir: <S>/decisions-<timestamp>` (`<D>`). While the result has a `next_cursor`, repeat with
    `query.cursor` and the same `out_dir`.
@@ -46,7 +46,9 @@ only when a lookup misses in `latest.json`.
 ## The helper
 
 Always `python -I tools/shortlist.py <command> --keys <keys> ...` (`-I`: the keys file is downloaded
-content). Output is JSON; `{"ok": false, ...}` and exit 1 on errors.
+content). Output is JSON; `{"ok": false, ...}` and exit 1 on errors. Company and title lookups
+match whole words ("okta" never matches "Brokta"); an unreadable decision file is skipped with a
+warning on stderr.
 
 - `list --rows <latest> --decisions <D> [--top N] [--new] [--priority] [--tab main|below_cut|all] [--location KW]... [--company KW] [--title KW] [--table]`
 - `find --rows <latest> [<older week files, newest first>] --decisions <D> (--url U | --rank N | --company C [--title T])`
@@ -72,7 +74,10 @@ run), plus an optional date ("yesterday" → that date) and note.
    (+ `--title`). No match → read the older weeks listed in `index.json` (newest first) and run
    `find` again with them after `<latest>`.
    - One match → use its `url`, `company` and `title` exactly, `--week` = its `week`. A match with
-     `decided: true` → say it is already decided and show the document (`decisions --url`).
+     `decided: true` → find its document (`decisions --url <url>`, else `--company C --title T` with
+     the row's company and title). Already `applied` → say so, show it, stop. `not_interested` →
+     tell Aly it is being changed to applied and go on (a document under another URL stays; tell
+     Aly it can be removed with Undo).
    - Several → show them (rank, company, title, location, week) and ask which.
    - None → the URL Aly gave (or the `posting.md` `- URL:` line), the company name, the exact posted
      title, `--week ""`. No URL known → ask Aly for it.

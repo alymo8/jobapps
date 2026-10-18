@@ -44,7 +44,12 @@ def load_keys(path):
         raise KeysError(f"keys file not found: {path}")
     spec = importlib.util.spec_from_file_location("decision_keys", path)
     module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
+    try:
+        spec.loader.exec_module(module)
+    except KeyboardInterrupt:
+        raise
+    except BaseException as e:  # downloaded code: SyntaxError, ImportError, SystemExit, ...
+        raise KeysError(f"{path} failed to load: {type(e).__name__}: {e}") from e
     missing = [name for name in KEY_FUNCTIONS if not callable(getattr(module, name, None))]
     if missing:
         raise KeysError(f"{path} lacks key function(s): {', '.join(missing)}")
@@ -60,7 +65,7 @@ def load_rows(path):
         week = path.stem
     else:
         data = json.loads(path.read_text(encoding="utf-8"))
-        week, rows = data.get("week", path.stem), data.get("rows", [])
+        week, rows = data.get("week") or path.stem, data.get("rows") or []
     out = []
     for r in rows:
         r = {k: r.get(k, "") if r.get(k) is not None else "" for k in set(ROW_FIELDS) | set(r)}
@@ -73,7 +78,11 @@ def load_rows(path):
 def load_decision_file(path):
     """{doc_id, version, body} from one saved decision, or None if it isn't a JSON object."""
     path = Path(path)
-    obj = json.loads(path.read_text(encoding="utf-8"))
+    try:
+        obj = json.loads(path.read_text(encoding="utf-8"))
+    except ValueError as e:
+        print(f"warning: skipped unreadable decision file {path}: {e}", file=sys.stderr)
+        return None
     if not isinstance(obj, dict):
         return None
     if isinstance(obj.get("data"), dict):
@@ -137,6 +146,12 @@ def rank_of(row):
     return row["rank"] if isinstance(row.get("rank"), int) else 10**9
 
 
+def has_tokens(needle_text, haystack_text):
+    """Whether the words of `needle_text` appear as a contiguous run of whole words in `haystack_text`."""
+    needle, hay = needle_text.split(), haystack_text.split()
+    return bool(needle) and any(hay[i:i + len(needle)] == needle for i in range(len(hay) - len(needle) + 1))
+
+
 def contains(keys, haystack, needle):
     return keys.norm_text(needle) in keys.norm_text(str(haystack))
 
@@ -168,7 +183,7 @@ def cmd_list(keys, args):
         return (1, 0, rank_of(r))
 
     shown = sorted((r for r in undecided if keep(r)), key=sort_key)
-    if args.top:
+    if args.top is not None:
         shown = shown[: args.top]
     out_rows = [{"rank": r.get("rank"), "company": r.get("company"), "title": r.get("title"),
                  "location": r.get("location"), "url": r.get("url"), "deadline": r.get("deadline", ""),
@@ -202,8 +217,9 @@ def cmd_find(keys, args):
             if not matches:
                 company = keys.norm_company(args.company)
                 words = keys.norm_text(args.title or "").split()
+                # Whole words only, so "okta" never matches "Brokta" (decisions are durable).
                 matches = [r for r in rows
-                           if company in keys.norm_company(r.get("company", ""))
+                           if has_tokens(company, keys.norm_company(r.get("company", "")))
                            and all(w in keys.norm_text(r.get("title", "")).split() for w in words)]
         if matches:
             out = []
@@ -228,8 +244,7 @@ def decided_at(value):
 def build_doc(keys, args, existing=None):
     note = args.note or ""
     if existing is not None:
-        old = existing["body"].get("note", "") or ""
-        note = old if not note or note == old else (f"{old}; {note}" if old else note)
+        note = merge_note(existing["body"].get("note"), note)
     data = {
         "schema_version": 1,
         "url": args.url,
@@ -265,9 +280,12 @@ def cmd_decisions(keys, args):
         out = [d for d in out if d["body"].get("decision") == args.decision]
     if args.url:
         out = [d for d in out if d["body"].get("url_norm") == keys.norm_url(args.url)]
-    if args.company:
-        target = keys.match_key(args.company, args.title or "")
+    if args.company and args.title:
+        target = keys.match_key(args.company, args.title)
         out = [d for d in out if d["body"].get("match_key") == target]
+    elif args.company:
+        company = keys.norm_company(args.company)
+        out = [d for d in out if has_tokens(company, keys.norm_company(d["body"].get("company", "")))]
     if args.match:
         out = [d for d in out if contains(keys, d["body"].get("company", ""), args.match)
                or contains(keys, d["body"].get("title", ""), args.match)]
@@ -291,15 +309,28 @@ def read_pending(path):
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def merge_note(old, new):
+    old, new = old or "", new or ""
+    if not new or new == old:
+        return old
+    return f"{old}; {new}" if old else new
+
+
 def cmd_pending_plan(keys, args):
     existing = {d["doc_id"]: d for d in load_decisions(args.decisions)}
-    plan = []
+    latest = {}  # one write per document: the last pending line for a doc_id wins
     for entry in read_pending(args.file):
         data = dict(entry["data"])
         doc_id = entry.get("doc_id") or keys.doc_id(data["url"])
         data["url_norm"] = data.get("url_norm") or keys.norm_url(data["url"])
         data["match_key"] = data.get("match_key") or keys.match_key(data["company"], data["title"])
+        latest.pop(doc_id, None)
+        latest[doc_id] = data
+    plan = []
+    for doc_id, data in latest.items():
         current = existing.get(doc_id)
+        if current:
+            data["note"] = merge_note(current["body"].get("note"), data.get("note"))
         if current and current["body"].get("decision") == data["decision"]:
             plan.append({"action": "skip", "doc_id": doc_id, "if_version": current["version"], "data": data})
         else:
