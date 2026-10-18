@@ -60,6 +60,10 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - Edit the sources in the Claude Docs (claude.ai), never in `sources/`: the next pull overwrites
   local edits.
 - `tools/` scripts aren't ruff-clean at the default 88-column limit; CI byte-compiles them and runs the unittest suite (no linter).
+- `tests/fixtures/decision_keys.py` is a pinned copy of the shortlist artifact's keys file (`-text` in
+  `.gitattributes`); refreshing it also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
+- `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
+  `shortlist.py` treats a missing directory as no decisions.
 
 ## Pointers
 
