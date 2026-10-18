@@ -12,6 +12,7 @@ Prints a JSON report:
   pdf             Aly_Mohamed_Hussein_Cover_Letter_<Company>.pdf next to the .md
   png             rendered page preview, in the temp dir
   ok              all checks pass (looking at the PNG is still on you)
+  error           without --check only: sources/profile.md is missing (pull the sources first)
 """
 
 import json
@@ -89,7 +90,7 @@ def contact() -> dict:
     section = text.split("## Contact", 1)[1].split("\n## ", 1)[0]
     fields = dict(re.findall(r"^- ([^:\n]+): *(\S.*?) *$", section, re.M))
     # Values may carry a trailing note for Aly, e.g. "https://... (www form; ...)": drop it.
-    c = {k: re.sub(r"\s*\(.*\)$", "", fields[v]) for k, v in CONTACT_KEYS.items()}
+    c = {k: re.sub(r"\s*\([^()]*\)$", "", fields[v]) for k, v in CONTACT_KEYS.items()}
     c["city"] = c["city"].split(",")[0]
     for k in ("linkedin", "github"):
         c[f"{k}_bare"] = re.sub(r"^https?://(www\.)?", "", c[k])

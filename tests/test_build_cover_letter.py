@@ -71,6 +71,13 @@ class BuildCoverLetterTest(unittest.TestCase):
         self.assertEqual(c["linkedin"], "https://www.linkedin.com/in/x")
         self.assertEqual(c["linkedin_bare"], "linkedin.com/in/x")
 
+    def test_contact_keeps_inner_parentheses(self):
+        profile = self.dir / "profile.md"
+        profile.write_text(CONTACT.replace("- Full name: A B", "- Full name: A (Al) B (note)"),
+                           encoding="utf-8")
+        with mock.patch.object(self.bcl, "PROFILE", profile):
+            self.assertEqual(self.bcl.contact()["name"], "A (Al) B")
+
     def test_missing_profile_is_json_error(self):
         with mock.patch.object(self.bcl, "PROFILE", self.dir / "missing.md"):
             code, report = self.run_main([str(self.letter)])
