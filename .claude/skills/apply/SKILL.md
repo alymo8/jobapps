@@ -72,6 +72,10 @@ for this specific application in this session.**
    other pop-up tabs). Never close a tab you didn't open. On a CAPTCHA, a code, an error, a
    failure or a skip, leave them open for the user.
 5. Update `applications.md` row to `applied` with the date. Report done.
+6. **Shortlist.** Ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
+   `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
+   `tailored resume + cover letter` (a cover letter went in) or `tailored resume`. Not in a batch
+   subagent or batch execute mode (the `/batch` orchestrator asks once at its finish).
 
 ## Postings that can't be applied to
 

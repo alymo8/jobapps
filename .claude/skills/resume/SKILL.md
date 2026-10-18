@@ -44,6 +44,10 @@ All paths are relative to the `jobapps/` folder (the project root).
    if missing) with status `resume`.
 8. **Report** in a few lines: the changelog, the PDF path, and open the PDF for the user
    (`Invoke-Item <pdf>`).
+9. **Shortlist.** Only when the user ran `/resume` directly (not from `/apply`, `/outreach` or a batch):
+   ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
+   `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
+   `tailored resume`.
 
 ## Running as a batch subagent
 

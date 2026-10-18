@@ -36,6 +36,10 @@ All paths are relative to `jobapps/` (the project root).
    `postings/<dir>/changelog.md`. Fix or flag any claim without a source.
 6. **Report**: the prompt's "What to report", then the full letter text verbatim. Open the file for
    the user (`Invoke-Item postings/<dir>/cover_letter.md`, or the PDF when built).
+7. **Shortlist.** Only when the user ran `/cover-letter` directly (not from `/apply`, `/outreach` or a
+   batch): ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
+   `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
+   `tailored resume + cover letter`.
 
 ## Running as a batch subagent
 
