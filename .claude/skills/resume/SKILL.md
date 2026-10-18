@@ -12,8 +12,9 @@ All paths are relative to the `jobapps/` folder (the project root).
 
 - `$ARGUMENTS`: a posting URL or pasted posting text. If empty, ask for it.
 - `sources/resume_prompt.md`: **the rules. Read it in full every run and follow it exactly.** Where it says
-  `mega_resume.txt` / `latex_resume.txt`, use `sources/mega-resume.tex` / `latex_resume.tex`.
-- `sources/mega-resume.tex`: the only source of facts. `latex_resume.tex`: format reference.
+  `mega_resume.txt` or `latex_resume.txt`, use `sources/mega-resume.tex` for both.
+- `sources/mega-resume.tex`: the only source of facts, and the format reference (its preamble, custom
+  commands, header block and section order are the ones a one-page resume reuses).
 
 ## Steps
 
