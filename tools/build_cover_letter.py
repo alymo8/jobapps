@@ -3,7 +3,7 @@
 Usage: python tools/build_cover_letter.py <postings/<dir>/cover_letter.md> [--check]
 
 The .md is plain paste-ready text: paragraphs separated by blank lines, starting with
-the greeting line and ending with the sign-off (see CoverLetter_prompt_v1.md).
+the greeting line and ending with the sign-off (see sources/cover_letter_prompt.md).
 Prints a JSON report:
   words           word count of the whole letter (target 300-400)
   greeting_ok     first line is the exact greeting (English or French form)

@@ -7,3 +7,4 @@ the next number for a new one, never deleted, superseded instead. Template:
 | # | Title | Status | Date |
 |---|-------|--------|------|
 | [0001](0001-workday-sign-in-via-chrome-saved-passwords.md) | Workday sign-in via Chrome saved passwords | accepted | 2026-10-05 |
+| [0002](0002-claude-docs-are-the-source-of-truth.md) | Claude Docs are the source of truth for the resume and prompts | accepted | 2026-10-17 |
