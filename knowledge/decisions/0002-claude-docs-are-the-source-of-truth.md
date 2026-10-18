@@ -1,7 +1,9 @@
 # ADR 0002: Claude Docs are the source of truth for the resume and prompts
 
-- **Status:** accepted
+- **Status:** superseded
 - **Date:** 2026-10-17
+
+Superseded by [ADR 0003](0003-claude-code-writes-to-the-profile-doc.md).
 
 ## Context
 Aly edits the mega resume and the resume and cover letter prompts in claude.ai, and Claude Code's

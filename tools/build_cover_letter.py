@@ -59,7 +59,7 @@ PREAMBLE = r"""\documentclass[letterpaper,11pt]{article}
 """
 
 # Contact details come from the pulled Profile doc (gitignored sources/), not the repo.
-PROFILE = Path(__file__).resolve().parent.parent / "sources" / "profile.md"
+PROFILE = Path(__file__).resolve().parent.parent / "sources/profile.md"
 MISSING_PROFILE = "sources/profile.md missing: pull the sources first (.claude/skills/pull-sources.md)"
 CONTACT_KEYS = {"name": "Full name", "phone": "Phone", "email": "Email",
                 "city": "Location", "linkedin": "LinkedIn", "github": "GitHub"}  # fmt: skip
