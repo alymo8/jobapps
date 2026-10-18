@@ -59,7 +59,17 @@ class BuildCoverLetterTest(unittest.TestCase):
             self.assertEqual(self.bcl.contact(), {
                 "name": "A B", "phone": "1", "email": "a@b.c", "city": "Montreal",
                 "linkedin": "https://www.linkedin.com/in/x", "github": "https://github.com/y",
-                "linkedin_bare": "www.linkedin.com/in/x", "github_bare": "github.com/y"})
+                "linkedin_bare": "linkedin.com/in/x", "github_bare": "github.com/y"})
+
+    def test_contact_drops_trailing_notes(self):
+        profile = self.dir / "profile.md"
+        profile.write_text(CONTACT.replace(
+            "https://www.linkedin.com/in/x", "https://www.linkedin.com/in/x (www form; note, 2026-10-05)"),
+            encoding="utf-8")
+        with mock.patch.object(self.bcl, "PROFILE", profile):
+            c = self.bcl.contact()
+        self.assertEqual(c["linkedin"], "https://www.linkedin.com/in/x")
+        self.assertEqual(c["linkedin_bare"], "linkedin.com/in/x")
 
     def test_missing_profile_is_json_error(self):
         with mock.patch.object(self.bcl, "PROFILE", self.dir / "missing.md"):

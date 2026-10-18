@@ -88,10 +88,11 @@ def contact() -> dict:
     text = PROFILE.read_text(encoding="utf-8")
     section = text.split("## Contact", 1)[1].split("\n## ", 1)[0]
     fields = dict(re.findall(r"^- ([^:\n]+): *(\S.*?) *$", section, re.M))
-    c = {k: fields[v] for k, v in CONTACT_KEYS.items()}
+    # Values may carry a trailing note for Aly, e.g. "https://... (www form; ...)": drop it.
+    c = {k: re.sub(r"\s*\(.*\)$", "", fields[v]) for k, v in CONTACT_KEYS.items()}
     c["city"] = c["city"].split(",")[0]
     for k in ("linkedin", "github"):
-        c[f"{k}_bare"] = re.sub(r"^https?://", "", c[k])
+        c[f"{k}_bare"] = re.sub(r"^https?://(www\.)?", "", c[k])
     return c
 
 
