@@ -32,7 +32,7 @@ All paths are relative to the `jobapps/` folder (the project root).
    Hard rules, Content selection, Skills section and Fitting the page. If `postings/<dir>/score.md` exists (from `/batch` scoring), read its Must-haves table first: lead with the evidenced must-haves and steer around the real gaps it lists (never claim them).
 4. **Compile and verify:** `python tools/build_resume.py <that .tex>`. It prints JSON:
    `errors`, `overfull`, `pages` (must be 1), `fill` (target 0.95–0.98; this overrides the prompt's "roughly 95%" and "below roughly 90%" underfill threshold: below 0.95 is underfilled), `skills_lines` (≤ 5), `png`.
-   Then **Read the PNG and look at it** for the prompt's visual checks (no wrapped skill category,
+   Then **Read the PNG at the path in `png` (it is in the temp dir, not next to the .tex) and look at it** for the prompt's visual checks (no wrapped skill category,
    no collisions, no orphan words, dates and rules aligned). Iterate until `ok` is true and the
    page looks right. Never hand over a version whose PNG you have not looked at.
 5. **Truth check.** Before delivering, go bullet by bullet: each claim (metric, tech, scope, date)

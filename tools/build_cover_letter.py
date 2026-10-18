@@ -9,7 +9,8 @@ Prints a JSON report:
   greeting_ok     first line is the exact greeting (English or French form)
   signoff_ok      last two lines are the exact sign-off matching that greeting
   pages           page count of the PDF (must be 1; omitted with --check)
-  pdf, png        the user_Cover_Letter_<Company>.pdf/.png next to the .md
+  pdf             the user_Cover_Letter_<Company>.pdf next to the .md
+  png             rendered page preview, in the temp dir
   ok              all checks pass (looking at the PNG is still on you)
 """
 
@@ -22,7 +23,7 @@ from pathlib import Path
 import fitz  # PyMuPDF
 
 sys.path.insert(0, str(Path(__file__).parent))
-from build_resume import compile_tex  # noqa: E402
+from build_resume import compile_tex, preview_png  # noqa: E402
 
 WORDS_MIN, WORDS_MAX = 300, 400
 FORMS = {  # greeting -> sign-off lines
@@ -128,7 +129,7 @@ def main(argv: list[str]) -> int:
             report["ok"] = False
         else:
             doc = fitz.open(pdf)
-            png = tex.with_suffix(".png")
+            png = preview_png(pdf)
             doc[0].get_pixmap(dpi=110).save(png)
             report.update(pages=doc.page_count, pdf=str(pdf), png=str(png))
             doc.close()
