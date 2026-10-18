@@ -86,7 +86,7 @@ playbook failures → `FAILED` (see `workday.md`).
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (orchestrated by the `batch` skill): Skip step 0: the orchestrator has already pulled the sources. Run Phase 1
+When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the orchestrator has already pulled the sources), then run Phase 1
 steps 1–5 **without asking Aly anything**, in your own Chrome tab only. Put every unanswerable field
 in `application.md` as `ASK` with the exact question and options, leave that field empty, and record
 the tab URL at the top of `application.md`. Workday postings follow `workday.md`: sign in through Chrome's autofill and fill up to the consent

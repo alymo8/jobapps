@@ -57,7 +57,7 @@ posting link only if it fits; the follow-up carries it), drafted and approved li
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (orchestrated by the `batch` skill): Skip step 0: the orchestrator has already pulled the sources. Run `/apply`
+When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the orchestrator has already pulled the sources), then run `/apply`
 Phase 1 under its batch rules, then steps 2–3 in your own tab, **send nothing, submit nothing,
 connect with no one**. End with: posting dir, `ASK` count, blockers, and the `outreach.md` path.
 

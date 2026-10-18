@@ -39,6 +39,6 @@ All paths are relative to `jobapps/` (the project root).
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (or `/apply` runs this inside a batch subagent): Skip step 0: the orchestrator has already pulled the sources.
-Do steps 1-5, don't open files, and don't ask the user anything. End with: posting dir, word count,
+When the prompt says you are a batch subagent (or `/apply` runs this inside a batch subagent): skip step 0 (the
+orchestrator has already pulled the sources), then do steps 1-5, don't open files, and don't ask the user anything. End with: posting dir, word count,
 `ok`, PDF path if built, and any sentence to sanity-check.

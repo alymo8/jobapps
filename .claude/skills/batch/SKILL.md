@@ -98,10 +98,10 @@ Split the rest into chunks of 5 and launch background `general-purpose` subagent
 > `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
 > `postings/<dir>/posting.md`, `sources/mega-resume.tex`, `profile.md` section `## Targeting`, and
 > `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write
-> `postings/<dir>/score.md` for each. Do not ask the user anything. Final reply: one line per
+> `postings/<dir>/score.md` for each. The sources in `sources/` are already pulled; don't pull them
+> again. Do not ask the user anything. Final reply: one line per
 > posting, `<rank> <dir> <score> | fit <f> | pay <p> | legit <tier> | <reason>`, or
 > `<rank> <dir> PAY-FLOOR <top of range in CAD> | <reason>`. Posting dirs: <rank. dir — one per line>
-> The sources in `sources/` are already pulled; don't pull them again.
 
 A garbled or incomplete line gets one retry at `opus` for that posting; still bad → dead-letter it
 `FAILED`, stage `score`.
@@ -233,10 +233,10 @@ Only for postings with a recorded approval. Same-tenant Workday postings run one
 > You are a batch execute subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
 > `.claude/skills/<apply|outreach>/SKILL.md`, section "Batch execute mode", and run it for
 > `postings/<dir>`. Act only on items marked `APPROVED` in that folder's files. Own tab only.
+> The sources in `sources/` are already pulled; don't pull them again.
 > If you hit a CAPTCHA, an email verification code, or anything needing Aly, stop and reply
 > `NEEDS ALY: <what, which tab>`. Final reply, at most 5 lines: what was submitted/sent, and proof
 > (confirmation text or screenshot path).
-> The sources in `sources/` are already pulled; don't pull them again.
 
 The execute subagent closes its own tabs after a confirmed submit (`/apply` Phase 2 step 4). When
 it reports a confirmed submit, close that posting's prepare-stage tab too, if it is still open

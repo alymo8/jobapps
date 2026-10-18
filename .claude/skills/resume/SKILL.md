@@ -46,7 +46,7 @@ All paths are relative to the `jobapps/` folder (the project root).
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent: Skip step 0: the orchestrator has already pulled the sources. Do steps 1–6 (the orchestrator owns `applications.md`; never write it), don't open the PDF, and **don't ask
+When the prompt says you are a batch subagent: skip step 0 (the orchestrator has already pulled the sources), then do steps 1–6 (the orchestrator owns `applications.md`; never write it), don't open the PDF, and **don't ask
 the user anything**. If the posting dir already has a verified resume (`changelog.md`), don't
 rebuild; report it as done. If `posting.md` is already there (the pre-screen saved it), use it
 and skip steps 1–2. Otherwise fetch postings with WebFetch or the ATS's public JSON API (Greenhouse:

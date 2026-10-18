@@ -64,6 +64,18 @@ class PullSourcesTest(unittest.TestCase):
         self.assertEqual(report["code_blocks"], 2)
         self.assertFalse(target.exists())
 
+    def test_empty_block_is_error(self):
+        target = self.dir / "out.tex"
+        report = pull_sources.pull(self.doc("```latex\n \n```\n"), target)
+        self.assertIn("error", report)
+        self.assertFalse(target.exists())
+
+    def test_write_failure_is_error(self):
+        target = self.dir / "isdir"
+        target.mkdir()
+        report = pull_sources.pull(self.doc(LATEX_DOC), target)
+        self.assertIn("error", report)
+
     def test_unclosed_fence_is_error(self):
         target = self.dir / "out.tex"
         report = pull_sources.pull(self.doc("```latex\n\\a{1}\n"), target)
