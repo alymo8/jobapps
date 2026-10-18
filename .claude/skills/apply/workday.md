@@ -182,7 +182,7 @@ label (or "no consent checkbox") and the `After approval` rows.
 
 ## Work history section
 
-`profile.md` `## Workday work history`, local-only. Built once from `mega-resume-v1.5.tex` (every
+`profile.md` `## Workday work history`, local-only. Built once from `sources/mega-resume.tex` (every
 value traceable to it; when it gives only a year for a job date, ask the user for the month, never
 infer it), shown to the user in full, saved only after the user approves. Missing in a normal
 run → build, show, wait for approval. Missing in a batch subagent → report blocker

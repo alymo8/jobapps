@@ -13,9 +13,11 @@ for this specific application in this session.**
 
 ## Phase 1: prepare
 
+0. **Pull the sources.** Follow `.claude/skills/pull-sources.md`, unless the skill that ran this one
+   already pulled them in this run.
 1. **Resume.** If `postings/<dir>/` already has a resume PDF that passed verification (its
    `changelog.md` exists), reuse it. Otherwise run the full `/resume` skill steps first.
-2. **Answers source.** Read `profile.md` (reusable answers) and `mega-resume-v1.5.tex` (facts).
+2. **Answers source.** Read `profile.md` (reusable answers) and `sources/mega-resume.tex` (facts).
    When the form has free-text or cover letter fields, also read `answers.md` (the user's past free-text
    answers) and `stories.md` (STAR behavioral stories, indexed by leadership principle).
 3. **Open the application** in a new Chrome tab (the posting URL; on Greenhouse the form is on the
@@ -43,7 +45,7 @@ for this specific application in this session.**
    - Behavioral ("tell me about a time..."): pick the story from the `stories.md` index, write it as
      a short STAR paragraph, mark `draft`. Never state an item under a story's **Open** as fact.
    - Voluntary EEO questions: use `profile.md`; if `ASK`, ask the user (never guess these).
-   - Anything not answerable from `profile.md`, `mega-resume-v1.5.tex`, `answers.md` or `stories.md`:
+   - Anything not answerable from `profile.md`, `sources/mega-resume.tex`, `answers.md` or `stories.md`:
      **ask the user**, all such questions at once, in one message. Save each answer that is reusable into `profile.md` under the right heading.
    - Never invent facts (dates, employers, degrees, authorization, salary).
 5. **Fill the form** in Chrome (`form_input`/`computer`; React selects need clicking the option).
@@ -84,7 +86,7 @@ playbook failures → `FAILED` (see `workday.md`).
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (orchestrated by the `batch` skill): run Phase 1
+When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the orchestrator has already pulled the sources), then run Phase 1
 steps 1–5 **without asking the user anything**, in your own Chrome tab only. Put every unanswerable field
 in `application.md` as `ASK` with the exact question and options, leave that field empty, and record
 the tab URL at the top of `application.md`. Workday postings follow `workday.md`: sign in through Chrome's autofill and fill up to the consent
