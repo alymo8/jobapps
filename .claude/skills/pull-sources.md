@@ -34,7 +34,7 @@ The saved copies stay in the doc: there is no clean-up step (blob delete is not 
 agents, and each asset delete needs Aly's confirmation; ADR 0002).
 
 Then report one line naming each file and its status, for example `Pulled sources: mega-resume.tex
-changed, profile.md changed, the other four unchanged.`
+changed, the other five unchanged.`
 
 ## When it runs
 
