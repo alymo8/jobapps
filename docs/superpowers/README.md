@@ -6,7 +6,7 @@
 
 | Date | Spec | Status |
 |---|---|---|
-| 2026-10-18 | [Profile, stories and answers in Claude Docs: design](specs/2026-10-18-claude-docs-profile-design.md) | draft |
+| 2026-10-18 | [Profile, stories and answers in Claude Docs: design](specs/2026-10-18-claude-docs-profile-design.md) | approved |
 | 2026-10-17 | [Claude Docs as the source of the resume and prompts: design](specs/2026-10-17-claude-docs-sources-design.md) | approved |
 | 2026-10-10 | [Score gate in /batch and posting discovery: design](specs/2026-10-10-score-gate-and-discovery-design.md) | approved |
 | 2026-10-05 | [Workday applications in /apply and /batch: design](specs/2026-10-05-workday-apply-design.md) | implemented |
@@ -16,6 +16,7 @@
 
 | Date | Plan | Status |
 |---|---|---|
+| 2026-10-18 | [Profile, stories and answers in Claude Docs Implementation Plan](plans/2026-10-18-claude-docs-profile.md) | draft |
 | 2026-10-17 | [Claude Docs as the source of the resume and prompts Implementation Plan](plans/2026-10-17-claude-docs-sources.md) | approved |
 | 2026-10-10 | [Score gate in /batch and posting discovery Implementation Plan](plans/2026-10-10-score-gate-and-discovery.md) | approved |
 | 2026-10-05 | [Workday applications in /apply and /batch Implementation Plan](plans/2026-10-05-workday-apply.md) | implemented |
