@@ -20,6 +20,7 @@ python tools/build_cover_letter.py postings/<dir>/cover_letter.md [--check]
 python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all]
 python tools/discover.py [--since N] [--exclude <list>] [--location <kw> ...] [--career-ops <dir>]  # -> discovered/<date>.csv
 python tools/pull_sources.py <downloaded.md> <target>                      # doc code block -> sources/ (see .claude/skills/pull-sources.md)
+python -I tools/shortlist.py list --keys <decision_keys.py> --rows <latest.json> --decisions <dir> --top 10 --table  # see job-shortlist skill
 python -m unittest discover -s tests -v                                     # unit tests (CI runs them)
 python -m py_compile tools/*.py                                  # CI runs this and the tests
 ```
@@ -28,10 +29,15 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 - Sources of truth: six Claude Docs (listed in `sources.json`) for the mega resume, both prompts,
   the profile, stories and answers, pulled into gitignored `sources/` per
-  `.claude/skills/pull-sources.md`. Claude Code writes only to the Profile doc, through
+  `.claude/skills/pull-sources.md`. Of the six source Docs, Claude Code writes only to the Profile doc, through
   `.claude/skills/write-source.md` ([ADR 0003](knowledge/decisions/0003-claude-code-writes-to-the-profile-doc.md)).
 - Skills in `.claude/skills/`: `/discover` (career-ops scanner → CSV) → `/resume` → `/apply` → `/outreach` → `/followup`;
-  `/cover-letter` when a form offers one; `/batch` fans these out over many postings.
+  `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
+  `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
+- Weekly shortlist: a claude.ai artifact (URL in `.claude/skills/job-shortlist/SKILL.md`). Claude Code
+  reads its `data/*` and writes only its `decisions` collection, keys from its `decision_keys.py`
+  via `tools/shortlist.py` ([ADR 0004](knowledge/decisions/0004-job-shortlist-artifact-decisions.md)).
+  The apply flow asks "Mark <company> – <title> as applied?".
 - `/batch` stage 1a.5 scores each posting (`.claude/skills/batch/scoring.md`, `sonnet`) against `## Targeting` in `sources/profile.md` and dead-letters low scores as `LOW-SCORE` before resumes.
 - Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`,
   `application.md`, `cover_letter.md`, `outreach.md`, `changelog.md`.
