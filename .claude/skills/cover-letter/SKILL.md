@@ -30,7 +30,7 @@ All paths are relative to `jobapps/` (the project root).
 3. **Write** `postings/<dir>/cover_letter.md` per the prompt. If one already exists, say so and
    ask whether to rewrite (batch subagent: keep it, report it as done).
 4. **Check:** `python tools/build_cover_letter.py postings/<dir>/cover_letter.md --check`. Fix and
-   rerun until `ok` is true. With `--pdf`, run it without `--check`, then **Read the PNG and look at
+   rerun until `ok` is true. With `--pdf`, run it without `--check`, then **Read the PNG at the path in the JSON `png` field (temp dir) and look at
    it** (one page, header intact, no overflow, paragraphs separated).
 5. **Truth check** per the prompt, written under `## Cover letter truth check` in
    `postings/<dir>/changelog.md`. Fix or flag any claim without a source.
