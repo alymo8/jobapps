@@ -43,7 +43,7 @@ Exceptions, seen on Manulife (2026-10-05), where a ref click lands on the wrong 
 
 Prompt pickers (How Did You Hear, Degree, Field of Study): click the field and browse the list
 (typing does not filter it without Enter). No match: `ASK`, or the approved fallback in
-`profile.md` (e.g. Field of Study → Computer Science). Re-read the field after picking.
+`sources/profile.md` (e.g. Field of Study → Computer Science). Re-read the field after picking.
 
 **Search-only fields** (Skills, Certifications on Manulife): options appear only after an
 Enter-triggered search, and the browse icon lists just the first 100 alphabetically.
@@ -51,7 +51,7 @@ Enter-triggered search, and the browse icon lists just the first 100 alphabetica
   it at the approval point (the resume carries skills and certifications).
 - **Required** (e.g. Skills on Thomson Reuters, which blocks Save and Continue): pressing Enter
   **inside that field's search box only** is allowed, to run the search (the user, 2026-10-06; in a
-  Workday search box Enter searches, it does not submit). Search each skill from `profile.md`
+  Workday search box Enter searches, it does not submit). Search each skill from `sources/profile.md`
   `### Skills`, click the matching suggestion, confirm it shows as selected; skip skills with no
   true match and note them. Enter stays forbidden everywhere else.
 
@@ -64,7 +64,7 @@ unsure, treat it as filled and let a Sign In error decide. Never pick a credenti
 suggestion dropdown (it may belong to another tenant); accept only what Chrome fills on its own.
 
 - Email **and** password both filled by Chrome, and the filled email matches the `Email` in
-  `profile.md` `## Contact` → click the dialog's **Sign In** button, wait 3 seconds, confirm the
+  `sources/profile.md` `## Contact` → click the dialog's **Sign In** button, wait 3 seconds, confirm the
   header shows the email.
 - Filled with a different email (another saved login, e.g. a school address) → don't click Sign
   In: a wrong login is a failed attempt and can lock the account. Treat it as no usable saved
@@ -106,19 +106,19 @@ Required field answered `ASK` (the step can't be saved with it empty):
 
 ## 6. My Information
 
-From `profile.md` `## Contact` and `## Common questions`.
-- How Did You Hear About Us: the `profile.md` answer (Company careers page), or the closest option.
-- Previously worked for the organization: `profile.md`; if not answerable, `ASK`.
+From `sources/profile.md` `## Contact` and `## Common questions`.
+- How Did You Hear About Us: the `sources/profile.md` answer (Company careers page), or the closest option.
+- Previously worked for the organization: `sources/profile.md`; if not answerable, `ASK`.
 - Name: `Full name` split into first/last; preferred name from `Preferred first name` if asked.
 - Address: split `Street address` on commas: part 1 → Address Line 1, part 2 → City; the
   province abbreviation → its full name in the Province dropdown (`QC` → `Quebec`); the rest →
   Postal Code.
-- Phone: device type `Mobile`, country code `Canada (+1)`, number from `Phone`, unless `profile.md`
+- Phone: device type `Mobile`, country code `Canada (+1)`, number from `Phone`, unless `sources/profile.md`
   says otherwise.
 
 ## 7. My Experience
 
-Source: `profile.md` `## Workday work history` (see "Work history section"; missing → build it
+Source: `sources/profile.md` `## Workday work history` (see "Work history section"; missing → build it
 first).
 - Read what the tenant profile already holds. Edit or delete entries so the step ends up matching
   the section exactly: same jobs, same order, same values.
@@ -128,10 +128,10 @@ first).
   (closest option), dates when asked.
 - Skills: search-only on most tenants (section 2): skip when optional; when required, use the
   section 2 Enter-in-search exception.
-- Certifications, Languages (optional sections): Languages from `profile.md` (bilingual / native →
+- Certifications, Languages (optional sections): Languages from `sources/profile.md` (bilingual / native →
   Fluent, intermediate → Intermediate). Certifications are search-only on most tenants: skip.
 - Resume/CV: upload the posting's tailored resume PDF (`file_upload`); confirm the filename shows.
-- Websites: LinkedIn and GitHub from `profile.md` `## Contact`. Workday rejects
+- Websites: LinkedIn and GitHub from `sources/profile.md` `## Contact`. Workday rejects
   `linkedin.com/in/...`: always type `https://www.linkedin.com/in/<handle>`.
 - Any field the section doesn't cover → `ASK`.
 
@@ -142,12 +142,12 @@ Same rules as `/apply` step 4 (`profile`, `mega_resume`, `answers`, `stories`, `
 
 ## 9. Voluntary Disclosures / Self Identify
 
-EEO answers from `profile.md`; never guessed; `ASK` when absent. The terms / consent checkbox
+EEO answers from `sources/profile.md`; never guessed; `ASK` when absent. The terms / consent checkbox
 (e.g. "I consent to the terms and conditions") is **not** ticked. The step that holds it (the
 *consent step*) is filled but cannot be saved, so the run stops there:
 - Fields on the consent step are filled and recorded in `application.md`.
 - Steps after the consent step and before Review (e.g. Self Identify) can't be reached yet: prepare
-  their answers from `profile.md` by the same rules (EEO section, else `ASK`) and record them in
+  their answers from `sources/profile.md` by the same rules (EEO section, else `ASK`) and record them in
   `application.md` under `### After approval`.
 - No consent checkbox anywhere: fill every step before Review; the last one is filled but left
   unsaved, and the run stops there.
@@ -182,9 +182,9 @@ label (or "no consent checkbox") and the `After approval` rows.
 
 ## Work history section
 
-`profile.md` `## Workday work history`, local-only. Built once from `sources/mega-resume.tex` (every
+`sources/profile.md` `## Workday work history`. Built once from `sources/mega-resume.tex` (every
 value traceable to it; when it gives only a year for a job date, ask the user for the month, never
-infer it), shown to the user in full, saved only after the user approves. Missing in a normal
+infer it), shown to the user in full, saved only after the user approves through `.claude/skills/write-source.md`. Missing in a normal
 run → build, show, wait for approval. Missing in a batch subagent → report blocker
 `NO-WORKDAY-HISTORY` (recorded as `BLOCKED`). Format:
 

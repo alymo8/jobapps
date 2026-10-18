@@ -17,9 +17,9 @@ for this specific application in this session.**
    already pulled them in this run.
 1. **Resume.** If `postings/<dir>/` already has a resume PDF that passed verification (its
    `changelog.md` exists), reuse it. Otherwise run the full `/resume` skill steps first.
-2. **Answers source.** Read `profile.md` (reusable answers) and `sources/mega-resume.tex` (facts).
-   When the form has free-text or cover letter fields, also read `answers.md` (the user's past free-text
-   answers) and `stories.md` (STAR behavioral stories, indexed by leadership principle).
+2. **Answers source.** Read `sources/profile.md` (reusable answers) and `sources/mega-resume.tex` (facts).
+   When the form has free-text or cover letter fields, also read `sources/answers.md` (the user's past free-text
+   answers) and `sources/stories.md` (STAR behavioral stories, indexed by leadership principle).
 3. **Open the application** in a new Chrome tab (the posting URL; on Greenhouse the form is on the
    same page under "Apply"). Read the whole form first with `read_page`/`get_page_text` and list
    every field: label, type, required or optional, options for selects.
@@ -31,7 +31,7 @@ for this specific application in this session.**
 4. **Answer every field**, writing `postings/<dir>/application.md`: one line per field,
    `label | answer | source` where source is `profile`, `mega_resume`, `answers`, `stories`,
    `posting` or `ASK`.
-   - Contact fields: `profile.md`. Resume upload: the posting's PDF (`file_upload`).
+   - Contact fields: `sources/profile.md`. Resume upload: the posting's PDF (`file_upload`).
    - Cover letter: **whenever the form offers one, optional or required**, run the `cover-letter`
      skill (`postings/<dir>/cover_letter.md`; reuse it if it exists). Paste the text into the cover
      letter text box when there is one (Greenhouse: "Enter manually"); if the form only takes a file,
@@ -40,13 +40,13 @@ for this specific application in this session.**
    - "Why this company/role" free text: draft 2–4 sentences from the posting + mega resume facts,
      mark `draft` so the user sees it.
    - Other free text (LLM/AI experience, "most interesting thing you've built", "what should we
-     know about you"): start from the closest `answers.md` answer, tailor it to the posting and the
+     know about you"): start from the closest `sources/answers.md` answer, tailor it to the posting and the
      field's length limit, mark `draft`.
-   - Behavioral ("tell me about a time..."): pick the story from the `stories.md` index, write it as
+   - Behavioral ("tell me about a time..."): pick the story from the `sources/stories.md` index, write it as
      a short STAR paragraph, mark `draft`. Never state an item under a story's **Open** as fact.
-   - Voluntary EEO questions: use `profile.md`; if `ASK`, ask the user (never guess these).
-   - Anything not answerable from `profile.md`, `sources/mega-resume.tex`, `answers.md` or `stories.md`:
-     **ask the user**, all such questions at once, in one message. Save each answer that is reusable into `profile.md` under the right heading.
+   - Voluntary EEO questions: use `sources/profile.md`; if `ASK`, ask the user (never guess these).
+   - Anything not answerable from `sources/profile.md`, `sources/mega-resume.tex`, `sources/answers.md` or `sources/stories.md`:
+     **ask the user**, all such questions at once, in one message. Save each answer that is reusable into `sources/profile.md` under the right heading through `.claude/skills/write-source.md`.
    - Never invent facts (dates, employers, degrees, authorization, salary).
 5. **Fill the form** in Chrome (`form_input`/`computer`; React selects need clicking the option).
    **Never press Enter in any form field, dropdown or input**: Enter can submit the form (it did,
@@ -91,7 +91,7 @@ steps 1–5 **without asking the user anything**, in your own Chrome tab only. P
 in `application.md` as `ASK` with the exact question and options, leave that field empty, and record
 the tab URL at the top of `application.md`. Workday postings follow `workday.md`: sign in through Chrome's autofill and fill up to the consent
 checkbox; only `NO-WORKDAY-LOGIN <tenant> <workday url>` (no usable saved login) or
-`NO-WORKDAY-HISTORY` (no `## Workday work history` in `profile.md`) blocks. On any other site, if
+`NO-WORKDAY-HISTORY` (no `## Workday work history` in `sources/profile.md`) blocks. On any other site, if
 it needs an account login or sign-up, or a CAPTCHA blocks the form, stop and report it as a
 blocker. Never create accounts or type passwords. End with a short
 report: posting dir, number of `ASK` fields, blockers. **Never submit in a batch subagent.**
