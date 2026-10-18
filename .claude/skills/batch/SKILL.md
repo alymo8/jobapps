@@ -254,6 +254,13 @@ dead-lettered by reason (counts + posting numbers), the manifest path, and the r
 anything retryable (`/batch <mode> dlq.md`, or `--reason BLOCKED` once Aly has e.g. created the
 accounts). Leave `batches/<id>/` in place.
 
+**Shortlist.** When execute confirmed one or more submits, list them (company, title) and ask once
+`Mark these <n> as applied?` (yes / pick some), the batch form of `Mark <company> – <title> as applied?`.
+On yes, run steps 1-2 of "Record applied" in `.claude/skills/job-shortlist/SKILL.md` for each chosen
+posting (find, `get`, `doc --existing` when the document exists; note `tailored resume + cover letter`
+or `tailored resume`), then write them with one `ArtifactData batch` per 50 writes, each existing
+document with its `if_version`. Confirm with one `Recorded: Applied — ...` line per posting.
+
 ## Dead-letter queue
 
 `dlq.md` (in `jobapps/`) is the one persistent list of postings that couldn't be processed, across
