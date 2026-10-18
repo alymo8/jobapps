@@ -1,6 +1,6 @@
 ---
 name: cover-letter
-description: Write a tailored, one-page cover letter for one job posting, following sources/cover_letter_prompt.md, from sources/mega-resume.tex, stories.md, answers.md and profile.md, truth-checked. Use when the user runs /cover-letter or asks for a cover letter; /apply runs it whenever a form offers a cover letter.
+description: Write a tailored, one-page cover letter for one job posting, following sources/cover_letter_prompt.md, from sources/mega-resume.tex, sources/stories.md, sources/answers.md and sources/profile.md, truth-checked. Use when the user runs /cover-letter or asks for a cover letter; /apply runs it whenever a form offers a cover letter.
 argument-hint: <posting URL | posting dir> [--pdf]
 ---
 
@@ -15,7 +15,7 @@ All paths are relative to `jobapps/` (the project root).
 - `sources/cover_letter_prompt.md`: **the rules. Read it in full every run and follow it exactly.**
   Where the prompt names a versioned mega resume file (`mega-resume-v<N>.tex`), use
   `sources/mega-resume.tex`.
-- Fact sources it names: `sources/mega-resume.tex`, `stories.md`, `answers.md`, `profile.md`.
+- Fact sources it names: `sources/mega-resume.tex`, `sources/stories.md`, `sources/answers.md`, `sources/profile.md`.
 
 ## Steps
 

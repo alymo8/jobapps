@@ -9,7 +9,7 @@ relative to `jobapps/`. Adapted from career-ops (`modes/oferta.md` Blocks B, C, 
   lines, or YAML frontmatter (`---`, `company:`, `location:`, `apply_url:`, `posting_url:`). Read all
   three.
 - `sources/mega-resume.tex`: the only source of evidence about Aly.
-- `profile.md`, section `## Targeting`: `Pay floor`, `USD to CAD rate`, `Score threshold`,
+- `sources/profile.md`, section `## Targeting`: `Pay floor`, `USD to CAD rate`, `Score threshold`,
   `Years of experience`, `Target roles`, `Deal-breakers`. Use the values written there; never assume them.
 - `applications.md` and `dlq.md`: only for the repeats signal.
 
