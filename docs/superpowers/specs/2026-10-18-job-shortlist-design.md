@@ -1,7 +1,7 @@
 # Job shortlist skill: design
 
 - **Date:** 2026-10-18
-- **Status:** approved
+- **Status:** implemented
 
 ## Purpose
 

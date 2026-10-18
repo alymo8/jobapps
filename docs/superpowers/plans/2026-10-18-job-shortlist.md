@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 - **Date:** 2026-10-18
-- **Status:** approved
+- **Status:** implemented
 
 **Goal:** A `job-shortlist` skill shows Aly's weekly shortlist (from the claude.ai artifact) with decided postings left out, records applied / not-interested decisions in the artifact's `decisions` collection, undoes and reviews them, and the apply flow asks to mark a posting applied.
 
