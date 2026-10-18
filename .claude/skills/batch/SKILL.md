@@ -43,14 +43,17 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    Status to `retried` in `dlq.md` before launching.
 3. Create `batches/<YYYY-MM-DD-HHMM>-<mode>/` with `postings.json` (the list) and `manifest.md`:
    a table `# | Rank | Company | Title | Posting dir | Stage | Score | Result`, one row per posting.
-4. **Confirm before launching** in one message: mode, number of postings, ranks, the flagged ones
+4. **Pull the sources** once, following `.claude/skills/pull-sources.md`. This comes before the
+   confirm step, which builds the Workday work history from `sources/mega-resume.tex`, and before
+   any subagent launches.
+5. **Confirm before launching** in one message: mode, number of postings, ranks, the flagged ones
    (unverified Canada eligibility; recommend skipping or keeping), and the rough cost: subagents
    per stage and model (e.g. "4 haiku pre-screens, 4 sonnet scorers, ~20 opus resumes, ~20 sonnet form fills"). Wait for Aly's go. A reply that trims the list (e.g. "skip 14, 97") is
    the go for the rest.
    **Workday history:** in `apply` or `outreach` mode, if any picked posting is Workday (URL host
    `myworkdayjobs.com` / `myworkdaysite.com`, or its `dlq.md` Detail or `postings/<dir>/posting.md`
    contains one of those or `Workday (`) and `profile.md` has no `## Workday work history`, build
-   that section from `mega-resume-v1.5.tex` (format in `.claude/skills/apply/workday.md`, "Work
+   that section from `sources/mega-resume.tex` (format in `.claude/skills/apply/workday.md`, "Work
    history section"), show it in full in this same message, and save it on Aly's approval before
    any prepare subagent.
    **Targeting:** if `profile.md` has no `## Targeting` section, say so in this message and offer to
@@ -93,11 +96,12 @@ Split the rest into chunks of 5 and launch background `general-purpose` subagent
 
 > You are a batch scoring subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
 > `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
-> `postings/<dir>/posting.md`, `mega-resume-v1.5.tex`, `profile.md` section `## Targeting`, and
+> `postings/<dir>/posting.md`, `sources/mega-resume.tex`, `profile.md` section `## Targeting`, and
 > `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write
 > `postings/<dir>/score.md` for each. Do not ask the user anything. Final reply: one line per
 > posting, `<rank> <dir> <score> | fit <f> | pay <p> | legit <tier> | <reason>`, or
 > `<rank> <dir> PAY-FLOOR <top of range in CAD> | <reason>`. Posting dirs: <rank. dir — one per line>
+> The sources in `sources/` are already pulled; don't pull them again.
 
 A garbled or incomplete line gets one retry at `opus` for that posting; still bad → dead-letter it
 `FAILED`, stage `score`.
@@ -134,6 +138,7 @@ finishes, launch the next. Prompt:
 > subagent" section, for posting dir `postings/<dir>` (its `posting.md` is already saved; use it
 > instead of refetching). Do not ask the user anything. Final reply, at most 5 lines: posting dir,
 > ok (true/false), fill, skills_lines, and "Questions for Aly" (or none).
+> The sources in `sources/` are already pulled; don't pull them again.
 
 Update each manifest row and its `applications.md` row (you are the only writer of that file) from
 the report (Stage `resume`, Result `ok 0.96 (opus)` / `FAILED: ..`). A failed build gets one more
@@ -152,6 +157,7 @@ fill escalates to `opus`):
 > You are a batch subagent for the `<apply|outreach>` skill in `C:\Users\alymo\Desktop\Github\jobapps`.
 > Read `.claude/skills/<apply|outreach>/SKILL.md` and follow its "Running as a batch subagent"
 > section for posting dir `postings/<dir>` (URL <url>). The resume is already built; reuse it.
+> The sources in `sources/` are already pulled; don't pull them again.
 > Load the `claude-in-chrome` skill first. Create your **own new tab** and use only that tab id;
 > never touch, navigate or close other tabs. Never click Submit/Send/Connect. Do not ask the user
 > anything. Final reply, at most 5 lines: posting dir, tab id and URL, number of ASK fields, blockers
@@ -230,6 +236,7 @@ Only for postings with a recorded approval. Same-tenant Workday postings run one
 > If you hit a CAPTCHA, an email verification code, or anything needing Aly, stop and reply
 > `NEEDS ALY: <what, which tab>`. Final reply, at most 5 lines: what was submitted/sent, and proof
 > (confirmation text or screenshot path).
+> The sources in `sources/` are already pulled; don't pull them again.
 
 The execute subagent closes its own tabs after a confirmed submit (`/apply` Phase 2 step 4). When
 it reports a confirmed submit, close that posting's prepare-stage tab too, if it is still open

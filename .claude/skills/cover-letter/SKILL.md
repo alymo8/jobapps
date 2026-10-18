@@ -1,6 +1,6 @@
 ---
 name: cover-letter
-description: Write a tailored, one-page cover letter for one job posting, following CoverLetter_prompt_v1.md, from mega-resume-v1.5.tex, stories.md, answers.md and profile.md, truth-checked. Use when the user runs /cover-letter or asks for a cover letter; /apply runs it whenever a form offers a cover letter.
+description: Write a tailored, one-page cover letter for one job posting, following sources/cover_letter_prompt.md, from sources/mega-resume.tex, stories.md, answers.md and profile.md, truth-checked. Use when the user runs /cover-letter or asks for a cover letter; /apply runs it whenever a form offers a cover letter.
 argument-hint: <posting URL | posting dir> [--pdf]
 ---
 
@@ -12,11 +12,15 @@ All paths are relative to `jobapps/` (the project root).
 
 - `$ARGUMENTS`: a posting dir (`postings/<dir>`), a posting URL, or pasted posting text. `--pdf`
   also builds the one-page PDF (for forms that only take an upload). If empty, ask for it.
-- `CoverLetter_prompt_v1.md`: **the rules. Read it in full every run and follow it exactly.**
-- Fact sources it names: `mega-resume-v1.5.tex`, `stories.md`, `answers.md`, `profile.md`.
+- `sources/cover_letter_prompt.md`: **the rules. Read it in full every run and follow it exactly.**
+  Where the prompt names a versioned mega resume file (`mega-resume-v<N>.tex`), use
+  `sources/mega-resume.tex`.
+- Fact sources it names: `sources/mega-resume.tex`, `stories.md`, `answers.md`, `profile.md`.
 
 ## Steps
 
+0. **Pull the sources.** Follow `.claude/skills/pull-sources.md`, unless the skill that ran this one
+   already pulled them in this run.
 1. **Get the posting.** If `postings/<dir>/posting.md` exists, use it. For a URL with no folder
    yet, find the folder whose `posting.md` has that `- URL:` line; if none, fetch and save the
    posting exactly as the `resume` skill's steps 1-2 do (WebFetch, Chrome fallback, same folder
@@ -35,6 +39,6 @@ All paths are relative to `jobapps/` (the project root).
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (or `/apply` runs this inside a batch subagent): do
-steps 1-5, don't open files, and don't ask the user anything. End with: posting dir, word count,
+When the prompt says you are a batch subagent (or `/apply` runs this inside a batch subagent): Skip step 0: the orchestrator has already pulled the sources.
+Do steps 1-5, don't open files, and don't ask the user anything. End with: posting dir, word count,
 `ok`, PDF path if built, and any sentence to sanity-check.
