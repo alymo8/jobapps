@@ -58,8 +58,9 @@ PREAMBLE = r"""\documentclass[letterpaper,11pt]{article}
 \vspace{10pt}
 """
 
-# Contact details live in the gitignored profile.md, not in the repo.
-PROFILE = Path(__file__).resolve().parent.parent / "profile.md"
+# Contact details come from the pulled Profile doc (gitignored sources/), not the repo.
+PROFILE = Path(__file__).resolve().parent.parent / "sources" / "profile.md"
+MISSING_PROFILE = "sources/profile.md missing: pull the sources first (.claude/skills/pull-sources.md)"
 CONTACT_KEYS = {"name": "Full name", "phone": "Phone", "email": "Email",
                 "city": "Location", "linkedin": "LinkedIn", "github": "GitHub"}  # fmt: skip
 
@@ -83,7 +84,7 @@ def check(lines: list[str]) -> dict:
 
 
 def contact() -> dict:
-    """Header fields from the "## Contact" bullets ("- Key: value") of profile.md."""
+    """Header fields from the "## Contact" bullets ("- Key: value") of sources/profile.md."""
     text = PROFILE.read_text(encoding="utf-8")
     section = text.split("## Contact", 1)[1].split("\n## ", 1)[0]
     fields = dict(re.findall(r"^- ([^:\n]+): *(\S.*?) *$", section, re.M))
@@ -118,7 +119,9 @@ def main(argv: list[str]) -> int:
     report = {"md": str(md), **check(lines)}
     report["ok"] = (WORDS_MIN <= report["words"] <= WORDS_MAX
                     and report["greeting_ok"] and report["signoff_ok"])
-    if "--check" not in argv:
+    if "--check" not in argv and not PROFILE.exists():
+        report.update(ok=False, error=MISSING_PROFILE)
+    elif "--check" not in argv:
         company = md.parent.name.split("-")[0]
         tex = md.with_name(f"Aly_Mohamed_Hussein_Cover_Letter_{company}.tex")
         tex.write_text(to_tex(text), encoding="utf-8")
