@@ -3,12 +3,12 @@
 A shared procedure file, not a skill: `/outreach`, `/followup` and `/batch`'s LinkedIn subagents
 follow it whenever they use LinkedIn. A LinkedIn tab takes several hundred MB and grows with every
 page opened inside it; several of them at once crashed Aly's 16 GB laptop
-([ADR 0006](../../knowledge/decisions/0006-light-linkedin-runs.md)).
+([ADR 0007](../../knowledge/decisions/0007-light-linkedin-runs.md)).
 
 - **One LinkedIn tab per run.** Create it when the first LinkedIn page is needed (after loading
   `claude-in-chrome`) and use only its id. Never open a second LinkedIn tab, never touch other tabs.
 - **Never leave a message waiting in a tab.** A message is sent or it is not typed; nothing is
-  left unsent for Aly (the resume goes as a link, see "Resume link" in `/outreach`).
+  left unsent for Aly.
 - **Open pages by direct URL**, never by clicking through the feed, and never open
   `https://www.linkedin.com/feed/`:
   - profile: the profile URL from `outreach.md`;

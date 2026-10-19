@@ -17,7 +17,7 @@ in the workspace `CLAUDE.md` one level up.
 ```
 python tools/build_resume.py postings/<dir>/<name>.tex          # compile + JSON checks (1 page, fill, skills lines)
 python tools/build_cover_letter.py postings/<dir>/cover_letter.md [--check]
-python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all]
+python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all] [--for outreach]
 python tools/discover.py [--since N] [--exclude <list>] [--location <kw> ...] [--career-ops <dir>]  # -> discovered/<date>.csv
 python tools/pull_sources.py <downloaded.md> <target>                      # doc code block -> sources/ (see .claude/skills/pull-sources.md)
 python -I tools/shortlist.py list --keys <decision_keys.py> --rows <latest.json> --decisions <dir> --top 10 --table  # see job-shortlist skill
@@ -31,7 +31,7 @@ python -m py_compile tools/*.py                                  # CI runs this 
   the profile, stories and answers, pulled into gitignored `sources/` per
   `.claude/skills/pull-sources.md`. Of the six source Docs, Claude Code writes only to the Profile doc, through
   `.claude/skills/write-source.md` ([ADR 0003](knowledge/decisions/0003-claude-code-writes-to-the-profile-doc.md)).
-- Skills in `.claude/skills/`: `/discover` (career-ops scanner → CSV) → `/resume` → `/apply` → `/outreach` → `/followup`;
+- Skills in `.claude/skills/`: `/discover` (career-ops scanner → CSV) → `/resume` → `/apply`; `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
   `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
   `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
 - Weekly shortlist: a claude.ai artifact (URL in `.claude/skills/job-shortlist/SKILL.md`). Claude Code
@@ -49,8 +49,8 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - Never submit an application without Aly's explicit OK. On LinkedIn, messages to Aly's existing
   connections and replies need Aly's OK (names shown first); requests and messages to new people
   go out without it ([ADR 0005](knowledge/decisions/0005-linkedin-approval-only-for-existing-connections.md)).
-- LinkedIn runs use one tab at a time (`.claude/skills/linkedin-tab.md`) and send the resume as a
-  `Resume link:` URL, never an attachment left in an open tab ([ADR 0006](knowledge/decisions/0006-light-linkedin-runs.md)).
+- LinkedIn runs use one tab at a time, recycled every 8 page opens (`.claude/skills/linkedin-tab.md`,
+  [ADR 0007](knowledge/decisions/0007-light-linkedin-runs.md)); `/batch` does LinkedIn work one posting at a time.
 - Everything written about Aly must be truth-checked against the source files above.
 - The repo holds only the setup (skills, tools, docs). Personal sources, `sources/`,
   `postings/`, `batches/`, `discovered/`, `archive/` and the trackers are local-only and gitignored;
@@ -64,6 +64,10 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - Edit the sources in the Claude Docs (claude.ai), never in `sources/`: the next pull overwrites
   local edits.
 - `tools/` scripts aren't ruff-clean at the default 88-column limit; CI byte-compiles them and runs the unittest suite (no linter).
+- CI (`ci.yml`) runs only on pull requests and pushes to `main`; a feature-branch push runs only
+  `secret-scan`, so CI results appear once the PR is open.
+- `applications.md` statuses and the legend line are written by four skills (outreach, apply,
+  batch, followup); change a status rule or the legend in all four, byte-identical.
 - `tests/fixtures/decision_keys.py` is a pinned copy of the shortlist artifact's keys file (`-text` in
   `.gitattributes`); refreshing it also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
 - `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
