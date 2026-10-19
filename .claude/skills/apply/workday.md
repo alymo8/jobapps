@@ -158,7 +158,8 @@ Replaces `/apply` step 6 for Workday: the same summary (role, company, resume fi
 `application.md` table with `draft` and new rows highlighted, the cover letter verbatim if any),
 plus the tenant, the step the run stopped on, the consent checkbox label quoted (or "no consent
 checkbox"), and the `After approval` rows. Normal run: set `applications.md` to `ready` (in batch
-the orchestrator does it). Ask "Submit? (ok / edits)". Aly's "ok" approves ticking that consent
+the orchestrator does it), unless the row is `outreach-only-ready` or `outreach-only-sent`: then
+keep that status and add `form filled <date>, awaiting OK` to its Notes instead. Ask "Submit? (ok / edits)". Aly's "ok" approves ticking that consent
 checkbox, filling the `After approval` rows, and submitting.
 
 Batch subagent: don't ask; end with the batch report, adding the tenant, the stop step, the consent
