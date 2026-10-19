@@ -62,6 +62,10 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - Edit the sources in the Claude Docs (claude.ai), never in `sources/`: the next pull overwrites
   local edits.
 - `tools/` scripts aren't ruff-clean at the default 88-column limit; CI byte-compiles them and runs the unittest suite (no linter).
+- CI (`ci.yml`) runs only on pull requests and pushes to `main`; a feature-branch push runs only
+  `secret-scan`, so CI results appear once the PR is open.
+- `applications.md` statuses and the legend line are written by four skills (outreach, apply,
+  batch, followup); change a status rule or the legend in all four, byte-identical.
 - `tests/fixtures/decision_keys.py` is a pinned copy of the shortlist artifact's keys file (`-text` in
   `.gitattributes`); refreshing it also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
 - `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
