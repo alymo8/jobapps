@@ -8,7 +8,18 @@ argument-hint: <posting URL> | <posting dir>
 
 All paths are relative to `jobapps/`. Uses Chrome (load `claude-in-chrome` first); Aly is logged in
 to LinkedIn. Keep volume low (at most 3 people per posting): LinkedIn flags automated-looking
-activity, and the account is Aly's.
+activity, and the account is Aly's. All LinkedIn work happens in one tab, per
+`.claude/skills/linkedin-tab.md` (direct URLs, recycled every 8 page opens, closed at the end).
+
+## Resume link
+
+Messages carry the tailored resume as a link, never an attachment (attaching left a tab open per
+message, and the composer's cross-origin iframe blocks `file_upload` anyway). The link is one line
+under the title of `postings/<dir>/outreach.md`: `Resume link: <url>`. Aly makes it: uploads the
+posting's resume PDF (e.g. to Google Drive, shared as "anyone with the link can view") and gives
+the URL. Drafts write `<resume link>` where it goes; the text sent has the real URL, and length
+checks count it. Before the first send that uses a new link, open it once in the LinkedIn tab and
+check that the PDF shows (not a sign-in page); otherwise ask Aly for a working one.
 
 ## Approval rule
 
@@ -27,8 +38,8 @@ approves an existing-connection message; an approval of one message does not cov
    already pulled them in this run.
 1. **Apply first.** Run the full `/apply` skill (both phases). If `applications.md` already shows
    this posting as `applied`, skip to step 2. If Aly decides not to submit, stop here.
-2. **Find people** (LinkedIn people search in a new tab, filtered to the company's current
-   employees). Check each one still works there (current position).
+2. **Find people** (LinkedIn people search in the run's LinkedIn tab, filtered to the company's
+   current employees). Check each one still works there (current position).
    1. **Aly's connections first**: the same search with the Connections filter set to `1st`. Every
       1st-degree connection at the company is a candidate, whatever their role (anyone inside can
       refer or forward); rank engineers / managers on the posting's team, then recruiters, then
@@ -45,13 +56,13 @@ approves an existing-connection message; an approval of one message does not cov
 3. **Draft one message per picked person** (save all in `outreach.md`):
    - **Existing connection** → a direct message, 400–800 characters: friendly and personal (they
      know Aly), role title and that Aly applied, 1–2 concrete facts from the tailored resume that
-     match the posting (from `sources/mega-resume.tex` only), and the ask: a referral, forwarding
-     to the hiring team, or a short chat.
+     match the posting (from `sources/mega-resume.tex` only), the ask: a referral, forwarding
+     to the hiring team, or a short chat; and the resume as `<resume link>`.
    - **New person** → (a) a connection note ≤ 200 characters (role, that Aly applied, one fact),
      length checked in code by piping it on stdin into
      `python -c "import sys; print(len(sys.stdin.read().rstrip(chr(10))))"`; and (b) the follow-up
-     message for after acceptance, 500–800 characters, same content rules as above, tailored to the
-     reader: recruiter → fit + availability; hiring manager → the most relevant work. With Premium
+     message for after acceptance, 500–800 characters, same content rules as above (resume link
+     included), tailored to the reader: recruiter → fit + availability; hiring manager → the most relevant work. With Premium
      InMail credits, (b) can go now as an InMail with a subject ≤ 60 chars instead of (a).
    - No flattery filler, no claims beyond the resume.
 4. **Approval gate, existing connections only.** Before anything is sent, show Aly in chat:
@@ -59,30 +70,31 @@ approves an existing-connection message; an approval of one message does not cov
    - For each: title, why, and the exact message text.
    - Then the new people (name, title, channel, the note), for information only: they are sent in
      step 5 without waiting for an answer.
+   - If `outreach.md` has no `Resume link:` line, ask for it in the same message: `Resume link for
+     <company>? Upload <resume PDF path> and paste the URL.` Connection requests (a) carry no link
+     and don't wait for it; an existing-connection message waits for both the OK and the link.
 
    Wait for Aly on the existing connections only: Aly picks who and OKs or edits each text. If there
    are no existing connections at the company, say so in one line and go on.
-5. **Send**, one person at a time, waiting 3–5 seconds between page opens:
+5. **Send**, one person at a time, waiting 3–5 seconds between page opens (in the one tab, per
+   `.claude/skills/linkedin-tab.md`):
    - **New person**: send the connection request with note (a) right away, no approval needed;
      confirm it shows as pending. Notes are budgeted (below); past the budget send the request
      **without a note**, and (b) goes later through `/followup` once they accept.
-   - **Existing connection**: only after the OK, the approved text verbatim as a regular message
-     with the resume PDF attached.
-   - Known (2026-10-04): the LinkedIn message composer is in a cross-origin iframe, so
-     `file_upload` cannot attach there. For a message that should carry the resume, type the text,
-     leave it unsent in its own tab, and list the tabs for Aly to attach the PDF and send. A
-     message that doesn't say the resume is attached can be sent directly.
+   - **Existing connection**: only after the OK, the approved text verbatim (the resume link
+     filled in) as a regular message; confirm it appears in the thread. Nothing is typed and left
+     unsent for Aly.
    - A CAPTCHA, rate limit, "restricted activity" warning or failed send: stop and tell Aly. No
      retries.
 6. **Log** each send in `postings/<dir>/outreach.md` under `## Sent`, one bullet per send in exactly
    this format (the `/followup` skill parses it):
    `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the text sent as a
    `>` quote on the next line(s). Channel is one of `message (existing connection)`,
-   `connection request with note`, `connection request (no note)`, `InMail`; a message typed for
-   Aly gets `typed, Aly to send` after the channel. Set the `applications.md` row to
+   `connection request with note`, `connection request (no note)`, `InMail` (older files may show
+   `typed, Aly to send` after the channel, from before resume links; `/followup` still reads it). Set the `applications.md` row to
    `outreach-sent` (or `outreach-ready` if an existing-connection message is waiting on Aly).
-   End with a chat report: who was messaged (by name, existing connections marked), requests sent,
-   tabs waiting for Aly. Later follow-ups are handled by `/followup`.
+   Close the LinkedIn tab. End with a chat report: who was messaged (by name, existing connections
+   marked), requests sent, anything waiting on Aly (an OK or the resume link). Later follow-ups are handled by `/followup`.
 
 ## Invitation and InMail budget
 
@@ -96,17 +108,23 @@ credits first and note the count in `outreach.md`.
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the
-orchestrator has already pulled the sources), then run `/apply` Phase 1 under its batch rules, then
-steps 2–3 in your own tab, **send nothing, submit nothing, connect with no one** (parallel
-subagents must not act on Aly's account at once). End with: posting dir, `ASK` count, blockers,
-the `outreach.md` path, and the names of any existing connections found.
+When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0
+(the orchestrator has already pulled the sources), then run the part the prompt names:
+
+- **Application part**: `/apply` Phase 1 under its batch rules. Do not open LinkedIn.
+- **LinkedIn part**: steps 2–3 in one LinkedIn tab of your own, per
+  `.claude/skills/linkedin-tab.md`; close it at the end.
+
+Either way **send nothing, submit nothing, connect with no one** (subagents must not act on Aly's
+account at once). End with: posting dir, `ASK` count, blockers, the `outreach.md` path, and the
+names of any existing connections found.
 
 ## Batch execute mode
 
 Run on `postings/<dir>/`: first the application (`/apply` batch execute mode) if approved and not
 yet `applied`; then step 5 for each **new** person in the shortlist's picks not marked skipped (no approval mark
 needed) and for each **existing connection** marked `APPROVED <date>`, with the text **verbatim**;
-then log to `outreach.md` only (the orchestrator owns `applications.md`; never write it in batch).
-Never message an existing connection without an approval mark. Anything needing Aly (attachment
-impossible, budget exhausted, CAPTCHA) → stop and reply `NEEDS ALY: ...`.
+all LinkedIn sends in one tab per `.claude/skills/linkedin-tab.md`, closed at the end; then log to
+`outreach.md` only (the orchestrator owns `applications.md`; never write it in batch).
+Never message an existing connection without an approval mark. Anything needing Aly (no working
+`Resume link:` for a message that needs it, budget exhausted, CAPTCHA) → stop and reply `NEEDS ALY: ...`.

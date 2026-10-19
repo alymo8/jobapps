@@ -6,8 +6,9 @@ argument-hint: "[<posting dir | company> ...] [--dry-run]"
 
 # /followup — re-engage earlier outreach contacts and add new ones
 
-All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one Chrome
-tab of its own**: load `claude-in-chrome` first, create a new tab, never touch other tabs. Aly is
+All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one LinkedIn
+tab of its own**, per `.claude/skills/linkedin-tab.md`: load `claude-in-chrome` first, open pages
+by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. Aly is
 logged in to LinkedIn on a free account (no InMail; about 3 personalized invitations a month;
 invitation notes ≤200 characters).
 
@@ -87,7 +88,8 @@ date (`done (no-response)` after ≥3 business days with no reply, else `waiting
 ## 2. LinkedIn sweep
 
 If more than 40 people have records, ask Aly to confirm or narrow first. Wait 3–5 seconds
-between page opens (browser wait action).
+between page opens (browser wait action), and count page opens for the tab recycling in
+`.claude/skills/linkedin-tab.md`.
 
 1. **Sent invitations** (My Network → Manage → Sent), one pass: who is pending and since when.
    Record the total count in the manifest header (`Sent invitations at start: N`).
@@ -113,7 +115,7 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, Aly to send` → note `typed <date>, not sent` |
+| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, Aly to send` (from before resume links) → note `typed <date>, not sent` and send it now |
 | 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days since the last outbound message, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Add the next new person (step 3b) |
 | 6 | `waiting` | Anything else | None |
@@ -176,7 +178,9 @@ Create `batches/<YYYY-MM-DD-HHMM>-followup/`:
   final `## No contacts` section for postings in scope with no contact found and nobody to add.
 - `questions.txt`: plain text, numbered, **approval items only**. One item per message: who, which
   posting, `existing connection` or `reply`, the message verbatim, then `Answer:` (`ok` /
-  `edit: <text>` / `skip`). Then reply questions from step 3. Header line: "Only `ok` or `edit:`
+  `edit: <text>` / `skip`). Then reply questions from step 3. Then, for each posting with a message
+  to send that needs the resume and no `Resume link:` line in its `outreach.md`: `Resume link for
+  <company>? Upload <resume PDF path> and paste the URL.` (see "Resume link" in `/outreach`). Header line: "Only `ok` or `edit:`
   approves; a blank `Answer:` counts as `skip`." No suggested answers. Open it with
   `Invoke-Item` (not in `--dry-run`).
 
@@ -199,25 +203,29 @@ final text quoted. Save reusable answers to `sources/profile.md` through `.claud
 `not needed` items, plus approval items with an `ok`/`edit:`, text verbatim, one at a time,
 waiting 3–5 seconds between page opens:
 
-- **Nudge or reply** (no attachment): send in the thread; confirm it appears there.
-- **Follow-up (b)**, or any text that says the resume is attached: type it in the thread
-  and leave it **unsent** in its own tab; list those tabs for Aly, who attaches the PDF and sends.
-  A follow-up that doesn't mention an attachment (e.g. links the posting) is sent directly.
+Nothing is typed and left unsent for Aly: the resume goes as the posting's `Resume link:` (see
+"Resume link" in `/outreach`), never as an attachment.
+
+- **Nudge or reply**: send in the thread; confirm it appears there.
+- **Follow-up (b)**: fill in `<resume link>` and send it in the thread; confirm it appears there.
+  An older (b) that says the resume is attached gets that clause changed to the link (a `new`
+  person needs no approval for this). No `Resume link:` yet → hold that item until Aly gives one
+  in questions.txt; it is not sent without the resume.
 - **New connection request**: re-check any note is ≤200 characters in code; send the request;
   confirm it shows as pending.
-- **Existing connection message**: only with its approval; send (or type for Aly when it carries
-  the resume) in the thread.
-- After each confirmed send (or each message typed for Aly), write its action bullet immediately
+- **Existing connection message**: only with its approval; send in the thread (the approved text
+  already holds the link).
+- After each confirmed send, write its action bullet immediately
   to that posting's `## Follow-up` (format in step 7), before the next item. A run that stops
   midway then never loses the record of a nudge already sent.
 - A send that fails or hits a warning: stop and tell Aly. No retries.
 
 ## 7. Log
 
-- **`outreach.md`**, `## Follow-up`, one action bullet per person handled (sends and typed
-  messages were already logged in step 6; add the rest):
+- **`outreach.md`**, `## Follow-up`, one action bullet per person handled (sends were already
+  logged in step 6; add the rest):
   `- <Name> | <date> | <state> | <action> | text:` + the quoted text if any. Actions:
-  `follow-up sent`, `nudge sent`, `reply sent`, `typed, Aly to send`, `invite sent` (a new
+  `follow-up sent`, `nudge sent`, `reply sent`, `held (no resume link)`, `invite sent` (a new
   person, `with note` / `no note`), `message sent` (an existing connection), `replacement sent` /
   `none left` (the stale person), `none`.
   - A newly added person also gets a standard `## Sent` bullet
@@ -237,8 +245,8 @@ waiting 3–5 seconds between page opens:
   - Every touched row gets a short note with the batch id.
   - Safety net: if the legend line lacks `in-conversation`, update it to
     ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`.``
-- **Manifest** Result column filled. Chat report: sent, typed for Aly (with tab list), skipped,
-  stopped-on-warning.
+- **Manifest** Result column filled. Close the LinkedIn tab. Chat report: sent, held for a resume
+  link, skipped, stopped-on-warning.
 
 ## Guardrails
 

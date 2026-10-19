@@ -21,9 +21,9 @@ default. Pick by how much judgment the step needs:
 | 1a.5 | Fit, pay and legitimacy score (`scoring.md`) | `sonnet` | judgment, but no writing |
 | 1b | Resume tailoring | `opus` | truthfulness, content selection, page fit |
 | 2 | Form fill + drafted free-text answers | `sonnet` | multi-step Chrome work, React selects |
-| 2 | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
+| 2b | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
 | 5 | Submit an approved application | `haiku` | answers fixed; re-fill, verify, click |
-| 5 | Send an approved LinkedIn message | `haiku` | verbatim text, attach, send |
+| 5 | Send an approved LinkedIn message | `haiku` | verbatim text, send |
 
 **Escalation.** When a subagent's step fails (`FAILED`, `UNREADABLE`, or a garbled/incomplete
 report), retry it once with the **next tier up**: `haiku` → `sonnet` → `opus`; a failure at `opus`
@@ -149,14 +149,15 @@ to the dead-letter queue** and drops out of the later stages.
 
 ## 2. Prepare stage (apply / outreach) — Chrome, at most 2 subagents at a time
 
-All subagents share Aly's one Chrome window, so **never more than 2** run at once. Never run two postings of the same Workday tenant at once
+All subagents share Aly's one Chrome window, so **never more than 2** run at once. In `outreach`
+mode these subagents do the **application part** only; LinkedIn waits for stage 2b. Never run two postings of the same Workday tenant at once
 (shared session and candidate profile); queue the second. For each posting
 with an ok resume, launch a background `general-purpose` subagent with `model: sonnet` (a failed
 fill escalates to `opus`):
 
 > You are a batch subagent for the `<apply|outreach>` skill in `C:\Users\alymo\Desktop\Github\jobapps`.
 > Read `.claude/skills/<apply|outreach>/SKILL.md` and follow its "Running as a batch subagent"
-> section for posting dir `postings/<dir>` (URL <url>). The resume is already built; reuse it.
+> section for posting dir `postings/<dir>` (URL <url>) (in `outreach` mode add: ", application part"). The resume is already built; reuse it.
 > The sources in `sources/` are already pulled; don't pull them again.
 > Load the `claude-in-chrome` skill first. Create your **own new tab** and use only that tab id;
 > never touch, navigate or close other tabs. Never click Submit/Send/Connect. Do not ask the user
@@ -167,6 +168,26 @@ Blockers (needs an account login/sign-up (non-Workday), NO-WORKDAY-LOGIN / NO-WO
 dead-letter queue as `BLOCKED` with what would unblock them; a form fill that fails at `sonnet`
 and again at `opus` goes as `FAILED`. Either way the posting drops out of the review's approval list (its resume is still
 listed there, so Aly can apply by hand).
+
+## 2b. LinkedIn stage (outreach) — one subagent at a time
+
+A LinkedIn tab is heavy and grows with use; several at once crashed Aly's 16 GB laptop
+([ADR 0006](../../../knowledge/decisions/0006-light-linkedin-runs.md)). So exactly **one** LinkedIn
+subagent runs at a time, and the next starts only after the previous one has reported (its tab is
+closed by then). Run it for each outreach posting that came through stage 2 (not dead-lettered),
+also while other postings are still in stage 2 (that keeps at most 2 form tabs + 1 LinkedIn tab).
+Launch a background `general-purpose` subagent with `model: sonnet`:
+
+> You are a batch subagent for the `outreach` skill in `C:\Users\alymo\Desktop\Github\jobapps`.
+> Read `.claude/skills/outreach/SKILL.md` and follow its "Running as a batch subagent" section,
+> LinkedIn part, for posting dir `postings/<dir>`. The sources in `sources/` are already pulled.
+> Load the `claude-in-chrome` skill first, then follow `.claude/skills/linkedin-tab.md`: one
+> LinkedIn tab of your own, recycled every 8 page opens, closed when you finish. Never touch other
+> tabs. Never click Send/Connect. Do not ask the user anything. Final reply, at most 5 lines:
+> posting dir, outreach drafts path, existing connections found (names), blockers.
+
+A CAPTCHA or restriction warning in this stage stops the stage for every posting (no more LinkedIn
+subagents this run); tell Aly in the review.
 
 ## 3. Review sheet — one approval round for everything
 
@@ -206,7 +227,9 @@ parts, in this order:
 4. Decisions: which applications to submit, blocked or odd postings, retries.
 5. LinkedIn per company: **the names of Aly's existing connections** to message, each with its message
    verbatim to OK or edit; then the new people for information only (they get connection requests at
-   execute without approval; "skip <name>" drops one).
+   execute without approval; "skip <name>" drops one). When the company's `outreach.md` has no
+   `Resume link:` line and a message needs it: `Resume link for <company>? Upload <resume PDF path>
+   and paste the URL.` (see "Resume link" in `/outreach`).
 
 **Apply `sources/profile.md` first:** never ask a question it already answers or has a standing rule for
 (salary from the posted range, sponsorship by role location, relocation, start date, EEO, and so
@@ -222,19 +245,24 @@ approved by silence or by an approval given for a different posting or an earlie
 
 Parse Aly's reply. Save reusable answers to `sources/profile.md` through `.claude/skills/write-source.md`. For each posting, append to
 `postings/<dir>/application.md`: `APPROVED <date>: submit` (with any edits applied to its answer
-table), and in `outreach.md` mark each approved person + message `APPROVED <date>`. Anything
+table), and in `outreach.md` mark each approved person + message `APPROVED <date>` and write any
+resume link Aly gave as the `Resume link: <url>` line under the title. Anything
 unclear → ask before recording. Postings Aly skips go to the dead-letter queue as `SKIPPED`
 (with Aly's reason, if given) so they aren't re-proposed next run; postings Aly defers ("not yet")
 get Stage `held` in the manifest instead.
 
-## 5. Execute stage — Chrome, at most 2 subagents at a time
+## 5. Execute stage — Chrome, at most 2 subagents at a time (1 in `outreach` mode)
+
+In `outreach` mode each execute subagent sends on LinkedIn, so run them **one at a time** (stage
+2b's rule); `apply` mode keeps 2.
 
 Only for postings with a recorded approval. Same-tenant Workday postings run one at a time, as in stage 2. Launch with `model: haiku`; a failed submit or send
 (not `NEEDS ALY`) escalates to `sonnet`. Subagent prompt:
 
 > You are a batch execute subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
 > `.claude/skills/<apply|outreach>/SKILL.md`, section "Batch execute mode", and run it for
-> `postings/<dir>`. Act only on items marked `APPROVED` in that folder's files. Own tab only.
+> `postings/<dir>`. Act only on items marked `APPROVED` in that folder's files. Own tab only;
+> LinkedIn work follows `.claude/skills/linkedin-tab.md` (one tab, closed when you finish).
 > The sources in `sources/` are already pulled; don't pull them again.
 > If you hit a CAPTCHA, an email verification code, or anything needing Aly, stop and reply
 > `NEEDS ALY: <what, which tab>`. Final reply, at most 5 lines: what was submitted/sent, and proof
