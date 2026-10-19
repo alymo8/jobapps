@@ -1,6 +1,6 @@
 ---
 name: apply
-description: Build the tailored resume for a job posting (/resume) and fill the online application in Chrome, then submit only after the user's explicit OK. Use when the user runs /apply or asks to apply to a posting; /outreach runs this first.
+description: Build the tailored resume for a job posting (/resume) and fill the online application in Chrome, then submit only after the user's explicit OK. Use when the user runs /apply or asks to apply to a posting; /outreach --apply runs it first.
 argument-hint: <posting URL> | <posting dir> --submit
 ---
 
@@ -56,7 +56,8 @@ for this specific application in this session.**
 6. **Stop for approval.** Show the user a compact summary: role, company, resume filename, and the table
    from `application.md` (highlight `draft` and newly-answered rows), plus the full cover letter
    text verbatim if there is one. Update `applications.md` to
-   `ready`. Ask: "Submit? (ok / edits)".
+   `ready`, unless the row is `outreach-only-ready`, `outreach-only-sent`, `in-conversation`, `no-response` or `closed`: then keep that status and
+   add `form filled <date>, awaiting OK` to its Notes instead. Ask: "Submit? (ok / edits)".
 
 ## Phase 2: submit (on the user's "ok" only)
 
@@ -71,7 +72,15 @@ for this specific application in this session.**
    confirmation: every tab you opened for this posting (the form, the posting page, sign-in or
    other pop-up tabs). Never close a tab you didn't open. On a CAPTCHA, a code, an error, a
    failure or a skip, leave them open for the user.
-5. Update `applications.md` row to `applied` with the date. Report done.
+5. Update the `applications.md` row with the date, mapping the status it had before this run:
+   `outreach-only-ready` → `outreach-ready`, `outreach-only-sent` → `outreach-sent`, anything else
+   → `applied`, except that `in-conversation`, `no-response` and `closed` keep their status and get
+   `applied <date>` in Notes (a conversation outlives the application). A declined or failed submit
+   leaves the status unchanged; a `form filled <date>, awaiting OK` note becomes
+   `form filled <date>, not submitted`. When you write the row and the
+   legend line lacks `outreach-only`, rewrite the legend line to:
+   ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
+   Report done.
 6. **Shortlist.** Ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
    `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
    `tailored resume + cover letter` (a cover letter went in) or `tailored resume`. Not in a batch

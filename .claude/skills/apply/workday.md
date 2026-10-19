@@ -158,7 +158,8 @@ Replaces `/apply` step 6 for Workday: the same summary (role, company, resume fi
 `application.md` table with `draft` and new rows highlighted, the cover letter verbatim if any),
 plus the tenant, the step the run stopped on, the consent checkbox label quoted (or "no consent
 checkbox"), and the `After approval` rows. Normal run: set `applications.md` to `ready` (in batch
-the orchestrator does it). Ask "Submit? (ok / edits)". the user's "ok" approves ticking that consent
+the orchestrator does it), unless the row is `outreach-only-ready`, `outreach-only-sent`, `in-conversation`, `no-response` or `closed`: then
+keep that status and add `form filled <date>, awaiting OK` to its Notes instead. Ask "Submit? (ok / edits)". the user's "ok" approves ticking that consent
 checkbox, filling the `After approval` rows, and submitting.
 
 Batch subagent: don't ask; end with the batch report, adding the tenant, the stop step, the consent
@@ -177,7 +178,7 @@ label (or "no consent checkbox") and the `After approval` rows.
    Screenshot to `postings/<dir>/confirmation.png`.
 7. Close the tabs you opened for this posting (`/apply` Phase 2 step 4), only after step 6
    confirmed the submit.
-8. Normal run: `/apply` Phase 2 step 5 (update `applications.md` to `applied`). Batch execute mode:
+8. Normal run: `/apply` Phase 2 step 5 (update the `applications.md` row with its status mapping). Batch execute mode:
    never write `applications.md` (the orchestrator does).
 
 ## Work history section

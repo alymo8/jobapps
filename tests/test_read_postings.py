@@ -12,6 +12,8 @@ import read_postings as rp  # noqa: E402
 
 HEAD = "| Date | Batch | Rank | Company | Title | URL | Stage | Reason | Detail | Needs | Status |\n"
 SEP = "|---|---|---|---|---|---|---|---|---|---|---|\n"
+STATUSES = ["applied", "outreach-ready", "outreach-sent", "outreach-only-ready",
+            "outreach-only-sent", "in-conversation", "ready"]
 
 
 def dlq_row(rank, url, reason, status="open"):
@@ -102,6 +104,34 @@ class ReadPostingsTest(unittest.TestCase):
         self.assertEqual(n("https://x.example/a#frag"), "https://x.example/a")
         self.assertEqual(n(" https://x.example/a/ "), "https://x.example/a")
         self.assertEqual(n("http://www.X.example/a"), "https://x.example/a")
+
+    def write_apps(self):
+        rows = "".join(f"| 2026-10-19 | b | Co | T | postings/D{i} | {s} | https://s.example/{i} |\n" for i, s in enumerate(STATUSES, 1))
+        (self.root / "applications.md").write_text(rows, encoding="utf-8")
+
+    def status_urls(self):
+        return [f"https://s.example/{i}" for i in range(1, 8)]
+
+    def test_default_skips_applied_and_outreach(self):
+        self.write_apps()
+        got = self.run_main(*self.status_urls())
+        self.assertEqual(sorted(x["status"] for x in got),
+                         sorted(["outreach-only-ready", "outreach-only-sent", "in-conversation", "ready"]))
+
+    def test_for_outreach_picks_applied_not_messaged(self):
+        self.write_apps()
+        got = self.run_main(*self.status_urls(), "--for", "outreach")
+        self.assertEqual(sorted(x["status"] for x in got), ["applied", "ready"])
+
+    def test_for_outreach_all_keeps_everything(self):
+        self.write_apps()
+        got = self.run_main(*self.status_urls(), "--for", "outreach", "--all")
+        self.assertEqual(len(got), 7)
+
+    def test_for_other_value_is_default(self):
+        self.write_apps()
+        got = self.run_main(*self.status_urls(), "--for", "apply")
+        self.assertEqual(len(got), 4)
 
 
 if __name__ == "__main__":
