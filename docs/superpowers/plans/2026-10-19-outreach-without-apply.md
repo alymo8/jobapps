@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 - **Date:** 2026-10-19
-- **Status:** approved
+- **Status:** implemented
 
 **Goal:** `/outreach` and `/batch outreach` message people on LinkedIn without applying unless Aly asks (`--apply`). New `outreach-only-*` statuses keep "messaged but not applied" visible, and the skills follow Aly's standing LinkedIn rules: "interested", no attachment, never InMail.
 
@@ -210,3 +210,41 @@ def test_for_other_value_is_default(self):
 - [ ] **Step 5:** Run (PowerShell) `rg -n "/outreach runs this first" .claude/skills` (expected: nothing) and `ls knowledge/decisions/0006-*`. Note in the PR body that "CI is green on the PR" (criterion 2) is checked by the shipping flow after the PR opens.
 - [ ] **Step 5b: Record the evidence.** Append a `## Verification evidence` section to this plan with (1) every Step 3 `rg` hit as `file:line → --apply path | apply mode | forbid rule`, (2) the Paths table (steps run by `/outreach`, `/outreach --apply`, `/batch outreach`, `/batch outreach --apply`), (3) the Step 4a re-run results, (4) the Step 1, 2, 4 and 5 command outputs in short. The PR description copies this section verbatim.
 - [ ] **Step 6:** Set the spec and plan Status to `implemented`, then commit with message `Mark outreach-without-apply spec and plan implemented`.
+
+## Verification evidence
+
+Run on branch `outreach-without-apply` after Tasks 1–6 merged (ripgrep isn't on PATH here, so the searches below used the Grep tool, which is ripgrep, and plain `grep`).
+
+**Step 1.** `python -m unittest discover -s tests -v` ran 74 tests, OK. `python -m py_compile tools/*.py` passed.
+
+**Step 2 (criterion 3).** Every hit of `applied|InMail|attach` (case-insensitive) in `.claude/skills/outreach` and `.claude/skills/followup` is allowed:
+- outreach 49, 54, 120: status names on the `--apply` path. 84, 85: the "never say he applied / attach nothing" rules. 101: the never-InMail rule. 104: "No attachment". 112: old-log channels that are still parsed. 129: the legend. 164: batch execute, `outreach + apply` only.
+- followup 11: the free-account "no InMail" note. 72: the old draft heading "InMail Body". 116, 208, 209: "sent directly, no attachment". 117: "InMail (old logs)". 151, 215: the never-InMail / attach-nothing rules. 238: status names. 247: the legend.
+
+**Step 3 (criterion 4).** Hits of `/apply|Submit|submit`:
+- `outreach/SKILL.md`: 3 (description: "unless Aly asks (`--apply`…)"); 15–19 (Apply or not: never `/apply` by default, a forbid rule); 48–56 (step 1, `--apply` path only); 151–153 (batch subagent, `Mode: outreach + apply` only); 155 ("submit nothing", a forbid rule); 163–166 (batch execute application part, `outreach + apply` only).
+- `batch/SKILL.md`: 3, 25, 33, 63, 224, 245, 273–279, 284 (`apply` mode or the general flow); 172 (a forbid rule); 178–182 (outreach-only skips `/apply`; `Application only` is `--apply` only); 236, 248, 271 (outreach-only: no submit parts, no submit write, "nothing is submitted"); 258 (approval gate); 296–303 (status mapping in `apply` / `outreach --apply`; the shortlist prompt only when something was submitted).
+- None of these hits is on the no-`--apply` path.
+
+**Paths.**
+
+| Path | Steps run |
+|------|-----------|
+| `/outreach` | 0, 1 (resume only, status checks), 2, 3, 4, 5, 6 |
+| `/outreach --apply` | 0, 1 (`/apply` both phases, or the exceptions), 2–6 |
+| `/batch outreach` | 0 (`--for outreach`, mode line), 1, 1a.5, 1b (pre-run status kept), 2 (`Mode: outreach only`: outreach steps 2–3), 3 (LinkedIn part only), 4 (`APPROVED <date>: outreach`), 5 (sends only), finish (`outreach-only-*` / `outreach-*`) |
+| `/batch outreach --apply` | today's flow, plus `Application only` for already-messaged rows, then post-submit mapping |
+
+**Step 4a (re-runs).** No case messages anyone twice:
+- `/outreach` on `outreach-only-ready` / `outreach-ready`: resumes the pending approval; step 5 skips everyone under `## Sent`.
+- `/outreach` on `outreach-only-sent` / `outreach-sent` / `in-conversation`: stops, unless Aly says continue; a continued run still skips `## Sent`.
+- `/outreach --apply` on `outreach-only-*` / `in-conversation`: `/apply` only, steps 2–6 skipped.
+- `/outreach --apply` on `outreach-ready` / `outreach-sent`: no reapply; then the same stop / resume as without `--apply`.
+- `/batch outreach` on a `*-sent` or conversation row: not picked (`OUTREACH_DONE`). An `*-ready` row is also not picked.
+- `/batch outreach --apply` on `outreach-only-*` / conversation rows: `Application only` in prepare and execute.
+- `outreach-ready` / `outreach-sent` are in `DONE`, so they are not picked.
+- Batch execute never sends to anyone under `## Sent`.
+
+**Step 4 (criterion 5).** `outreach-only` appears in `apply/SKILL.md`, `apply/workday.md`, `batch/SKILL.md`, `followup/SKILL.md`, `outreach/SKILL.md` and `tools/read_postings.py`. A fixed-string count of the legend line gives 1 in each of outreach, apply, batch and followup.
+
+**Step 5 (criterion 6).** `grep -rn "/outreach runs this first" .claude/skills` finds nothing. `knowledge/decisions/0006-outreach-separate-from-apply.md` exists and is row 0006 in the decisions README. "CI is green on the PR" (criterion 2) is checked by the shipping flow after the PR opens.

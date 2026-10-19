@@ -1,7 +1,7 @@
 # Outreach without apply: design
 
 - **Date:** 2026-10-19
-- **Status:** approved
+- **Status:** implemented
 
 ## Purpose
 
