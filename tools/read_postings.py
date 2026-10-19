@@ -2,7 +2,7 @@
 
 Usage:
   python tools/read_postings.py <file.xlsx|file.csv|file.txt|dlq.md|url> [url ...] [--rows 1-20,25]
-                                [--new] [--all] [--reason BLOCKED]
+                                [--new] [--all] [--reason BLOCKED] [--for outreach]
 
 Prints JSON: [{"rank", "company", "title", "location", "url", "eligibility", "flag",
 "status", "dlq"}], where status is the posting's current row status in applications.md
@@ -13,7 +13,8 @@ are skipped; --all keeps them. --rows filters by the sheet's Rank; --new keeps
 a URL column; ranks listed on a "Flags & Exclusions" sheet get their reason in "flag".
 CSV/TSV: same header names (delimiter and UTF-8/BOM/cp1252 detected); "flag" is empty.
 Passing dlq.md as the source retries its `open` rows except CLOSED/INELIGIBLE/LOW-SCORE
-(--reason selects exactly one reason, including those three).
+(--reason selects exactly one reason, including those three). With --for outreach,
+already-messaged postings are skipped and `applied` ones are kept.
 """
 
 import csv
@@ -26,6 +27,8 @@ from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
 ROOT = Path(__file__).resolve().parent.parent
 DONE = {"applied", "outreach-ready", "outreach-sent"}
+OUTREACH_DONE = {"outreach-ready", "outreach-sent", "outreach-only-ready", "outreach-only-sent",
+                 "in-conversation", "no-response", "closed"}  # fmt: skip
 DLQ = ROOT / "dlq.md"
 DLQ_COLS = ["date", "batch", "rank", "company", "title", "url", "stage", "reason", "detail",
             "needs", "status"]  # fmt: skip
@@ -179,13 +182,15 @@ def statuses() -> dict[str, str]:
 
 
 def main(argv: list[str]) -> None:
-    args, rows, new_only, keep_all, reason = [], None, False, False, None
+    args, rows, new_only, keep_all, reason, purpose = [], None, False, False, None, ""
     it = iter(argv)
     for a in it:
         if a == "--rows":
             rows = parse_rows(next(it))
         elif a == "--reason":
             reason = next(it).upper()
+        elif a == "--for":
+            purpose = next(it).lower()
         elif a == "--new":
             new_only = True
         elif a == "--all":
@@ -224,7 +229,8 @@ def main(argv: list[str]) -> None:
         x["status"] = st.get(x["url"], "")
         x["dlq"] = dlq[x["url"]]["reason"] if x["url"] in dlq else ""
     if not keep_all:
-        postings = [x for x in postings if x["status"] not in DONE]
+        skip = OUTREACH_DONE if purpose == "outreach" else DONE
+        postings = [x for x in postings if x["status"] not in skip]
         if not from_dlq:
             postings = [x for x in postings if not (x["url"] in dlq and dlq_skip(dlq[x["url"]]))]
     if hasattr(sys.stdout, "reconfigure"):

@@ -1,7 +1,7 @@
 ---
 name: batch
 description: Run /resume, /apply or /outreach over many job postings at once (an Excel or CSV target list, a text file of URLs, or URLs), using subagents so the main context stays small; all submits and messages to Aly's existing LinkedIn connections wait for Aly's approval, collected in one review sheet (connection requests to new people go out without it). Use when the user runs /batch or asks to do several postings at once.
-argument-hint: resume|apply|outreach <file.xlsx|file.csv|file.txt|dlq.md|url ...> [--rows 1-20] [--new] [--limit N] [--all] [--reason BLOCKED] [--min-score N]
+argument-hint: resume|apply|outreach <file.xlsx|file.csv|file.txt|dlq.md|url ...> [--rows 1-20] [--new] [--limit N] [--all] [--reason BLOCKED] [--min-score N] [--apply]
 ---
 
 # /batch — many postings, subagents, one review
@@ -23,7 +23,7 @@ default. Pick by how much judgment the step needs:
 | 2 | Form fill + drafted free-text answers | `sonnet` | multi-step Chrome work, React selects |
 | 2 | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
 | 5 | Submit an approved application | `haiku` | answers fixed; re-fill, verify, click |
-| 5 | Send an approved LinkedIn message | `haiku` | verbatim text, attach, send |
+| 5 | Send an approved LinkedIn message | `haiku` | verbatim text, send |
 
 **Escalation.** When a subagent's step fails (`FAILED`, `UNREADABLE`, or a garbled/incomplete
 report), retry it once with the **next tier up**: `haiku` → `sonnet` → `opus`; a failure at `opus`
@@ -35,22 +35,29 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
 ## 0. Parse and confirm
 
 1. `$ARGUMENTS`: first word is the mode (`resume`, `apply`, `outreach`); the rest are sources and
-   filters. Missing mode or sources → ask.
+   filters. Missing mode or sources → ask. `--apply` only counts in `outreach` mode: without it,
+   `outreach` mode is LinkedIn only (no application); with it, `outreach` also applies. In
+   `resume` or `apply` mode, `--apply` is ignored with a one-line note.
 2. `python tools/read_postings.py <sources> [--rows ..] [--new] [--all] [--reason ..]` → JSON
-   list. It skips postings already `applied` or later in `applications.md`, and postings held in
+   list. In `outreach` mode without `--apply`, append `--for outreach` to this call; with
+   `--apply`, keep the call as it is. It skips postings already `applied` or later in
+   `applications.md` (with `--for outreach`: skips already-messaged postings and keeps `applied`
+   ones), and postings held in
    the dead-letter queue `dlq.md` (see "Dead-letter queue" below), unless `--all`. `--limit N` and `--min-score N` are handled here, not passed to `read_postings.py`. Apply `--limit N`
    (first N by rank) yourself. When the source is `dlq.md` (a retry run), set each picked row's
-   Status to `retried` in `dlq.md` before launching.
+   Status to `retried` in `dlq.md` before launching. Keep each posting's `status` from
+   `postings.json` as its **pre-run status**; every later status choice in this run uses it.
 3. Create `batches/<YYYY-MM-DD-HHMM>-<mode>/` with `postings.json` (the list) and `manifest.md`:
    a table `# | Rank | Company | Title | Posting dir | Stage | Score | Result`, one row per posting.
 4. **Pull the sources** once, following `.claude/skills/pull-sources.md`. This comes before the
    confirm step, which builds the Workday work history from `sources/mega-resume.tex`, and before
    any subagent launches.
-5. **Confirm before launching** in one message: mode, number of postings, ranks, the flagged ones
+5. **Confirm before launching** in one message: mode (`Mode: outreach only (no application)` or
+   `Mode: outreach + apply` in `outreach` mode), number of postings, ranks, the flagged ones
    (unverified Canada eligibility; recommend skipping or keeping), and the rough cost: subagents
    per stage and model (e.g. "4 haiku pre-screens, 4 sonnet scorers, ~20 opus resumes, ~20 sonnet form fills"). Wait for Aly's go. A reply that trims the list (e.g. "skip 14, 97") is
    the go for the rest.
-   **Workday history:** in `apply` or `outreach` mode, if any picked posting is Workday (URL host
+   **Workday history:** in `apply` mode or `outreach --apply` (not in outreach-only mode), if any picked posting is Workday (URL host
    `myworkdayjobs.com` / `myworkdaysite.com`, or its `dlq.md` Detail or `postings/<dir>/posting.md`
    contains one of those or `Workday (`) and `sources/profile.md` has no `## Workday work history`, build
    that section from `sources/mega-resume.tex` (format in `.claude/skills/apply/workday.md`, "Work
@@ -141,7 +148,10 @@ finishes, launch the next. Prompt:
 > The sources in `sources/` are already pulled; don't pull them again.
 
 Update each manifest row and its `applications.md` row (you are the only writer of that file) from
-the report (Stage `resume`, Result `ok 0.96 (opus)` / `FAILED: ..`). A failed build gets one more
+the report (Stage `resume`, Result `ok 0.96 (opus)` / `FAILED: ..`). Scoring (1a.5) runs as
+above in every mode. Stage 1b never overwrites a pre-run status of `applied`, `outreach-*`,
+`outreach-only-*`, `in-conversation`, `no-response` or `closed`: for those rows it writes only
+Notes `resume ok <date>`. A failed build gets one more
 `opus` attempt (see Model routing). **Every posting that ends this stage without an ok resume goes
 to the dead-letter queue** and drops out of the later stages.
 
@@ -162,6 +172,14 @@ fill escalates to `opus`):
 > never touch, navigate or close other tabs. Never click Submit/Send/Connect. Do not ask the user
 > anything. Final reply, at most 5 lines: posting dir, tab id and URL, number of ASK fields, blockers
 > (e.g. needs an account login (non-Workday), NO-WORKDAY-LOGIN <tenant> <workday url>, CAPTCHA before the form, closed), outreach drafts path if any.
+> <outreach mode only: the mode line, `Mode: outreach only (no application)` or `Mode: outreach + apply`>
+> <outreach + apply only, for a posting whose pre-run status is `outreach-only-*`, `in-conversation`, `no-response` or `closed`: `Application only`>
+
+In outreach mode the prompt carries the mode line. In outreach-only mode the subagent skips `/apply`
+and only searches LinkedIn and drafts messages; there is no form, so no ASK fields or form
+blockers. With `--apply`, a posting whose pre-run status is `outreach-only-*`, `in-conversation`,
+`no-response` or `closed` gets the application part only (`/apply` Phase 1, no LinkedIn search or
+drafts): its prompt carries the extra line `Application only`.
 
 Blockers (needs an account login/sign-up (non-Workday), NO-WORKDAY-LOGIN / NO-WORKDAY-HISTORY from a Workday posting, CAPTCHA before the form, unsupported site) go to the
 dead-letter queue as `BLOCKED` with what would unblock them; a form fill that fails at `sonnet`
@@ -215,6 +233,9 @@ Open questions.txt for Aly (`Invoke-Item`), not review.md. When Aly says it's do
 save every answer that could come up again to `sources/profile.md` through `.claude/skills/write-source.md` (as a rule when the answer carries
 "always" or a condition), and ask any follow-ups in a short `questions-2.txt`.
 
+**Outreach-only mode:** postings have no application, form-question or submit parts, in review.md
+or questions.txt: only the LinkedIn part (questions.txt part 5) and decisions (part 4).
+
 Post a 5-line summary in chat (counts: ready, ASKs, dead-lettered by reason). Wait. Nothing is
 approved by silence or by an approval given for a different posting or an earlier batch.
 
@@ -223,13 +244,20 @@ approved by silence or by an approval given for a different posting or an earlie
 Parse Aly's reply. Save reusable answers to `sources/profile.md` through `.claude/skills/write-source.md`. For each posting, append to
 `postings/<dir>/application.md`: `APPROVED <date>: submit` (with any edits applied to its answer
 table), and in `outreach.md` mark each approved person + message `APPROVED <date>`. Anything
-unclear → ask before recording. Postings Aly skips go to the dead-letter queue as `SKIPPED`
+unclear → ask before recording.
+**Outreach-only mode:** skip the `application.md` `APPROVED <date>: submit` write. For each posting
+Aly did not skip, write `APPROVED <date>: outreach` as the last line of the `## Shortlist` section
+of `postings/<dir>/outreach.md`; Aly's reply without a `skip` for the posting is the go. Per-person
+`APPROVED <date>` marks for existing connections work as above. In outreach-only mode a posting Aly
+skips gets Stage `skipped` in the manifest and is not dead-lettered (declining messages must not
+keep it out of a later `/batch apply`). In other modes, postings Aly skips go to the dead-letter queue as `SKIPPED`
 (with Aly's reason, if given) so they aren't re-proposed next run; postings Aly defers ("not yet")
 get Stage `held` in the manifest instead.
 
 ## 5. Execute stage — Chrome, at most 2 subagents at a time
 
-Only for postings with a recorded approval. Same-tenant Workday postings run one at a time, as in stage 2. Launch with `model: haiku`; a failed submit or send
+Only for postings with a recorded approval (an `APPROVED <date>: outreach` mark in `outreach.md`
+counts, so a posting with only new people still reaches execute). Same-tenant Workday postings run one at a time, as in stage 2. Launch with `model: haiku`; a failed submit or send
 (not `NEEDS ALY`) escalates to `sonnet`. Subagent prompt:
 
 > You are a batch execute subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
@@ -239,6 +267,10 @@ Only for postings with a recorded approval. Same-tenant Workday postings run one
 > If you hit a CAPTCHA, an email verification code, or anything needing Aly, stop and reply
 > `NEEDS ALY: <what, which tab>`. Final reply, at most 5 lines: what was submitted/sent, and proof
 > (confirmation text or screenshot path).
+> <outreach mode only: the mode line, `Mode: outreach only (no application)` or `Mode: outreach + apply`>
+> <outreach + apply only, for a posting whose pre-run status is `outreach-only-*`, `in-conversation`, `no-response` or `closed`: `Application only`>
+
+In outreach-only mode the execute subagent sends only; nothing is submitted.
 
 The execute subagent closes its own tabs after a confirmed submit (`/apply` Phase 2 step 4). When
 it reports a confirmed submit, close that posting's prepare-stage tab too, if it is still open
@@ -256,7 +288,25 @@ dead-lettered by reason (counts + posting numbers), the manifest path, and the r
 anything retryable (`/batch <mode> dlq.md`, or `--reason BLOCKED` once Aly has e.g. created the
 accounts). Leave `batches/<id>/` in place.
 
-**Shortlist.** When execute confirmed one or more submits, list them (company, title) and ask once
+**`applications.md` statuses** use each posting's pre-run status
+(step 0.2):
+
+- **Outreach-only mode:** `outreach-only-ready` (an existing-connection message waits on Aly's OK)
+  or `outreach-only-sent`; when the pre-run status was `applied` or `outreach-ready`, use
+  `outreach-ready` / `outreach-sent` instead. When the pre-run status was `ready` (a form filled,
+  awaiting OK), add `form filled <date>, not submitted` to the Notes cell.
+- **Prepare on an already-messaged row** (pre-run `outreach-only-*`, `in-conversation`,
+  `no-response` or `closed`, after stage 2): the status stays; the Notes cell gets
+  `form filled <date>, awaiting OK`. A declined or failed submit leaves the status unchanged and
+  turns that note into `form filled <date>, not submitted`.
+- **Post-submit mapping** in `apply` mode and `outreach --apply`: pre-run `outreach-only-ready` →
+  `outreach-ready`, `outreach-only-sent` → `outreach-sent`; pre-run `in-conversation`, `no-response`
+  or `closed` keep their status and get `applied <date>` in Notes; anything else → `applied`.
+- **Legend safety net:** when you write an `applications.md` row and the legend line lacks
+  `outreach-only`, rewrite the legend line to:
+  ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
+
+**Shortlist.** Only when something was submitted (never in outreach-only mode): when execute confirmed one or more submits, list them (company, title) and ask once
 `Mark these <n> as applied?` (yes / pick some), the batch form of `Mark <company> – <title> as applied?`.
 On yes, run steps 1-2 of "Record applied" in `.claude/skills/job-shortlist/SKILL.md` for each chosen
 posting (find, `get`, `doc --existing` when the document exists; note `tailored resume + cover letter`

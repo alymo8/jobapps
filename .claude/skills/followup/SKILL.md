@@ -113,12 +113,15 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, Aly to send` → note `typed <date>, not sent` |
-| 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days since the last outbound message, no nudge yet | One nudge, ≤300 characters |
+| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume, sent directly with no attachment (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, Aly to send` → note `typed <date>, not sent` |
+| 4 | `silent` | A (b), free message (open profile), InMail (old logs) or direct message sent, no reply, ≥3 business days since the last outbound message, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Add the next new person (step 3b) |
 | 6 | `waiting` | Anything else | None |
 
-**Nudge:** the role title, a reminder that Aly applied and messaged earlier, and one question:
+A `## Sent` or `## Follow-up` entry on channel `free message (open profile)` is classified like a
+sent (b): it can be `replied`, `silent` or `waiting`, never `accepted` or `stale-pending`.
+
+**Nudge:** the role title, a reminder that Aly is interested in it and messaged earlier, and one question:
 is the role still open, and would they be open to a short chat or to pointing Aly to the right
 person. No new claims, no guilt-tripping.
 
@@ -142,13 +145,16 @@ and up to **10 connection requests per run** in total:
   company (current employees), as in `/outreach` step 2: Aly's 1st-degree connections first, then
   recruiters for the posting's location and the likely hiring manager. Skip anyone already in any
   `outreach.md` (by profile URL). Check the current position. Append each person found to the
-  Shortlist table with `added <date>` in the why column, and their class.
-- **What:** a **new** person gets a connection request; with a note while the budget lasts (their
+  Shortlist table (as a table row, above any `APPROVED <date>: outreach` line) with `added <date>` in the why column, and their class.
+- **What:** a **new** person whose profile's Message button offers a free message (Open Profile
+  "Free message") gets their (b) as that free message. Otherwise a **new** person gets a
+  connection request (never InMail: if LinkedIn would only offer InMail, send the connection
+  request instead); with a note while the budget lasts (their
   "Short notes (200-char limit)" entry, else a new note ≤200 characters condensed from their (a),
   else written from the posting's drafts and tailored resume), otherwise without a note. Length
   checked by piping the note on stdin into
-  `python -c "import sys; print(len(sys.stdin.read().rstrip(chr(10))))"` (heredoc in Bash). Also
-  write their (b) into `outreach.md` for when they accept. An **existing connection** gets a
+  `python -c "import sys; print(len(sys.stdin.read().rstrip(chr(10))))"` (heredoc in Bash). For a
+  connection request, also write their (b) into `outreach.md` for when they accept. An **existing connection** gets a
   direct message drafted as in `/outreach` step 3, for approval.
 - Nobody left to add on a posting → `none left`.
 
@@ -200,44 +206,46 @@ final text quoted. Save reusable answers to `sources/profile.md` through `.claud
 waiting 3–5 seconds between page opens:
 
 - **Nudge or reply** (no attachment): send in the thread; confirm it appears there.
-- **Follow-up (b)**, or any text that says the resume is attached: type it in the thread
-  and leave it **unsent** in its own tab; list those tabs for Aly, who attaches the PDF and sends.
-  A follow-up that doesn't mention an attachment (e.g. links the posting) is sent directly.
+- **Follow-up (b)** (no attachment): send it directly in the thread; confirm it appears there.
+- **Free message (open profile)** to a new person: send their (b) as the free message; confirm it
+  appears in the thread.
 - **New connection request**: re-check any note is ≤200 characters in code; send the request;
   confirm it shows as pending.
-- **Existing connection message**: only with its approval; send (or type for Aly when it carries
-  the resume) in the thread.
-- After each confirmed send (or each message typed for Aly), write its action bullet immediately
+- **Existing connection message**: only with its approval; send in the thread.
+- Never InMail. Attach nothing, and never say a resume is attached.
+- After each confirmed send, write its action bullet immediately
   to that posting's `## Follow-up` (format in step 7), before the next item. A run that stops
   midway then never loses the record of a nudge already sent.
 - A send that fails or hits a warning: stop and tell Aly. No retries.
 
 ## 7. Log
 
-- **`outreach.md`**, `## Follow-up`, one action bullet per person handled (sends and typed
-  messages were already logged in step 6; add the rest):
+- **`outreach.md`**, `## Follow-up`, one action bullet per person handled (sends were
+  already logged in step 6; add the rest):
   `- <Name> | <date> | <state> | <action> | text:` + the quoted text if any. Actions:
-  `follow-up sent`, `nudge sent`, `reply sent`, `typed, Aly to send`, `invite sent` (a new
-  person, `with note` / `no note`), `message sent` (an existing connection), `replacement sent` /
+  `follow-up sent`, `nudge sent`, `reply sent`, `invite sent` (a new
+  person, `with note` / `no note`), `free message sent` (a new person, open profile), `message sent` (an existing connection), `replacement sent` /
   `none left` (the stale person), `none`.
   - A newly added person also gets a standard `## Sent` bullet
-    (`- <Name> | <profile URL> | <connection request with note | connection request (no note) | message (existing connection)> | <date> | text sent:` + quote).
+    (`- <Name> | <profile URL> | <free message (open profile) | connection request with note | connection request (no note) | message (existing connection)> | <date> | text sent:` + quote).
+  - `typed, Aly to send` is an old-log action only: parse it (see Dates and the `accepted` row),
+    never write it.
   - A reconciled send gets a `## Sent` bullet in the same format, with `(reconciled <date>)`
     after the channel.
 - **`applications.md`** (only writer this run). Rows: a plain dir → the row with that Posting dir;
   a `*-combined` dir → every row whose Posting dir, after `postings/`, starts with the same company
   prefix and whose dir name or req id is in the combined file's header.
-  - Status changes only from `applied`, `outreach-ready`, `outreach-sent`, `in-conversation`,
-    `no-response` or `closed`, checked in order: every contacted person `done` and at least one
+  - Status changes only from `applied`, `outreach-ready`, `outreach-sent`, `outreach-only-ready`,
+    `outreach-only-sent`, `in-conversation`, `no-response` or `closed`, checked in order: every contacted person `done` and at least one
     `done (closed)` → `closed`; every contacted person `done` with no reply → `no-response`; any
     person `replied`, or replied earlier in a conversation that is not closed → `in-conversation`;
     otherwise unchanged (a reconciled send or an acceptance only adds a Notes entry).
   - Unsubmitted rows (`resume`, `ready`, `blocked`, `held`, `skipped`) keep their status; the
     outcome goes in Notes only.
   - Every touched row gets a short note with the batch id.
-  - Safety net: if the legend line lacks `in-conversation`, update it to
-    ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`.``
-- **Manifest** Result column filled. Chat report: sent, typed for Aly (with tab list), skipped,
+  - Safety net: if the legend line lacks `outreach-only`, rewrite it to
+    ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
+- **Manifest** Result column filled. Chat report: sent, skipped,
   stopped-on-warning.
 
 ## Guardrails
