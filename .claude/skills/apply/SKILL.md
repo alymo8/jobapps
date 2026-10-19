@@ -56,8 +56,8 @@ for this specific application in this session.**
 6. **Stop for approval.** Show Aly a compact summary: role, company, resume filename, and the table
    from `application.md` (highlight `draft` and newly-answered rows), plus the full cover letter
    text verbatim if there is one. Update `applications.md` to
-   `ready`, unless the row is `outreach-only-ready` or `outreach-only-sent`: then keep that status
-   and add `form filled <date>, awaiting OK` to its Notes instead. Ask: "Submit? (ok / edits)".
+   `ready`, unless the row is `outreach-only-ready`, `outreach-only-sent`, `in-conversation`, `no-response` or `closed`: then keep that status and
+   add `form filled <date>, awaiting OK` to its Notes instead. Ask: "Submit? (ok / edits)".
 
 ## Phase 2: submit (on Aly's "ok" only)
 
@@ -74,7 +74,10 @@ for this specific application in this session.**
    failure or a skip, leave them open for Aly.
 5. Update the `applications.md` row with the date, mapping the status it had before this run:
    `outreach-only-ready` → `outreach-ready`, `outreach-only-sent` → `outreach-sent`, anything else
-   → `applied`. A declined or failed submit leaves the row unchanged. When you write the row and the
+   → `applied`, except that `in-conversation`, `no-response` and `closed` keep their status and get
+   `applied <date>` in Notes (a conversation outlives the application). A declined or failed submit
+   leaves the status unchanged; a `form filled <date>, awaiting OK` note becomes
+   `form filled <date>, not submitted`. When you write the row and the
    legend line lacks `outreach-only`, rewrite the legend line to:
    ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
    Report done.

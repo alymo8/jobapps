@@ -145,7 +145,7 @@ and up to **10 connection requests per run** in total:
   company (current employees), as in `/outreach` step 2: Aly's 1st-degree connections first, then
   recruiters for the posting's location and the likely hiring manager. Skip anyone already in any
   `outreach.md` (by profile URL). Check the current position. Append each person found to the
-  Shortlist table with `added <date>` in the why column, and their class.
+  Shortlist table (as a table row, above any `APPROVED <date>: outreach` line) with `added <date>` in the why column, and their class.
 - **What:** a **new** person whose profile's Message button offers a free message (Open Profile
   "Free message") gets their (b) as that free message. Otherwise a **new** person gets a
   connection request (never InMail: if LinkedIn would only offer InMail, send the connection

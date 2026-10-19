@@ -248,7 +248,9 @@ unclear → ask before recording.
 **Outreach-only mode:** skip the `application.md` `APPROVED <date>: submit` write. For each posting
 Aly did not skip, write `APPROVED <date>: outreach` as the last line of the `## Shortlist` section
 of `postings/<dir>/outreach.md`; Aly's reply without a `skip` for the posting is the go. Per-person
-`APPROVED <date>` marks for existing connections work as above. Postings Aly skips go to the dead-letter queue as `SKIPPED`
+`APPROVED <date>` marks for existing connections work as above. In outreach-only mode a posting Aly
+skips gets Stage `skipped` in the manifest and is not dead-lettered (declining messages must not
+keep it out of a later `/batch apply`). In other modes, postings Aly skips go to the dead-letter queue as `SKIPPED`
 (with Aly's reason, if given) so they aren't re-proposed next run; postings Aly defers ("not yet")
 get Stage `held` in the manifest instead.
 
@@ -291,11 +293,15 @@ accounts). Leave `batches/<id>/` in place.
 
 - **Outreach-only mode:** `outreach-only-ready` (an existing-connection message waits on Aly's OK)
   or `outreach-only-sent`; when the pre-run status was `applied` or `outreach-ready`, use
-  `outreach-ready` / `outreach-sent` instead.
-- **Prepare on an `outreach-only-*` row** (after stage 2): the status stays `outreach-only-*`; the
-  Notes cell gets `form filled <date>, awaiting OK`. A declined or failed submit leaves it unchanged.
+  `outreach-ready` / `outreach-sent` instead. When the pre-run status was `ready` (a form filled,
+  awaiting OK), add `form filled <date>, not submitted` to the Notes cell.
+- **Prepare on an already-messaged row** (pre-run `outreach-only-*`, `in-conversation`,
+  `no-response` or `closed`, after stage 2): the status stays; the Notes cell gets
+  `form filled <date>, awaiting OK`. A declined or failed submit leaves the status unchanged and
+  turns that note into `form filled <date>, not submitted`.
 - **Post-submit mapping** in `apply` mode and `outreach --apply`: pre-run `outreach-only-ready` →
-  `outreach-ready`, `outreach-only-sent` → `outreach-sent`; anything else → `applied`.
+  `outreach-ready`, `outreach-only-sent` → `outreach-sent`; pre-run `in-conversation`, `no-response`
+  or `closed` keep their status and get `applied <date>` in Notes; anything else → `applied`.
 - **Legend safety net:** when you write an `applications.md` row and the legend line lacks
   `outreach-only`, rewrite the legend line to:
   ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``

@@ -38,6 +38,8 @@ approves an existing-connection message; an approval of one message does not cov
      `posting.md` if new, as `/resume` does). If there is no compiled tailored resume in it, run
      `/resume` (build only; no form). The resume is the fact source for the messages and later
      follow-ups. Then check the posting's `applications.md` row:
+     - A Notes cell with `approval pending` is checked first and handled like an `*-ready` row
+       (next bullet), whatever the status.
      - `outreach-sent`, `outreach-only-sent`, `in-conversation`, `no-response` or `closed`: say so
        and stop unless Aly says to continue (people were already messaged; `/followup` handles
        them). On a continued run, never message anyone already under `## Sent` in `outreach.md`.
