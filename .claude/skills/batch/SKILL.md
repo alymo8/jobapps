@@ -1,6 +1,6 @@
 ---
 name: batch
-description: Run /resume, /apply or /outreach over many job postings at once (an Excel or CSV target list, a text file of URLs, or URLs), using subagents so the main context stays small; all submits and LinkedIn sends still wait for the user's approval, collected in one review sheet. Use when the user runs /batch or asks to do several postings at once.
+description: Run /resume, /apply or /outreach over many job postings at once (an Excel or CSV target list, a text file of URLs, or URLs), using subagents so the main context stays small; all submits and messages to the user's existing LinkedIn connections wait for the user's approval, collected in one review sheet (connection requests to new people go out without it). Use when the user runs /batch or asks to do several postings at once.
 argument-hint: resume|apply|outreach <file.xlsx|file.csv|file.txt|dlq.md|url ...> [--rows 1-20] [--new] [--limit N] [--all] [--reason BLOCKED] [--min-score N]
 ---
 
@@ -177,8 +177,8 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
    ask it. Reusable answers go to `sources/profile.md` through `.claude/skills/write-source.md` once the user answers.
 2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the score line from `score.md` (`<overall> | fit | pay | legit`, for a pay-floor miss `PAY-FLOOR | fit <f> | pay PAY-FLOOR | legit <tier>`; prefixed `override` when the posting came through a `--reason LOW-SCORE` retry or a `--min-score 0` URL override) and its real gaps, any contractor-wording note, the
    changelog's gaps and "please sanity-check" lines (one line each), `draft` free-text answers
-   verbatim, posting-specific ASKs, blockers. For outreach: the shortlist (name, title, location, why)
-   and each drafted message verbatim. For Workday postings: the tenant, the step the fill stopped on,
+   verbatim, posting-specific ASKs, blockers. For outreach: the shortlist (name, title, location, class, why)
+   and each drafted message verbatim, existing connections first. For Workday postings: the tenant, the step the fill stopped on,
    the consent checkbox label quoted (or "no consent checkbox"), and the "After approval" rows;
    their ASKs join item 1.
 3. **Dead-lettered in this run**: a short table (company, title, reason, needs), not mixed into
@@ -204,7 +204,9 @@ parts, in this order:
 2. One-off form questions.
 3. Drafted free-text answers to OK or edit, each pasted **in full, verbatim**: exactly the text that will go into the form. Never show a summary or a shorthand note. If `application.md` holds only a note for a free-text field, write the full answer first. A note in a free-text cell is not an approvable draft, and the execute subagent must never type a note into a form (Censys, 2026-10-04). Cover letters belong here too: the full `cover_letter.md` text, verbatim.
 4. Decisions: which applications to submit, blocked or odd postings, retries.
-5. LinkedIn picks per company: the suggested top 3 plus the other names; "ok" accepts the top 3.
+5. LinkedIn per company: **the names of the user's existing connections** to message, each with its message
+   verbatim to OK or edit; then the new people for information only (they get connection requests at
+   execute without approval; "skip <name>" drops one).
 
 **Apply `sources/profile.md` first:** never ask a question it already answers or has a standing rule for
 (salary from the posted range, sponsorship by role location, relocation, start date, EEO, and so

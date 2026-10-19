@@ -46,7 +46,9 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 ## Conventions
 
-- Never submit an application or send a LinkedIn message without the user's explicit OK.
+- Never submit an application without the user's explicit OK. On LinkedIn, messages to the user's existing
+  connections and replies need the user's OK (names shown first); requests and messages to new people
+  go out without it ([ADR 0005](knowledge/decisions/0005-linkedin-approval-only-for-existing-connections.md)).
 - Everything written about the user must be truth-checked against the source files above.
 - The repo holds only the setup (skills, tools, docs). Personal sources, `sources/`,
   `postings/`, `batches/`, `discovered/`, `archive/` and the trackers are local-only and gitignored;

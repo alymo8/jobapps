@@ -1,15 +1,25 @@
 ---
 name: outreach
-description: Apply to a job posting (/apply) and then message 1-3 relevant people at the company on LinkedIn (recruiter / hiring manager near the posting location) with the resume attached; every person and message is approved by the user before sending. Use when the user runs /outreach.
+description: Apply to a job posting (/apply) and then message people at the company on LinkedIn - the user's own 1st-degree connections there first, then recruiters / hiring managers near the posting location as new connection requests. Messages to the user's existing connections are approved by the user (names shown first); new connection requests and messages to people who are not the user's connections go out without approval. Use when the user runs /outreach.
 argument-hint: <posting URL> | <posting dir>
 ---
 
-# /outreach — /apply + LinkedIn messages, human-in-the-loop
+# /outreach — /apply + LinkedIn messages, connections first
 
 All paths are relative to `jobapps/`. Uses Chrome (load `claude-in-chrome` first); the user is logged in
-to LinkedIn and has Premium (InMail). **Nothing is sent to anyone until the user has approved both the
-person and the exact message text.** Keep volume low (at most 3 people per posting) — LinkedIn
-flags automated-looking activity, and the account is the user's.
+to LinkedIn. Keep volume low (at most 3 people per posting): LinkedIn flags automated-looking
+activity, and the account is the user's.
+
+## Approval rule
+
+| Person | Approval |
+|--------|----------|
+| **Existing connection**: 1st-degree when this run finds them (before any request from us) | **Required.** Show the user their **names** (plus title and why) and the exact message; send only after an explicit OK for that person and that text |
+| **Everyone else**: 2nd/3rd-degree, out of network, people the user does not follow | **Not required.** Send the connection request / message, then report it |
+
+A person stays in the class they had when first found: someone who accepts our request later is a
+*new* connection, not an existing one (see `/followup`). Silence or an ambiguous reply never
+approves an existing-connection message; an approval of one message does not cover another.
 
 ## Steps
 
@@ -17,55 +27,86 @@ flags automated-looking activity, and the account is the user's.
    already pulled them in this run.
 1. **Apply first.** Run the full `/apply` skill (both phases). If `applications.md` already shows
    this posting as `applied`, skip to step 2. If the user decides not to submit, stop here.
-2. **Find people** (LinkedIn search in a new tab; people search filtered to the company):
-   - Recruiter / talent acquisition / technical recruiter at the company, preferring ones covering
-     the posting's location or Canada/North America.
-   - Likely hiring manager: the eng/AI manager or lead for the team the posting describes, in the
-     posting's location (or the user's, Montreal) if the posting names several.
-   - Shortlist up to 5 candidates; for each: name, title, location, connection degree, profile URL,
-     and one line on why they fit. Check they still work at the company (current position).
-3. **Draft one message per person** (save all in `postings/<dir>/outreach.md`):
-   - InMail subject (≤ 60 chars) + body of 500–800 characters: role title and that the user applied, 1–2
-     concrete facts from the tailored resume that match the posting (from `sources/mega-resume.tex` only),
-     a low-friction ask (a short chat or forwarding to the hiring team), sign-off with name.
-   - Tailor to the reader: recruiter → fit + availability; hiring manager → the most relevant work.
+2. **Find people** (LinkedIn people search in a new tab, filtered to the company's current
+   employees). Check each one still works there (current position).
+   1. **the user's connections first**: the same search with the Connections filter set to `1st`. Every
+      1st-degree connection at the company is a candidate, whatever their role (anyone inside can
+      refer or forward); rank engineers / managers on the posting's team, then recruiters, then
+      the rest.
+   2. **Then new people**: recruiter / talent acquisition / technical recruiter at the company,
+      preferring ones covering the posting's location or Canada/North America; and the likely
+      hiring manager (the eng/AI manager or lead for the team the posting describes, in the
+      posting's location, or the user's (Montreal) if the posting names several).
+   - Write the shortlist (`## Shortlist` table in `postings/<dir>/outreach.md`): name, title,
+     location, connection degree, **class** (`existing connection` / `new`), profile URL, and one
+     line on why they fit. Up to 5 candidates, existing connections at the top.
+   - Pick up to 3 to contact: existing connections first (up to 3), then fill the remaining slots
+     with new people.
+3. **Draft one message per picked person** (save all in `outreach.md`):
+   - **Existing connection** → a direct message, 400–800 characters: friendly and personal (they
+     know the user), role title and that the user applied, 1–2 concrete facts from the tailored resume that
+     match the posting (from `sources/mega-resume.tex` only), and the ask: a referral, forwarding
+     to the hiring team, or a short chat.
+   - **New person** → (a) a connection note ≤ 200 characters (role, that the user applied, one fact),
+     length checked in code by piping it on stdin into
+     `python -c "import sys; print(len(sys.stdin.read().rstrip(chr(10))))"`; and (b) the follow-up
+     message for after acceptance, 500–800 characters, same content rules as above, tailored to the
+     reader: recruiter → fit + availability; hiring manager → the most relevant work. With Premium
+     InMail credits, (b) can go now as an InMail with a subject ≤ 60 chars instead of (a).
    - No flattery filler, no claims beyond the resume.
-4. **Approval gate (HITL).** Show the user the shortlist and, for each proposed person, the exact
-   subject + message. Wait. the user picks who (up to 3) and approves or edits each message. Do not
-   proceed on silence or an ambiguous reply; an approval of one message does not cover another.
-5. **Send**, one approved person at a time:
-   - 1st-degree connection: regular message with the resume PDF attached.
-   - Otherwise: InMail (Message button on the profile, Premium) with the resume PDF attached.
-   - Known (2026-10-04): the LinkedIn message composer is in a cross-origin iframe, so `file_upload` cannot attach there. For 1st-degree messages with the resume, the user prefers this: type the approved text, leave it unsent in its own tab, and let the user attach the PDF and send. Connection requests need no attachment, so keep sending them.
-   - If attaching isn't possible in that flow, tell the user before sending and ask whether to send
-     without it (with the posting link) or skip.
-   - After sending, confirm the message appears in the sent thread with the attachment.
+4. **Approval gate, existing connections only.** Before anything is sent, show the user in chat:
+   - A line naming them: `Your connections at <company> I'd message: <Name>, <Name>.`
+   - For each: title, why, and the exact message text.
+   - Then the new people (name, title, channel, the note), for information only: they are sent in
+     step 5 without waiting for an answer.
+
+   Wait for the user on the existing connections only: the user picks who and OKs or edits each text. If there
+   are no existing connections at the company, say so in one line and go on.
+5. **Send**, one person at a time, waiting 3–5 seconds between page opens:
+   - **New person**: send the connection request with note (a) right away, no approval needed;
+     confirm it shows as pending. Notes are budgeted (below); past the budget send the request
+     **without a note**, and (b) goes later through `/followup` once they accept.
+   - **Existing connection**: only after the OK, the approved text verbatim as a regular message
+     with the resume PDF attached.
+   - Known (2026-10-04): the LinkedIn message composer is in a cross-origin iframe, so
+     `file_upload` cannot attach there. For a message that should carry the resume, type the text,
+     leave it unsent in its own tab, and list the tabs for the user to attach the PDF and send. A
+     message that doesn't say the resume is attached can be sent directly.
+   - A CAPTCHA, rate limit, "restricted activity" warning or failed send: stop and tell the user. No
+     retries.
 6. **Log** each send in `postings/<dir>/outreach.md` under `## Sent`, one bullet per send in exactly
    this format (the `/followup` skill parses it):
    `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the text sent as a
-   `>` quote on the next line(s). Set the `applications.md` row to `outreach-sent` (or
-   `outreach-ready` if waiting on the user). Later follow-ups (accepted connections, nudges, replies)
-   are handled by `/followup`.
+   `>` quote on the next line(s). Channel is one of `message (existing connection)`,
+   `connection request with note`, `connection request (no note)`, `InMail`; a message typed for
+   the user gets `typed, the user to send` after the channel. Set the `applications.md` row to
+   `outreach-sent` (or `outreach-ready` if an existing-connection message is waiting on the user).
+   End with a chat report: who was messaged (by name, existing connections marked), requests sent,
+   tabs waiting for the user. Later follow-ups are handled by `/followup`.
 
-## InMail credits
+## Invitation and InMail budget
 
-Premium includes a limited number of InMail credits per month. Before drafting InMails, check the
-remaining credits (LinkedIn shows them in the InMail compose window or Premium page) and note the
-count in `outreach.md`. If there are fewer credits than proposed InMails, say so at the approval
-gate and offer the fallback: a connection request with a note (≤ 200 characters: the free-account limit, measured in code; 300 only with active Premium; no attachment,
-posting link only if it fits; the follow-up carries it), drafted and approved like any other message. A free account also gets only about 3 personalized invitations per month (seen 2026-10-04), so ask the user how to prioritize before sending more than that.
+A free account gets about 3 personalized invitations (with a note) per month (seen 2026-10-04);
+requests without a note are not capped that way, but LinkedIn limits them weekly, so send at most
+10 connection requests per run across all postings. Count notes already sent this calendar month
+across all `outreach.md` (`## Sent` channel `connection request with note`, plus `## Follow-up`
+action `invite sent` with a note). Give the notes left to the most relevant new people (hiring
+manager before recruiter); the rest go without a note. With Premium, check the remaining InMail
+credits first and note the count in `outreach.md`.
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the orchestrator has already pulled the sources), then run `/apply`
-Phase 1 under its batch rules, then steps 2–3 in your own tab, **send nothing, submit nothing,
-connect with no one**. End with: posting dir, `ASK` count, blockers, and the `outreach.md` path.
+When the prompt says you are a batch subagent (orchestrated by the `batch` skill): skip step 0 (the
+orchestrator has already pulled the sources), then run `/apply` Phase 1 under its batch rules, then
+steps 2–3 in your own tab, **send nothing, submit nothing, connect with no one** (parallel
+subagents must not act on the user's account at once). End with: posting dir, `ASK` count, blockers,
+the `outreach.md` path, and the names of any existing connections found.
 
 ## Batch execute mode
 
-Run only on items marked `APPROVED <date>` in `postings/<dir>/`: first the application (`/apply`
-batch execute mode) if approved and not yet `applied`, then step 5 for each approved person, with
-the approved text **verbatim**, then log to `outreach.md` only (the orchestrator owns
-`applications.md`; never write it in batch). Never message a person or send text that isn't marked
-approved. Anything needing the user (attachment impossible, out of InMail credits, CAPTCHA) → stop and
-reply `NEEDS USER: ...`.
+Run on `postings/<dir>/`: first the application (`/apply` batch execute mode) if approved and not
+yet `applied`; then step 5 for each **new** person in the shortlist's picks not marked skipped (no approval mark
+needed) and for each **existing connection** marked `APPROVED <date>`, with the text **verbatim**;
+then log to `outreach.md` only (the orchestrator owns `applications.md`; never write it in batch).
+Never message an existing connection without an approval mark. Anything needing the user (attachment
+impossible, budget exhausted, CAPTCHA) → stop and reply `NEEDS USER: ...`.
