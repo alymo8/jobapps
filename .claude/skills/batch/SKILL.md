@@ -286,7 +286,7 @@ dead-lettered by reason (counts + posting numbers), the manifest path, and the r
 anything retryable (`/batch <mode> dlq.md`, or `--reason BLOCKED` once Aly has e.g. created the
 accounts). Leave `batches/<id>/` in place.
 
-**`applications.md` statuses** follow the spec's "Statuses" and use each posting's pre-run status
+**`applications.md` statuses** use each posting's pre-run status
 (step 0.2):
 
 - **Outreach-only mode:** `outreach-only-ready` (an existing-connection message waits on Aly's OK)
