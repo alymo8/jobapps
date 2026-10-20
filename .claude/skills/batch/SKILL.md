@@ -21,7 +21,7 @@ default. Pick by how much judgment the step needs:
 | 1a.5 | Fit, pay and legitimacy score (`scoring.md`) | `sonnet` | judgment, but no writing |
 | 1b | Resume tailoring | `opus` | truthfulness, content selection, page fit |
 | 2 | Form fill + drafted free-text answers | `sonnet` | multi-step Chrome work, React selects |
-| 2 | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
+| 2b | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
 | 5 | Submit an approved application | `haiku` | answers fixed; re-fill, verify, click |
 | 5 | Send an approved LinkedIn message | `haiku` | verbatim text, send |
 
@@ -159,7 +159,9 @@ to the dead-letter queue** and drops out of the later stages.
 
 ## 2. Prepare stage (apply / outreach) — Chrome, at most 2 subagents at a time
 
-All subagents share the user's one Chrome window, so **never more than 2** run at once. Never run two postings of the same Workday tenant at once
+All subagents share the user's one Chrome window, so **never more than 2** run at once. This stage
+never opens LinkedIn: LinkedIn work is stage 2b, one posting at a time. In outreach-only mode there
+is no stage 2 (no form); go to stage 2b. Never run two postings of the same Workday tenant at once
 (shared session and candidate profile); queue the second. For each posting
 with an ok resume, launch a background `general-purpose` subagent with `model: sonnet` (a failed
 fill escalates to `opus`):
@@ -172,14 +174,35 @@ fill escalates to `opus`):
 > never touch, navigate or close other tabs. Never click Submit/Send/Connect. Do not ask the user
 > anything. Final reply, at most 5 lines: posting dir, tab id and URL, number of ASK fields, blockers
 > (e.g. needs an account login (non-Workday), NO-WORKDAY-LOGIN <tenant> <workday url>, CAPTCHA before the form, closed), outreach drafts path if any.
-> <outreach mode only: the mode line, `Mode: outreach only (no application)` or `Mode: outreach + apply`>
-> <outreach + apply only, for a posting whose pre-run status is `outreach-only-*`, `in-conversation`, `no-response` or `closed`: `Application only`>
+> <outreach + apply only: the lines `Mode: outreach + apply` and `Application only`>
 
-In outreach mode the prompt carries the mode line. In outreach-only mode the subagent skips `/apply`
-and only searches LinkedIn and drafts messages; there is no form, so no ASK fields or form
-blockers. With `--apply`, a posting whose pre-run status is `outreach-only-*`, `in-conversation`,
-`no-response` or `closed` gets the application part only (`/apply` Phase 1, no LinkedIn search or
-drafts): its prompt carries the extra line `Application only`.
+With `--apply` the prompt carries the mode line `Mode: outreach + apply` and always the extra line
+`Application only` (`/apply` Phase 1, no LinkedIn search or drafts). A posting whose pre-run status
+is `outreach-only-*`, `in-conversation`, `no-response` or `closed` gets only this part: it skips
+stage 2b.
+
+## 2b. LinkedIn stage (outreach) — one subagent at a time
+
+A LinkedIn tab is heavy and grows with use; several at once crashed the user's 16 GB laptop
+([ADR 0007](../../../knowledge/decisions/0007-light-linkedin-runs.md)). So exactly **one** LinkedIn
+subagent runs at a time; the next starts only after the previous one has reported (its tab is
+closed by then). It may run while stage 2 form fills are still going (at most 2 form tabs + 1
+LinkedIn tab). Run it for each outreach posting with an ok resume that is not dead-lettered and not
+application-only, with `model: sonnet`:
+
+> You are a batch subagent for the `outreach` skill in `C:\Users\<user>\Desktop\Github\jobapps`.
+> Read `.claude/skills/outreach/SKILL.md` and follow its "Running as a batch subagent" section for
+> posting dir `postings/<dir>` (URL <url>). The resume is already built; the sources in `sources/`
+> are already pulled. Load the `claude-in-chrome` skill first, then follow
+> `.claude/skills/linkedin-tab.md`: one LinkedIn tab of your own, recycled every 8 page opens,
+> closed when you finish. Never touch other tabs. Never click Send/Connect. Do not ask the user
+> anything. Final reply, at most 5 lines: posting dir, outreach drafts path, existing connections
+> found (names), blockers.
+> <the mode line, `Mode: outreach only (no application)` or `Mode: outreach + apply`>
+> <outreach + apply only: `LinkedIn only`>
+
+A CAPTCHA or restriction warning here stops stage 2b for every remaining posting (no more LinkedIn
+subagents this run); say so in the review.
 
 Blockers (needs an account login/sign-up (non-Workday), NO-WORKDAY-LOGIN / NO-WORKDAY-HISTORY from a Workday posting, CAPTCHA before the form, unsupported site) go to the
 dead-letter queue as `BLOCKED` with what would unblock them; a form fill that fails at `sonnet`
@@ -254,7 +277,10 @@ keep it out of a later `/batch apply`). In other modes, postings the user skips 
 (with the user's reason, if given) so they aren't re-proposed next run; postings the user defers ("not yet")
 get Stage `held` in the manifest instead.
 
-## 5. Execute stage — Chrome, at most 2 subagents at a time
+## 5. Execute stage — Chrome, at most 2 subagents at a time (1 in `outreach` mode)
+
+In `outreach` mode each execute subagent may send on LinkedIn, so they run **one at a time**
+(stage 2b's rule); `apply` mode keeps 2.
 
 Only for postings with a recorded approval (an `APPROVED <date>: outreach` mark in `outreach.md`
 counts, so a posting with only new people still reaches execute). Same-tenant Workday postings run one at a time, as in stage 2. Launch with `model: haiku`; a failed submit or send
@@ -262,7 +288,8 @@ counts, so a posting with only new people still reaches execute). Same-tenant Wo
 
 > You are a batch execute subagent in `C:\Users\<user>\Desktop\Github\jobapps`. Read
 > `.claude/skills/<apply|outreach>/SKILL.md`, section "Batch execute mode", and run it for
-> `postings/<dir>`. Act only on items marked `APPROVED` in that folder's files. Own tab only.
+> `postings/<dir>`. Act only on items marked `APPROVED` in that folder's files. Own tab only;
+> LinkedIn work follows `.claude/skills/linkedin-tab.md` (one tab, closed when you finish).
 > The sources in `sources/` are already pulled; don't pull them again.
 > If you hit a CAPTCHA, an email verification code, or anything needing the user, stop and reply
 > `NEEDS USER: <what, which tab>`. Final reply, at most 5 lines: what was submitted/sent, and proof

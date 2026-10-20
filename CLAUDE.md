@@ -49,6 +49,8 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - Never submit an application without the user's explicit OK. On LinkedIn, messages to the user's existing
   connections and replies need the user's OK (names shown first); requests and messages to new people
   go out without it ([ADR 0005](knowledge/decisions/0005-linkedin-approval-only-for-existing-connections.md)).
+- LinkedIn runs use one tab at a time, recycled every 8 page opens (`.claude/skills/linkedin-tab.md`,
+  [ADR 0007](knowledge/decisions/0007-light-linkedin-runs.md)); `/batch` does LinkedIn work one posting at a time.
 - Everything written about the user must be truth-checked against the source files above.
 - The repo holds only the setup (skills, tools, docs). Personal sources, `sources/`,
   `postings/`, `batches/`, `discovered/`, `archive/` and the trackers are local-only and gitignored;
