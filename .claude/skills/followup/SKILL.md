@@ -6,8 +6,9 @@ argument-hint: "[<posting dir | company> ...] [--dry-run]"
 
 # /followup — re-engage earlier outreach contacts and add new ones
 
-All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one Chrome
-tab of its own**: load `claude-in-chrome` first, create a new tab, never touch other tabs. Aly is
+All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one LinkedIn
+tab of its own**, per `.claude/skills/linkedin-tab.md`: load `claude-in-chrome` first, open pages
+by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. Aly is
 logged in to LinkedIn on a free account (no InMail; about 3 personalized invitations a month;
 invitation notes ≤200 characters).
 
@@ -87,7 +88,8 @@ date (`done (no-response)` after ≥3 business days with no reply, else `waiting
 ## 2. LinkedIn sweep
 
 If more than 40 people have records, ask Aly to confirm or narrow first. Wait 3–5 seconds
-between page opens (browser wait action).
+between page opens (browser wait action), and count page opens for the tab recycling in
+`.claude/skills/linkedin-tab.md`.
 
 1. **Sent invitations** (My Network → Manage → Sent), one pass: who is pending and since when.
    Record the total count in the manifest header (`Sent invitations at start: N`).
@@ -245,7 +247,7 @@ waiting 3–5 seconds between page opens:
   - Every touched row gets a short note with the batch id.
   - Safety net: if the legend line lacks `outreach-only`, rewrite it to
     ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
-- **Manifest** Result column filled. Chat report: sent, skipped,
+- **Manifest** Result column filled. Close the LinkedIn tab. Chat report: sent, skipped,
   stopped-on-warning.
 
 ## Guardrails

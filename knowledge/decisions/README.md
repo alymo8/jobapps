@@ -12,3 +12,4 @@ the next number for a new one, never deleted, superseded instead. Template:
 | [0004](0004-job-shortlist-artifact-decisions.md) | The shortlist artifact's decisions collection | accepted | 2026-10-18 |
 | [0005](0005-linkedin-approval-only-for-existing-connections.md) | LinkedIn approval only for existing connections | accepted | 2026-10-19 |
 | [0006](0006-outreach-separate-from-apply.md) | Outreach separate from apply | accepted | 2026-10-19 |
+| [0007](0007-light-linkedin-runs.md) | Light LinkedIn runs: one tab at a time | accepted | 2026-10-19 |

@@ -8,7 +8,8 @@ argument-hint: <posting URL> | <posting dir> [--apply]
 
 All paths are relative to `jobapps/`. Uses Chrome (load `claude-in-chrome` first); Aly is logged in
 to LinkedIn. Keep volume low (at most 3 people per posting): LinkedIn flags automated-looking
-activity, and the account is Aly's.
+activity, and the account is Aly's. All LinkedIn work happens in one tab, per
+`.claude/skills/linkedin-tab.md` (direct URLs, recycled every 8 page opens, closed at the end).
 
 ## Apply or not
 
@@ -56,8 +57,8 @@ approves an existing-connection message; an approval of one message does not cov
      - `outreach-ready` or `outreach-sent` (applied and messaged): skip `/apply` (no reapply) and
        follow the no-`--apply` rules above: stop on `outreach-sent`, resume the pending approval on
        `outreach-ready`.
-2. **Find people** (LinkedIn people search in a new tab, filtered to the company's current
-   employees). Check each one still works there (current position).
+2. **Find people** (LinkedIn people search in the run's LinkedIn tab, filtered to the company's
+   current employees). Check each one still works there (current position).
    1. **Aly's connections first**: the same search with the Connections filter set to `1st`. Every
       1st-degree connection at the company is a candidate, whatever their role (anyone inside can
       refer or forward); rank engineers / managers on the posting's team, then recruiters, then
@@ -94,7 +95,8 @@ approves an existing-connection message; an approval of one message does not cov
 
    Wait for Aly on the existing connections only: Aly picks who and OKs or edits each text. If there
    are no existing connections at the company, say so in one line and go on.
-5. **Send**, one person at a time, waiting 3–5 seconds between page opens. Never send to anyone
+5. **Send**, one person at a time, waiting 3–5 seconds between page opens (in the one tab, per
+   `.claude/skills/linkedin-tab.md`). Never send to anyone
    already under `## Sent` in `outreach.md`.
    - **New person**, no approval needed: if the profile's Message button offers a free message
      (Open Profile "Free message"), send the follow-up (b) as that message. Otherwise send the
@@ -130,7 +132,7 @@ approves an existing-connection message; an approval of one message does not cov
      the legend line to:
      ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
 
-   End with a chat report: who was messaged (by name, existing connections marked), requests and
+   Close the LinkedIn tab. End with a chat report: who was messaged (by name, existing connections marked), requests and
    free messages sent, and, if the run did not apply, that `/apply <posting>` is available. Later
    follow-ups are handled by `/followup`.
 
@@ -152,7 +154,10 @@ orchestrator has already pulled the sources). The prompt's mode line decides the
   steps 2–3 in your own tab.
 - `Mode: outreach + apply`: run `/apply` Phase 1 under its batch rules, then steps 2–3 in your own
   tab. When the prompt also carries the line `Application only`, run `/apply` Phase 1 only and skip
-  steps 2–3.
+  steps 2–3; with the line `LinkedIn only`, skip `/apply` and run steps 2–3 only.
+
+Steps 2–3 use one LinkedIn tab of your own per `.claude/skills/linkedin-tab.md`, closed at the end;
+`Application only` never opens LinkedIn.
 
 In both modes **send nothing, submit nothing, connect with no one** (parallel subagents must not act
 on Aly's account at once). End with: posting dir, `ASK` count, blockers, the `outreach.md` path, and
@@ -168,7 +173,8 @@ Run on `postings/<dir>/`:
   entirely.
 - **Messages** (both modes, unless `Application only`): step 5 for each **new** person in the shortlist's picks not marked skipped
   (no approval mark needed) and for each **existing connection** marked `APPROVED <date>`, with the
-  text **verbatim**. Never send to anyone already listed under `## Sent` in `outreach.md`.
+  text **verbatim**, in one LinkedIn tab per `.claude/skills/linkedin-tab.md`, closed at the end.
+  Never send to anyone already listed under `## Sent` in `outreach.md`.
 
 Then log to `outreach.md` only (the orchestrator owns `applications.md`; never write it in batch).
 Never message an existing connection without an approval mark. Anything needing Aly (budget
