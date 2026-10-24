@@ -98,12 +98,15 @@ approves an existing-connection message; an approval of one message does not cov
 5. **Send**, one person at a time, waiting 3–5 seconds between page opens (in the one tab, per
    `.claude/skills/linkedin-tab.md`). Never send to anyone
    already under `## Sent` in `outreach.md`.
-   - **New person**, no approval needed: if the profile's Message button offers a free message
-     (Open Profile "Free message"), send the follow-up (b) as that message. Otherwise send the
+   - Before the first send, check Aly's plan (Premium or free), and for each new person read their
+     message composer, both per "Aly's plan and each person's message route" in
+     `.claude/skills/linkedin-tab.md`.
+   - **New person**, no approval needed: if their composer says "Free message" (Open Profile),
+     send the follow-up (b) as that message. Otherwise send the
      connection request with note (a) right away and confirm it shows as pending. Notes are
      budgeted (below); past the budget send the request **without a note**, and (b) goes later
-     through `/followup` once they accept. Never InMail: if LinkedIn would only offer InMail, send
-     the connection request instead.
+     through `/followup` once they accept. No InMail unless Aly OKs that person and text in chat:
+     if the composer shows InMail credits, send the connection request instead.
    - **Existing connection**: only after the OK, the approved text verbatim as a regular message,
      sent directly. No attachment.
    - A CAPTCHA, rate limit, "restricted activity" warning or failed send: stop and tell Aly. No
@@ -138,8 +141,10 @@ approves an existing-connection message; an approval of one message does not cov
 
 ## Invitation budget
 
-A free account gets about 3 personalized invitations (with a note) per month (seen 2026-10-04);
-requests without a note are not capped that way, but LinkedIn limits them weekly, so send at most
+With Premium (checked per `.claude/skills/linkedin-tab.md`) notes are unlimited: every request
+carries its note. A free account gets about 3 personalized invitations (with a note) per month
+(seen 2026-10-04); the rest of this section applies to a free account only. Requests without a
+note are not capped that way, but LinkedIn limits them weekly, so on either plan send at most
 10 connection requests per run across all postings. Count notes already sent this calendar month
 across all `outreach.md` (`## Sent` channel `connection request with note`, plus `## Follow-up`
 action `invite sent` with a note). Give the notes left to the most relevant new people (hiring

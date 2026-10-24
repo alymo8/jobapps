@@ -9,8 +9,9 @@ argument-hint: "[<posting dir | company> ...] [--dry-run]"
 All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one LinkedIn
 tab of its own**, per `.claude/skills/linkedin-tab.md`: load `claude-in-chrome` first, open pages
 by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. Aly is
-logged in to LinkedIn on a free account (no InMail; about 3 personalized invitations a month;
-invitation notes ≤200 characters).
+logged in to LinkedIn; check whether his plan is Premium or free before the first send, per
+"Aly's plan and each person's message route" in `.claude/skills/linkedin-tab.md` (free: about 3
+personalized invitations a month; Premium: unlimited notes). Invitation notes stay ≤200 characters.
 
 ## Approval rule
 
@@ -148,10 +149,11 @@ and up to **10 connection requests per run** in total:
   recruiters for the posting's location and the likely hiring manager. Skip anyone already in any
   `outreach.md` (by profile URL). Check the current position. Append each person found to the
   Shortlist table (as a table row, above any `APPROVED <date>: outreach` line) with `added <date>` in the why column, and their class.
-- **What:** a **new** person whose profile's Message button offers a free message (Open Profile
-  "Free message") gets their (b) as that free message. Otherwise a **new** person gets a
-  connection request (never InMail: if LinkedIn would only offer InMail, send the connection
-  request instead); with a note while the budget lasts (their
+- **What:** a **new** person whose message composer says "Free message" (Open Profile; read the
+  composer for every new person, per `.claude/skills/linkedin-tab.md`) gets their (b) as that free
+  message. Otherwise a **new** person gets a
+  connection request (no InMail unless Aly OKs that person and text: if the composer shows InMail
+  credits, send the connection request instead); with a note while the budget lasts (their
   "Short notes (200-char limit)" entry, else a new note ≤200 characters condensed from their (a),
   else written from the posting's drafts and tailored resume), otherwise without a note. Length
   checked by piping the note on stdin into
@@ -163,7 +165,8 @@ and up to **10 connection requests per run** in total:
 **Note budget:** count connection requests with a note dated this calendar month across all
 `outreach.md` (`## Sent` channel `connection request with note`, or a channel containing
 `connection request` with no `(no note)`, plus `## Follow-up` action `invite sent` with a note).
-Notes left = max(0, 3 − count); give them to hiring managers before recruiters. Requests beyond it
+On Premium every request carries its note and this count is shown for information only. On a free
+account, notes left = max(0, 3 − count); give them to hiring managers before recruiters. Requests beyond it
 go without a note.
 
 ## 4. Review sheet
@@ -214,7 +217,7 @@ waiting 3–5 seconds between page opens:
 - **New connection request**: re-check any note is ≤200 characters in code; send the request;
   confirm it shows as pending.
 - **Existing connection message**: only with its approval; send in the thread.
-- Never InMail. Attach nothing, and never say a resume is attached.
+- No InMail unless Aly OKs that person and text in chat. Attach nothing, and never say a resume is attached.
 - After each confirmed send, write its action bullet immediately
   to that posting's `## Follow-up` (format in step 7), before the next item. A run that stops
   midway then never loses the record of a nudge already sent.
