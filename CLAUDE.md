@@ -70,6 +70,9 @@ python -m py_compile tools/*.py                                  # CI runs this 
   batch, followup); change a status rule or the legend in all four, byte-identical.
 - `tests/fixtures/decision_keys.py` is a pinned copy of the shortlist artifact's keys file (`-text` in
   `.gitattributes`); refreshing it also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
+- LinkedIn's profile Connect button sometimes opens no dialog (or freezes the tab); open
+  `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>` instead, which shows the
+  invite dialog directly. When a profile's Message button opens nothing, use Messaging → New message.
 - `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
   `shortlist.py` treats a missing directory as no decisions.
 
