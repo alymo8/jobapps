@@ -20,14 +20,14 @@ this across all earlier postings in one pass, with every outgoing message approv
   counts as (a), and a "Follow-up message" or InMail Body counts as (b).
   The log formats vary today: most bullets are
   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the quoted text,
-  some (a company, a company, a company) have no `text sent:` field, and a company has a prose preamble
+  some (three postings) have no `text sent:` field, and a company has a prose preamble
   with the text quoted inline. `outreach/SKILL.md` step 6 lists the fields but not a format.
 - Premium has lapsed, so most contacts were made by connection request with a note. A free account
   gets about 3 personalized invitations per month.
 - The LinkedIn message composer is a cross-origin iframe: Claude cannot attach the resume PDF.
   Messages that need the resume are typed and left unsent in their own tab for the user to attach and send.
 - The user sent some messages by hand, so some contacts are not in any `## Sent` log
-  (e.g. a company, a company: drafts in `outreach.md`, no `## Sent` section, status `applied`).
+  (e.g. two postings: drafts in `outreach.md`, no `## Sent` section, status `applied`).
 - Some `outreach.md` files cover several postings (`<Company>-combined`, `<Company>-combined`);
   their `applications.md` rows point to the individual posting dirs. `<Company>-combined` names those
   dirs in its header; `<Company>-combined` names only the req ids (<req-id>, <req-id>).
@@ -212,8 +212,7 @@ Confirmed by the user on 2026-10-04:
 
 ## Success criteria
 
-1. **Dry run on real data:** `/followup --dry-run` over the current postings (a company, a company, a company,
-   a company, a company, Block, a company and any others with sends).
+1. **Dry run on real data:** `/followup --dry-run` over the current postings with sends
    - Every person in a `## Sent` log, plus any found by reconciliation, appears in `manifest.md`
      with exactly one state.
    - Each person gets the state the step 3 table gives for the run date, and the manifest shows
@@ -224,8 +223,8 @@ Confirmed by the user on 2026-10-04:
      are under `batches/<id>-followup/`.
 2. **Classifier table check:** the verifier works these synthetic cases out by hand against the step 3
    rules and records them in the verification notes; the skill does not produce them (logged sends
-   are dated 2026-10-04; hand-sent contacts found by reconciliation, e.g. a company's Lou (September)
-   and Crystal (pending before 2026-10-04), may reach other states in the criterion-1 run and are
+   are dated 2026-10-04; hand-sent contacts found by reconciliation, e.g. one contact (messaged in September)
+   and another (pending before 2026-10-04), may reach other states in the criterion-1 run and are
    checked against the step 3 table with their LinkedIn dates): Thu (b) message sent → Tue check = 3
    business days → `silent`; Fri send → Mon check = 1 → `waiting`; invite pending 10 days →
    `stale-pending`; nudged + 3 business days → `done`; inbound newer than outbound → `replied`, even

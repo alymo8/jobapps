@@ -6,7 +6,7 @@
 ## Context
 
 `/outreach` and `/followup` assumed a free LinkedIn account and treated any 2nd-degree "Message"
-button as InMail, so new people got connection requests. In a a company outreach run, a recruiter
+button as InMail, so new people got connection requests. In one company's outreach run, a recruiter
 was offered to the user as an InMail when his composer had never opened; the user checked and the message
 was free. Open Profile is a feature of the *recipient's* Premium: anyone can message an Open Profile
 member for free, whatever the sender's plan or degree. Separately, the user's own plan had changed to

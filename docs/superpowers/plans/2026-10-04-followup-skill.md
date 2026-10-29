@@ -20,7 +20,7 @@
   - **Draft labels:** (a) is a connection note and (b) is a follow-up to send after acceptance. In older files, a company has "Connection note" plus "Follow-up message", and a company has an InMail "Subject/Body" plus "Connection note (fallback)". "Connection note" / "Connection note (fallback)" count as (a); "Follow-up message" / InMail Body count as (b).
   - **`## Sent` bullet variants:**
     - `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by `  > quoted text` (e.g. `postings/<Company>-<id>/outreach.md`);
-    - the same pipe bullet with no `text sent:` field, followed by an indented `>` quote (a company, a company, a company);
+    - the same pipe bullet with no `text sent:` field, followed by an indented `>` quote (three postings);
     - a pipe bullet whose fifth field is the sent text in double quotes, preceded by a prose line giving the channel (a company).
 - `*-combined` dirs (`postings/<Company>-combined`) hold the outreach for several postings. Their `applications.md` rows point to the individual dirs. `<Company>-combined`'s header names the dirs; `<Company>-combined`'s header names only req ids (`<req-id>`, `<req-id>`).
 - `applications.md` is a table `| Date | Company | Role | Location | Posting dir | Status | Notes |`. Its legend line (line 4) currently reads:
@@ -494,7 +494,7 @@ For every person in every `postings/*/outreach.md` `## Sent` log, plus every `(r
 - They appear in `manifest.md` with exactly one state.
 - That state is the one the step 3 table gives for today's date, using the Days and Last out/in columns.
   - People logged on 2026-10-04 get whichever state the step 3 table gives on the run date (e.g. `stale-pending` from 2026-10-14 for invitations still pending, `silent` from 2026-10-07 for unanswered direct messages).
-  - Reconciled a company contacts (Lou, messaged in September; Crystal, pending before 2026-10-04) may be `silent`, `stale-pending` or `done`. Check them with their LinkedIn dates.
+  - Reconciled contacts (one messaged in September, another pending before 2026-10-04) may be `silent`, `stale-pending` or `done`. Check them with their LinkedIn dates.
 
 List any mismatch as a defect.
 
