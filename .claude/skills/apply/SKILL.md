@@ -35,7 +35,7 @@ for this specific application in this session.**
    - Cover letter: **whenever the form offers one, optional or required**, run the `cover-letter`
      skill (`postings/<dir>/cover_letter.md`; reuse it if it exists). Paste the text into the cover
      letter text box when there is one (Greenhouse: "Enter manually"); if the form only takes a file,
-     run it with `--pdf` and upload `the user_Cover_Letter_<Company>.pdf`. Row in
+     run it with `--pdf` and upload `<Full_Name>_Cover_Letter_<Company>.pdf` (the name `tools/build_cover_letter.py` prints as `pdf`). Row in
      `application.md`: `Cover letter | pasted text / <pdf name> | cover_letter.md, **draft**`.
    - "Why this company/role" free text: draft 2–4 sentences from the posting + mega resume facts,
      mark `draft` so the user sees it.
@@ -113,7 +113,7 @@ report: posting dir, number of `ASK` fields, blockers. **Never submit in a batch
 
 Run only when `application.md` contains `APPROVED <date>: submit`. Open the application in your own
 new tab (the earlier tab may be gone), fill it from the `application.md` table (which now holds
-the user's answers and edits, no `ASK` left; if one is left, stop and report it), upload the resume,
+The user's answers and edits, no `ASK` left; if one is left, stop and report it), upload the resume,
 paste or upload the cover letter from `cover_letter.md` (approved text, verbatim) if the table has one,
 re-verify every field, then run Phase 2 steps 2–4 (step 4 closes only the tabs this execute run
 opened; the orchestrator closes the prepare tab and updates `applications.md`; never write it in batch). CAPTCHA or email code → stop and reply

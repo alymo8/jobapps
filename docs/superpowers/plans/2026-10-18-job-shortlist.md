@@ -15,7 +15,7 @@
 
 ## Global Constraints
 
-- Artifact URL `https://claude.ai/artifact/<artifact-id>`, collection `decisions`, pending file `~/.job-shortlist/pending-decisions.jsonl`, keys cache `~/.job-shortlist/decision_keys.py` (spec, Design "Constants").
+- Artifact URL (kept in `config.local.json`), collection `decisions`, pending file `~/.job-shortlist/pending-decisions.jsonl`, keys cache `~/.job-shortlist/decision_keys.py` (spec, Design "Constants").
 - Never write a real decision during implementation or testing; never publish the artifact or touch `data/*`.
 - Keys (`norm_url`, `norm_text`, `norm_company`, `match_key`, `doc_id`) come only from the loaded keys module; `tools/shortlist.py` never reimplements them.
 - The helper runs as `python -I tools/shortlist.py ...`; it is stdlib only and writes JSON to stdout (`--table` for `list` prints Markdown). Errors print `{"ok": false, "error": "..."}` and exit 1.
@@ -65,7 +65,7 @@
 - [ ] **Step 1:** Write failing tests (call `shortlist.cmd_list(keys, rows, decisions, opts)` or `main([...])` capturing stdout), with `today = 2026-10-18`:
   - decided rows are left out; output has `total_rows`, `decided_hidden`, `shown`, `week`.
   - sort: rows with deadline `2026-10-22` (rank 50) and `2026-10-20` (rank 80) come first in deadline order, then rank order; deadlines `2026-10-11` (past) and `2026-10-31` (beyond 7 days) sort by rank; `2026-10-25` (today+7) counts as within.
-  - filters: `--new` (`new == "Yes"`), `--priority`, `--location montreal --location toronto` (OR, accent-insensitive: `Montréal` matches), `--company stripe`, `--title engineer`, `--tab main`; combined flags are AND'ed; `--top 2`.
+  - filters: `--new` (`new == "Yes"`), `--priority`, `--location montreal --location toronto` (OR, accent-insensitive: `Montréal` matches), `--company <name>`, `--title engineer`, `--tab main`; combined flags are AND'ed; `--top 2`.
   - chips: `New`, `Priority`, `Province-restricted` (from `canada` containing `province-restricted`, case-insensitive), `Deadline 2026-10-22`, `Deadline 2026-10-11 (past)`.
   - `--table` prints a Markdown table with header `| Rank | Company | Title | Location | Chips | URL |`.
 - [ ] **Step 2: Run** `python -m unittest tests.test_shortlist -v`. Expected: the new tests fail.
@@ -81,10 +81,10 @@
 **Depends on:** Task 2
 
 - [ ] **Step 1:** Write failing tests:
-  - `find --url` matches by `norm_url` (`https://www.Example.com/job/1/` finds `https://example.com/job/1`); `--rank 3` in the first rows file; `--company "Royal Bank" --title "AI Engineer"` exact `match_key`; fuzzy: `--company rbc --title "ai engineer"` finds `RBC` / `Senior AI Engineer (Toronto)`; `--company stripe` alone returns every Stripe row; several `--rows` files: returns matches only from the first file that has any, each with `week`; with optional `--decisions D` each match carries `decided: true|false` (url_norm or match_key rule), without it `decided` is absent.
+  - `find --url` matches by `norm_url` (`https://www.Example.com/job/1/` finds `https://example.com/job/1`); `--rank 3` in the first rows file; `--company "Royal Bank" --title "AI Engineer"` exact `match_key`; fuzzy: `--company <name> --title "ai engineer"` finds `a company` / `Senior AI Engineer (Toronto)`; `--company <name>` alone returns every a company row; several `--rows` files: returns matches only from the first file that has any, each with `week`; with optional `--decisions D` each match carries `decided: true|false` (url_norm or match_key rule), without it `decided` is absent.
   - `doc`: every contract field present; `schema_version` 1, `source` `claude_code`, `url_norm`, `match_key` and `doc_id` equal the fixture functions; `--decided-at 2026-10-17` → `2026-10-17T12:00:00` plus a `+HH:MM`/`-HH:MM` offset; default `decided_at` parses with `datetime.fromisoformat` and has an offset; `--week ""` allowed.
   - `doc --existing FILE`: existing note `"too senior"` kept when no `--note`; new different note → `"too senior; tailored resume"`; same note → unchanged; output `if_version` = existing version (null when not existing).
-  - `decisions`: newest `decided_at` first; `--decision applied`; `--match stripe` (substring of `norm_text` of company or title); `--url` and `--company/--title` filters per plan answer 5.
+  - `decisions`: newest `decided_at` first; `--decision applied`; `--match <name>` (substring of `norm_text` of company or title); `--url` and `--company/--title` filters per plan answer 5.
 - [ ] **Step 2: Run** `python -m unittest tests.test_shortlist -v`. Expected: new tests fail.
 - [ ] **Step 3:** Implement per spec Design → `find`, `doc`, `decisions` and plan answers 3 and 5. `doc` output: `{"doc_id": ..., "if_version": <int|null>, "data": {...}}`. `decided_at` default: `datetime.now().astimezone().isoformat(timespec="seconds")`.
 - [ ] **Step 4: Run** `python -m unittest tests.test_shortlist -v`. Expected: OK; full suite and py_compile → OK.

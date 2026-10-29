@@ -48,7 +48,7 @@
 
 Answers to the gate's plan questions, fixed here: the missing-profile check is the first thing in `main`'s non-`--check` branch, before the `.tex` is written or `compile_tex` runs. The error report keeps `md`, `words`, `greeting_ok`, `signoff_ok`, sets `"ok": false`, adds `"error": MISSING_PROFILE`, is printed as usual, and `main` returns 1.
 
-- [ ] **Step 1: Write the failing tests** in `tests/test_build_cover_letter.py`, skipped like `tests/test_build_resume.py` when `fitz` is missing (`@unittest.skipUnless(HAS_FITZ, ...)`, importing the module inside each test). Use a temp dir, a letter `cover_letter.md` of 320 words starting `Dear hiring team,` and ending `Best,\nAly`, placed at `<tmp>/Acme-1/cover_letter.md`:
+- [ ] **Step 1: Write the failing tests** in `tests/test_build_cover_letter.py`, skipped like `tests/test_build_resume.py` when `fitz` is missing (`@unittest.skipUnless(HAS_FITZ, ...)`, importing the module inside each test). Use a temp dir, a letter `cover_letter.md` of 320 words starting `Dear hiring team,` and ending `Best,\nSam`, placed at `<tmp>/Acme-1/cover_letter.md`:
   - `test_profile_path`: `build_cover_letter.PROFILE.as_posix().endswith("sources/profile.md")`.
   - `test_contact_reads_contact_section`: with `PROFILE` patched (`unittest.mock.patch.object`) to a temp file holding `## Contact` with `- Full name: A B`, `- Phone: 1`, `- Email: a@b.c`, `- Location: Montreal, QC, Canada`, `- LinkedIn: https://www.linkedin.com/in/x`, `- GitHub: https://github.com/y`, then `## Eligibility`: `contact() == {"name": "A B", "phone": "1", "email": "a@b.c", "city": "Montreal", "linkedin": "https://www.linkedin.com/in/x", "github": "https://github.com/y", "linkedin_bare": "www.linkedin.com/in/x", "github_bare": "github.com/y"}`.
   - `test_missing_profile_is_json_error`: `PROFILE` patched to a missing path; `main([letter])` (stdout captured) returns 1; the JSON has `"ok": false`, `"error"` equal to `MISSING_PROFILE`, and `"words"`; no `.tex` exists in `<tmp>/Acme-1/`.
@@ -77,7 +77,7 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 - Consumes: the pull procedure and `tools/pull_sources.py` as they are.
 - Produces: `.claude/skills/write-source.md`, referenced by Task 3 as "through `.claude/skills/write-source.md`".
 
-- [ ] **Step 1: `sources.json`:** append exactly the spec's three entries (profile with `"node_id": "<node-id>", "writable": true`). Run: `python -c "import json;print(len(json.load(open('sources.json'))['sources']))"`. Expected: `6`.
+- [ ] **Step 1: `sources.json`:** append exactly the spec's three entries (profile with `"node_id": "<node_id>", "writable": true`). Run: `python -c "import json;print(len(json.load(open('sources.json'))['sources']))"`. Expected: `6`.
 
 - [ ] **Step 2: `pull-sources.md`:**
   - Opening skill list: add `/followup`.
@@ -147,7 +147,7 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 
 - [ ] **Step 2: ADR 0003** from `0000-template.md`, Status `accepted`, Date 2026-10-18, with the spec's "ADR 0003" paragraph as Context/Decision/Consequences. ADR 0002: Status `superseded` and a line under it: `Superseded by [ADR 0003](0003-claude-code-writes-to-the-profile-doc.md).` README: 0002's status `superseded`; new row `| [0003](0003-claude-code-writes-to-the-profile-doc.md) | Claude Code writes to the Profile doc | accepted | 2026-10-18 |`.
 
-- [ ] **Step 3: Earlier spec and plan.** Status `implemented` in both 2026-10-17 files. Run: `python C:/Users/<user>/.claude/skills/claude-kit/scripts/spec-index.py docs/superpowers`. Expected: `docs/superpowers/README.md` shows both 2026-10-17 rows `implemented`.
+- [ ] **Step 3: Earlier spec and plan.** Status `implemented` in both 2026-10-17 files. Run: `python %USERPROFILE%/.claude/skills/claude-kit/scripts/spec-index.py docs/superpowers`. Expected: `docs/superpowers/README.md` shows both 2026-10-17 rows `implemented`.
 
 - [ ] **Step 4: Run** the spec's criterion 3: `git grep -n -E "(^|[^/_a-z])(profile|stories|answers)\.md" -- .claude tools CLAUDE.md | grep -v "by their old names"`. Expected: no output. Then the full suite and `py_compile`. Expected: PASS.
 
@@ -163,11 +163,11 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 - Consumes: the procedures and tools from Tasks 1-3.
 - Produces: the verification evidence for the PR body.
 
-Run from the worktree root, in the main session (it needs the Docs and Artifact tools). `<scratch>` is the session's scratchpad directory. The main checkout is `C:/Users/<user>/Desktop/Github/jobapps`.
+Run from the worktree root, in the main session (it needs the Docs and Artifact tools). `<scratch>` is the session's scratchpad directory. The main checkout is `<repo-root>`.
 
 - [ ] **Step 1: Pull** all six entries per `.claude/skills/pull-sources.md`. Expected: six report lines, none an error.
 
-- [ ] **Step 2: Compare** the three new files with the main checkout's root files, using one Python script run with the Bash tool (no shell redirects): for each of `profile.md`, `stories.md`, `answers.md`, read `C:/Users/<user>/Desktop/Github/jobapps/<name>` as bytes, replace `b"\r\n"` with `b"\n"`, add a final `b"\n"` only if missing, compare with `sources/<name>`; print `identical` or `DIFFERENT`; exit 1 on any difference.
+- [ ] **Step 2: Compare** the three new files with the main checkout's root files, using one Python script run with the Bash tool (no shell redirects): for each of `profile.md`, `stories.md`, `answers.md`, read `<repo-root>/<name>` as bytes, replace `b"\r\n"` with `b"\n"`, add a final `b"\n"` only if missing, compare with `sources/<name>`; print `identical` or `DIFFERENT`; exit 1 on any difference.
   Run: `python "<scratch>/compare_profile_refs.py"`
   Expected: three `identical`, exit 0.
 
@@ -183,4 +183,4 @@ Run from the worktree root, in the main session (it needs the Docs and Artifact 
 
 ## After merge (part of `/ship` clean-up)
 
-Once local `main` is fast-forwarded to the merge: move `C:/Users/<user>/Desktop/Github/jobapps/profile.md`, `stories.md` and `answers.md` to the Recycle Bin (PowerShell, once per file: `Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile('<path>', 'OnlyErrorDialogs', 'SendToRecycleBin')`). Expected: none of the three exists; the `.gitignore` lines for them stay.
+Once local `main` is fast-forwarded to the merge: move `<repo-root>/profile.md`, `stories.md` and `answers.md` to the Recycle Bin (PowerShell, once per file: `Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile('<path>', 'OnlyErrorDialogs', 'SendToRecycleBin')`). Expected: none of the three exists; the `.gitignore` lines for them stay.

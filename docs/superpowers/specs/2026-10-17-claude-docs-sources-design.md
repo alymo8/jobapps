@@ -5,12 +5,12 @@
 
 ## Purpose
 
-the user keeps the mega resume and the two prompts in two places: this repo (read by Claude Code's
+The user keeps the mega resume and the two prompts in two places: this repo (read by Claude Code's
 skills) and claude.ai (where the user prefers to edit them, since that is the tool meant for writing).
 Every change has to be made twice, and the copies drift: on 2026-10-17 the skills still read
 `mega-resume-v1.5.tex` while the user's current version was a local, unreferenced `mega-resume-v1.6.tex`.
 
-Fix: three Claude Docs become the only source of truth. the user edits them in claude.ai (through
+Fix: three Claude Docs become the only source of truth. The user edits them in claude.ai (through
 claude.ai skills the user sets up separately). Claude Code pulls them into a gitignored `sources/`
 folder at the start of every skill run that needs them, and the repo stops holding its own copies.
 
@@ -21,9 +21,9 @@ block each (the text above the block is a note for humans):
 
 | Local file (new path)            | Doc                                                                 | Tab id          | Fence          |
 | -------------------------------- | ------------------------------------------------------------------- | --------------- | -------------- |
-| `sources/mega-resume.tex`        | Mega resume, `https://claude.ai/code/artifact/<doc-id>`        | `<tab-id>` | ` ```latex `   |
-| `sources/resume_prompt.md`       | Resume prompt, `https://claude.ai/code/artifact/<doc-id>`      | `<tab-id>` | ` ```markdown ` |
-| `sources/cover_letter_prompt.md` | Cover letter prompt, `https://claude.ai/code/artifact/<doc-id>` | `<tab-id>` | ` ````markdown ` (the prompt contains ``` fences) |
+| `sources/mega-resume.tex`        | Mega resume, `<doc_url>`        | `<tab_id>` | ` ```latex `   |
+| `sources/resume_prompt.md`       | Resume prompt, `<doc_url>`      | `<tab_id>` | ` ```markdown ` |
+| `sources/cover_letter_prompt.md` | Cover letter prompt, `<doc_url>` | `<tab_id>` | ` ````markdown ` (the prompt contains ``` fences) |
 
 Verified on 2026-10-17:
 
@@ -82,9 +82,9 @@ exists locally and is not ignored on `main`.
 ```json
 {
   "sources": [
-    {"path": "sources/mega-resume.tex", "doc_url": "https://claude.ai/code/artifact/<doc-id>", "tab_id": "<tab-id>"},
-    {"path": "sources/resume_prompt.md", "doc_url": "https://claude.ai/code/artifact/<doc-id>", "tab_id": "<tab-id>"},
-    {"path": "sources/cover_letter_prompt.md", "doc_url": "https://claude.ai/code/artifact/<doc-id>", "tab_id": "<tab-id>"}
+    {"path": "sources/mega-resume.tex", "doc_url": "<doc_url>", "tab_id": "<tab_id>"},
+    {"path": "sources/resume_prompt.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>"},
+    {"path": "sources/cover_letter_prompt.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>"}
   ]
 }
 ```

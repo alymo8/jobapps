@@ -46,7 +46,7 @@
 - round 2 [blocking] Fit scale hinges on undefined gaps: real and minor gaps defined.
 - round 2 [blocking] posting.md header claim false: Background corrected; `- Posted:` counts; relative dates resolved.
 - round 2 [blocking] Career-ops prerequisite out of date: reworded as a check.
-- round 2 [minor] DeepMind expectation: "fit 2 or lower, overall below 3.5".
+- round 2 [minor] off-target expectation: "fit 2 or lower, overall below 3.5".
 - round 2 [minor] Criterion 3 comparison: "compared with `normalize_url`".
 - round 2 [minor] Single-row override: retry-all behaviour stated, `--rows` and per-URL override named.
 - round 3 [blocking] Per-URL override filtered out: now `--min-score 0 --all`.
@@ -62,7 +62,7 @@
 - rerun round 1 [blocking] PAY-FLOOR score.md undefined: exact lines, Score column and review line.
 - rerun round 1 [blocking] changelog postings scored?: neither scored nor gated.
 - rerun round 1 [minor] Published/Updated headers; `--min-score` without Targeting.
-- rerun round 2 [blocking] DeepMind can't score low: role-type check with `Target roles`.
+- rerun round 2 [blocking] an off-target posting can't score low: role-type check with `Target roles`.
 - rerun round 2 [blocking] bare `$` and several ranges: currency and range-choice rules.
 - rerun round 2 [blocking] seniority range: lower end.
 - rerun round 2 [minor] URL-less posting.md files noted; dry run outside `/batch` noted.

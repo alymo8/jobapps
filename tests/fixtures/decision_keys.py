@@ -1,4 +1,4 @@
-"""Reference key functions for the user's Job Shortlist decisions. Must match the page's JS exactly."""
+"""Reference key functions for the Job Shortlist decisions. Must match the page's JS exactly."""
 import hashlib, re, unicodedata
 from urllib.parse import urlsplit
 CO_SUFFIX = {"inc","ltd","llc","corp","corporation","canada","group","co","the"}

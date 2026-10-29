@@ -31,7 +31,7 @@
 - round 2 [blocking] Scope vs Design on apply/SKILL.md sections: Scope In clarified (step 6 and Phase 2 covered by workday.md).
 - round 2 [blocking] Tenant sign-in URL undefined: defined.
 - round 2 [blocking] Scope of "Workday logins needed": every open row in dlq.md, this run's marked.
-- round 2 [minor] Launch confirmation named correctly; background counts corrected (13 open, Salesforce resolved, Mastercard added).
+- round 2 [minor] Launch confirmation named correctly; background counts corrected (13 open, a company resolved, a company added).
 - round 3 [blocking] Sign-in URL wrong for postings found off Workday: Detail carries the Workday URL; list uses it.
 - round 3 [minor] Existing DLQ rows get the prefix on retry; retry mode matches the row; Scope In lists the batch history step.
 

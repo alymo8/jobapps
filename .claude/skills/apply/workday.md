@@ -11,7 +11,7 @@ A posting is Workday when its URL, or the page its Apply button leads to, has a 
 Built In, workopia) switches to this playbook when Apply lands on a Workday host.
 
 Tenant name (used in DLQ rows and the batch review):
-- `<tenant>.wdN.myworkdayjobs.com/...` → `<tenant>.wdN` (e.g. `manulife.wd3`).
+- `<tenant>.wdN.myworkdayjobs.com/...` → `<tenant>.wdN` (e.g. `acme.wd3`).
 - `wdN.myworkdaysite.com/[<locale>/]recruiting/<tenant>/<site>/...` → `<tenant>.wdN`.
 
 Blockers use the existing DLQ Reason `BLOCKED` (or `FAILED`), never a new code. The Detail starts with
@@ -29,7 +29,7 @@ Still unavailable → `FAILED`, Detail "Workday maintenance page".
 Click buttons, links and options through element refs from `find` (fallback: `read_page` with
 `filter: interactive`). **Never press Enter.** Cookie banner: **Decline**.
 
-Exceptions, seen on Manulife (2026-10-05), where a ref click lands on the wrong item or nothing:
+Exceptions, seen on a company (2026-10-05), where a ref click lands on the wrong item or nothing:
 - Dropdown and picker options: lists re-render under the click, so a ref often selects a
   neighbour. Open the list, take a screenshot, then click the option by position. Re-read the
   field (`get_page_text` or the button text) after every pick.
@@ -45,11 +45,11 @@ Prompt pickers (How Did You Hear, Degree, Field of Study): click the field and b
 (typing does not filter it without Enter). No match: `ASK`, or the approved fallback in
 `sources/profile.md` (e.g. Field of Study → Computer Science). Re-read the field after picking.
 
-**Search-only fields** (Skills, Certifications on Manulife): options appear only after an
+**Search-only fields** (Skills, Certifications on a company): options appear only after an
 Enter-triggered search, and the browse icon lists just the first 100 alphabetically.
 - Optional: don't try them: record `skipped (search-only field)` in `application.md` and mention
   it at the approval point (the resume carries skills and certifications).
-- **Required** (e.g. Skills on Thomson Reuters, which blocks Save and Continue): pressing Enter
+- **Required** (e.g. Skills on a company, which blocks Save and Continue): pressing Enter
   **inside that field's search box only** is allowed, to run the search (the user, 2026-10-06; in a
   Workday search box Enter searches, it does not submit). Search each skill from `sources/profile.md`
   `### Skills`, click the matching suggestion, confirm it shows as selected; skip skills with no
@@ -84,7 +84,7 @@ Click **Apply**, then **Apply Manually**. Never Autofill with Resume or Use My L
 Workday offers to continue an existing draft for this posting, or the wizard opens on a later step,
 continue it.
 
-the user approved (2026-10-06) clicking **Apply Manually** and **Save and Continue** in every Workday
+The user approved (2026-10-06) clicking **Apply Manually** and **Save and Continue** in every Workday
 run, batch subagents included: they only save a draft. The consent checkbox and **Submit** still
 need the user's explicit OK. If a permission check blocks one of these clicks, don't retry or work
 around it: stop and report it.
@@ -94,7 +94,7 @@ around it: stop and report it.
 On every step: `get_page_text` and `read_page` (`filter: interactive`); list every field in
 `application.md` (`label | answer | source`, with a `### <step name>` heading per step); fill;
 re-read and confirm each value; click **Save and Continue**. Save and Continue saves a draft on
-the user's account: it is not a submission and needs no approval. Field errors → fix and save again; a
+The user's account: it is not a submission and needs no approval. Field errors → fix and save again; a
 step that still fails after one retry → `FAILED` with the error text.
 
 Required field answered `ASK` (the step can't be saved with it empty):
@@ -113,7 +113,7 @@ From `sources/profile.md` `## Contact` and `## Common questions`.
 - Address: split `Street address` on commas: part 1 → Address Line 1, part 2 → City; the
   province abbreviation → its full name in the Province dropdown (`QC` → `Quebec`); the rest →
   Postal Code.
-- Phone: device type `Mobile`, country code `Canada (+1)`, number from `Phone`, unless `sources/profile.md`
+- Phone: device type `Mobile`, country code `<phone_country>` (config `targeting`; when absent, mark the field `ASK`), number from `Phone`, unless `sources/profile.md`
   says otherwise.
 
 ## 7. My Experience
@@ -159,7 +159,7 @@ Replaces `/apply` step 6 for Workday: the same summary (role, company, resume fi
 plus the tenant, the step the run stopped on, the consent checkbox label quoted (or "no consent
 checkbox"), and the `After approval` rows. Normal run: set `applications.md` to `ready` (in batch
 the orchestrator does it), unless the row is `outreach-only-ready`, `outreach-only-sent`, `in-conversation`, `no-response` or `closed`: then
-keep that status and add `form filled <date>, awaiting OK` to its Notes instead. Ask "Submit? (ok / edits)". the user's "ok" approves ticking that consent
+keep that status and add `form filled <date>, awaiting OK` to its Notes instead. Ask "Submit? (ok / edits)". The user's "ok" approves ticking that consent
 checkbox, filling the `After approval` rows, and submitting.
 
 Batch subagent: don't ask; end with the batch report, adding the tenant, the stop step, the consent

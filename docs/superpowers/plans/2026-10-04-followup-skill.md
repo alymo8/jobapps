@@ -15,14 +15,14 @@
 
 ## Context for a cold executor
 
-- Repo: `C:\Users\<user>\Desktop\Github\jobapps` (remote `origin` = `https://github.com/<owner>/jobapps.git`, branch `main`). This is the user's personal job-application workspace. "the user" is the user; refer to the user with they/them.
+- Repo: `<repo-root>` (remote `origin` = the GitHub remote, branch `main`). This is the user's personal job-application workspace. Refer to the user with they/them.
 - `postings/<dir>/outreach.md` holds, per posting: a header (posting URL, application status), a shortlist table under a heading that starts with `## Shortlist` (e.g. `## Shortlist (current ... verified ..., 2026-10-04)`; columns `| # | Name | Title | Location | Degree | Profile | Why |`, with an extra `Role`/`Roles` column in the `*-combined` files), per-person drafts, an optional `## Short notes (200-char limit), APPROVED ...` section (these replace note (a) when sending), and a `## Sent` log.
-  - **Draft labels:** (a) is a connection note and (b) is a follow-up to send after acceptance. In older files, HingeHealth has "Connection note" plus "Follow-up message", and Spellbook has an InMail "Subject/Body" plus "Connection note (fallback)". "Connection note" / "Connection note (fallback)" count as (a); "Follow-up message" / InMail Body count as (b).
+  - **Draft labels:** (a) is a connection note and (b) is a follow-up to send after acceptance. In older files, a company has "Connection note" plus "Follow-up message", and a company has an InMail "Subject/Body" plus "Connection note (fallback)". "Connection note" / "Connection note (fallback)" count as (a); "Follow-up message" / InMail Body count as (b).
   - **`## Sent` bullet variants:**
-    - `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by `  > quoted text` (e.g. `postings/GitLab-8698314002/outreach.md`);
-    - the same pipe bullet with no `text sent:` field, followed by an indented `>` quote (BanyanSoftware, Knak, Sardine);
-    - a pipe bullet whose fifth field is the sent text in double quotes, preceded by a prose line giving the channel (Censys).
-- `*-combined` dirs (`postings/Scotiabank-combined`, `postings/ThomsonReuters-combined`) hold the outreach for several postings. Their `applications.md` rows point to the individual dirs. Scotiabank-combined's header names the dirs; ThomsonReuters-combined's header names only req ids (`JREQ202780`, `9090356`).
+    - `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by `  > quoted text` (e.g. `postings/<Company>-<id>/outreach.md`);
+    - the same pipe bullet with no `text sent:` field, followed by an indented `>` quote (three postings);
+    - a pipe bullet whose fifth field is the sent text in double quotes, preceded by a prose line giving the channel (a company).
+- `*-combined` dirs (`postings/<Company>-combined`) hold the outreach for several postings. Their `applications.md` rows point to the individual dirs. `<Company>-combined`'s header names the dirs; `<Company>-combined`'s header names only req ids (`<req-id>`, `<req-id>`).
 - `applications.md` is a table `| Date | Company | Role | Location | Posting dir | Status | Notes |`. Its legend line (line 4) currently reads:
   `` Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent`. ``
 - LinkedIn facts (observed 2026-10-04):
@@ -34,7 +34,7 @@
 ## Prerequisites (do these first, in order)
 
 1. **Clean, current `main`** (workspace rule):
-   - Run `git -C C:/Users/<user>/Desktop/Github/jobapps branch --show-current` (expect `main`), then `git fetch` and `git status -sb`.
+   - Run `git -C <repo-root> branch --show-current` (expect `main`), then `git fetch` and `git status -sb`.
    - Expect `git status --porcelain` to show only `?? docs/` (the spec, gate records and this plan). Commit `docs/superpowers/` on `main` (or as the user directs) before branching. If anything else is uncommitted, **stop and ask the user**: a worktree branched from committed `main` would not contain it, and the merge could conflict.
 2. **Worktree:** create one with the `superpowers:using-git-worktrees` skill, on branch `feat/followup-skill`. Tasks 1–2 run there.
 3. Task 3 (dry run) runs in the **main checkout after merge**, because it needs the user's real `postings/` data, including any changes made since the merge. It also needs Chrome with the claude-in-chrome extension and the user logged in to LinkedIn.
@@ -55,7 +55,7 @@
    - anyone whose line in the file says skipped, may have left, or not at the company;
    - anyone found `done (left company)` in this sweep.
 5. **Withdrawn or expired invitation** (not pending, not connected, no thread): `done (no-response)`, note `invite withdrawn/expired`.
-6. **(b) counts as sent** when the thread shows any outbound message after the connection was accepted, other than the invitation note itself. A `typed, the user to send` action with no such message on the next run means the person is `accepted` again, and the review notes `typed <date>, not sent`.
+6. **(b) counts as sent** when the thread shows any outbound message after the connection was accepted, other than the invitation note itself. A `typed, <word> to send` action with no such message on the next run means the person is `accepted` again, and the review notes `typed <date>, not sent`.
 7. **Days cell:**
    - `N bd` for `silent` / `waiting` with an outbound message, and for `done` by nudge;
    - `N cd` for `stale-pending` / pending `waiting`;
@@ -134,7 +134,7 @@ need 'over budget'
 need 'weekday()<5'            # business-day one-liner
 need '--dry-run'
 need 'Invoke-Item'
-need 'typed, the user to send'
+need 'typed, <word> to send'
 need 'replacement sent'
 need 'nudged via'
 need 'across **all**'
@@ -160,7 +160,7 @@ argument-hint: "[<posting dir | company> ...] [--dry-run]"
 # /followup — re-engage earlier outreach contacts, human-in-the-loop
 
 All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one Chrome
-tab of its own**: load `claude-in-chrome` first, create a new tab, never touch other tabs. the user is
+tab of its own**: load `claude-in-chrome` first, create a new tab, never touch other tabs. The user is
 logged in to LinkedIn on a free account (no InMail; about 3 personalized invitations a month;
 invitation notes ≤200 characters). **Nothing is sent to anyone without an explicit `ok` or `edit:`
 from the user in this run's `questions.txt`.**
@@ -194,7 +194,7 @@ For each posting in scope read `outreach.md`:
 
 - **`## Sent`**: parse every variant: the pipe bullet
   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` + `>` quote; the same bullet
-  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (Censys). A
+  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (a company). A
   bullet that fits none is listed in the review as `unparsed` with its line; never guess.
 - **`## Follow-up`**: two kinds of bullet. Action bullets
   `- <Name> | <YYYY-MM-DD> | <state> | <action> | text:` are the record: derive state only from
@@ -243,7 +243,7 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; the user attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, the user to send` → note `typed <date>, not sent` |
+| 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; the user attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, <word> to send` → note `typed <date>, not sent` |
 | 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Propose the next unused shortlisted person (below) |
 | 6 | `waiting` | Anything else | None |
@@ -313,7 +313,7 @@ Approved items only, text verbatim, one at a time:
 
 - **`outreach.md`**, `## Follow-up`, one action bullet per person handled:
   `- <Name> | <date> | <state> | <action> | text:` + the quoted text if any. Actions:
-  `nudge sent`, `reply sent`, `typed, the user to send`, `invite sent` (the replacement person),
+  `nudge sent`, `reply sent`, `typed, <word> to send`, `invite sent` (the replacement person),
   `replacement sent` / `none left` (the stale person), `none`.
   - A replacement person also gets a standard `## Sent` bullet
     (`- <Name> | <profile URL> | connection request with note | <date> | text sent:` + quote).
@@ -452,7 +452,7 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - [ ] **Step 1: Hash the files the dry run must not touch**
 
 ```bash
-cd C:/Users/<user>/Desktop/Github/jobapps
+cd <repo-root>
 python - > "$SCRATCH/hashes-before.txt" <<'EOF'
 import glob, hashlib
 for p in sorted(["applications.md", "profile.md", *glob.glob("postings/*/outreach.md")]):
@@ -494,7 +494,7 @@ For every person in every `postings/*/outreach.md` `## Sent` log, plus every `(r
 - They appear in `manifest.md` with exactly one state.
 - That state is the one the step 3 table gives for today's date, using the Days and Last out/in columns.
   - People logged on 2026-10-04 get whichever state the step 3 table gives on the run date (e.g. `stale-pending` from 2026-10-14 for invitations still pending, `silent` from 2026-10-07 for unanswered direct messages).
-  - Reconciled Baseten contacts (Lou, messaged in September; Crystal, pending before 2026-10-04) may be `silent`, `stale-pending` or `done`. Check them with their LinkedIn dates.
+  - Reconciled contacts (one messaged in September, another pending before 2026-10-04) may be `silent`, `stale-pending` or `done`. Check them with their LinkedIn dates.
 
 List any mismatch as a defect.
 

@@ -6,7 +6,7 @@
 ## Purpose
 
 A scheduled weekly run in claude.ai publishes the user's job shortlist as an artifact ("the user's Job
-Shortlist", `https://claude.ai/artifact/<artifact-id>`). Its page has Applied / Not
+Shortlist", the shortlist artifact URL). Its page has Applied / Not
 interested buttons that write documents to the artifact's `decisions` database collection, and the
 weekly run hides every posting that matches a decision document. Claude Code knows nothing of it
 today: the user applies through `/apply` or `/batch` and the posting keeps coming back in the list.
@@ -85,7 +85,7 @@ Verified 2026-10-18 with the Artifact tool (`action: "read"`) and `ArtifactData`
 
 ### Constants
 
-The skill states the artifact URL `https://claude.ai/artifact/<artifact-id>`, the
+The skill states the artifact URL, the
 collection `decisions`, the pending file `~/.job-shortlist/pending-decisions.jsonl` and the keys
 cache `~/.job-shortlist/decision_keys.py`.
 
@@ -161,13 +161,13 @@ Commands:
 
 ### Skill flows (`SKILL.md`)
 
-**Show the shortlist** ("show my top 20", "new this week", "Montreal ones", "what's at Stripe"):
+**Show the shortlist** ("show my top 20", "new this week", "Montreal ones", "what's at a company"):
 fetch step, map the request to `list` flags (`--top`, `--new`, `--location`, `--company`,
 `--priority`, `--tab`), and print the table (rank, company, title, location, chips, URL), plus one
 line with the week and how many decided postings were hidden. With no count given, show 20.
 
 **Record applied** (end of an apply-flow run on the user's yes, or "I applied to X" / "I applied to the
-RBC AI Engineer role yesterday"):
+a company AI Engineer role yesterday"):
 
 1. `find` in `latest.json`, then the older weeks from `index.json` (newest first), by URL or
    company + title. One match: use its `url`, `company`, `title` exactly and `week_seen` = its week.
@@ -183,12 +183,12 @@ RBC AI Engineer role yesterday"):
 **Record not interested** ("skip the Okta ones", "not interested in #43", "remove the Coinbase
 senior staff roles"): resolve each posting with `find` (`--rank` refers to the latest week; company
 and title words for the rest), leaving out already-decided ones. Show the exact list. More than 3 →
-wait for the user's OK; 3 or fewer → write. the user's reason goes in `note`. One posting → `get` then `set`;
+wait for the user's OK; 3 or fewer → write. The user's reason goes in `note`. One posting → `get` then `set`;
 several → `get` each, then one `ArtifactData batch` per 50 writes (`set`, with `if_version` for
 existing documents). Confirm with one line per posting, `Recorded: Not interested — <company>,
 <title>.`
 
-**Undo** ("undo the Stripe one", "I didn't actually apply"): `decisions --match` (or `doc_id` from
+**Undo** ("undo the Okta one", "I didn't actually apply"): `decisions --match` (or `doc_id` from
 the URL) to find the document; several → ask which. Show it, then `ArtifactData delete` with
 `if_version`. Confirm: `Removed: <decision> — <company>, <title>. It can appear in the list again.`
 
@@ -223,7 +223,7 @@ edited by Claude Code):
 
 - `tailor-resume` and `write-cover-letter`, as the last step: "Ask: Mark <company> – <title> as
   applied? On yes, if the ArtifactData tool is available, write the decision to the `decisions`
-  collection of https://claude.ai/artifact/<artifact-id> per its `data/CONTRACT.md`
+  collection of the shortlist artifact URL per its `data/CONTRACT.md`
   (`source: \"claude_code\"`, doc id from `data/decision_keys.py`); otherwise tell the user to click
   Applied on the page."
 

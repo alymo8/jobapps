@@ -14,3 +14,4 @@ the next number for a new one, never deleted, superseded instead. Template:
 | [0006](0006-outreach-separate-from-apply.md) | Outreach separate from apply | accepted | 2026-10-19 |
 | [0007](0007-light-linkedin-runs.md) | Light LinkedIn runs: one tab at a time | accepted | 2026-10-19 |
 | [0008](0008-read-the-composer-before-choosing-a-route.md) | Read the message composer before choosing a LinkedIn route | accepted | 2026-10-23 |
+| [0009](0009-shared-repo-and-local-config.md) | Shared repo and local config | accepted | 2026-10-28 |

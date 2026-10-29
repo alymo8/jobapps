@@ -13,7 +13,10 @@ published `data/*` files, the weekly run) is built and owned elsewhere; this ski
 
 ## Constants
 
-- Artifact: `https://claude.ai/artifact/<artifact-id>` ("the user's Job Shortlist").
+- Artifact: `config.local.json` "shortlist" — "artifact_url" (the page) and "title".
+- If `config.local.json` does not exist, tell the user:
+  `config.local.json is missing: this repo is not set up yet (README "Setup").` and stop. If it has no `shortlist` key, tell the user:
+  `The shortlist is not set up: add "shortlist" to config.local.json (README "Setup").` and stop.
 - Collection: `decisions`. Document id: `doc_id(url)` from the artifact's `data/decision_keys.py`.
 - Data contract: `data/CONTRACT.md` in the artifact (source of truth; read it when a field is unclear).
 - Pending file: `~/.job-shortlist/pending-decisions.jsonl`. Keys cache: `~/.job-shortlist/decision_keys.py`.
@@ -110,7 +113,7 @@ run), plus an optional date ("yesterday" → that date) and note.
 
 ## Undo
 
-("undo the Stripe one", "I didn't actually apply")
+("undo the Okta one", "I didn't actually apply")
 
 1. Find the document: `decisions --decisions <D> --url <U>` when a URL is known; else
    `--company C --title T` from the shortlist row; else `--match <words>`. Several → ask which.

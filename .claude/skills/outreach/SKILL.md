@@ -59,14 +59,16 @@ approves an existing-connection message; an approval of one message does not cov
        `outreach-ready`.
 2. **Find people** (LinkedIn people search in the run's LinkedIn tab, filtered to the company's
    current employees). Check each one still works there (current position).
-   1. **the user's connections first**: the same search with the Connections filter set to `1st`. Every
+   1. **The user's connections first**: the same search with the Connections filter set to `1st`. Every
       1st-degree connection at the company is a candidate, whatever their role (anyone inside can
       refer or forward); rank engineers / managers on the posting's team, then recruiters, then
       the rest.
    2. **Then new people**: recruiter / talent acquisition / technical recruiter at the company,
-      preferring ones covering the posting's location or Canada/North America; and the likely
+      preferring ones covering the posting's location, `<eligible_regions>`, or a wider region that
+      contains them (e.g. a continent); and the likely
       hiring manager (the eng/AI manager or lead for the team the posting describes, in the
-      posting's location, or the user's (Montreal) if the posting names several).
+      posting's location, or the user's `<home_city>` if the posting names several). `<eligible_regions>` and
+      `<home_city>` come from config `targeting` (no `targeting`: only the posting's location).
    - Write the shortlist (`## Shortlist` table in `postings/<dir>/outreach.md`): name, title,
      location, connection degree, **class** (`existing connection` / `new`), profile URL, and one
      line on why they fit. Up to 5 candidates, existing connections at the top.
@@ -84,7 +86,7 @@ approves an existing-connection message; an approval of one message does not cov
      rules as above, tailored to the reader: recruiter → fit + availability; hiring manager → the
      most relevant work.
    - Wording rules, every message:
-     - Say the user is **interested** in the role. Never say he applied, even when he has.
+     - Say the user is **interested** in the role. Never say the user applied, even when they have.
      - Never say a resume is attached, and attach nothing.
      - No flattery filler, no claims beyond the resume.
 4. **Approval gate, existing connections only.** Before anything is sent, show the user in chat:
@@ -99,7 +101,7 @@ approves an existing-connection message; an approval of one message does not cov
    `.claude/skills/linkedin-tab.md`). Never send to anyone
    already under `## Sent` in `outreach.md`.
    - Before the first send, check the user's plan (Premium or free), and for each new person read their
-     message composer, both per "the user's plan and each person's message route" in
+     message composer, both per "The user's plan and each person's message route" in
      `.claude/skills/linkedin-tab.md`.
    - **New person**, no approval needed: if their composer says "Free message" (Open Profile),
      send the follow-up (b) as that message. Otherwise send the
@@ -116,7 +118,7 @@ approves an existing-connection message; an approval of one message does not cov
    `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the text sent as a
    `>` quote on the next line(s). Channel is one of `message (existing connection)`,
    `free message (open profile)`, `connection request with note`, `connection request (no note)`.
-   (Older logs may carry `InMail` or `typed, the user to send`; `/followup` still parses them, but new
+   (Older logs may carry `InMail` or `typed, <word> to send` (any single word); `/followup` still parses them, but new
    logs never use them.)
 
    **Status** in `applications.md`, using the row's status before the run:

@@ -15,9 +15,9 @@
 
 ## Context for a cold executor
 
-- Repo: `C:\Users\<user>\Desktop\Github\jobapps` (remote `origin` = `https://github.com/<owner>/jobapps.git`). the user's job-application workspace; refer to the user with they/them. Work happens in the worktree `.claude/worktrees/score-gate-and-discovery` on branch `feat/score-gate-and-discovery`.
-- Committed: skills (`.claude/skills/<name>/SKILL.md`), `tools/`, prompts, `docs/`, `knowledge/`. **Local-only, gitignored, never commit:** `profile.md`, `mega-resume-v1.5.tex`, `stories.md`, `answers.md`, `postings/`, `batches/`, `archive/`, `applications.md`, `dlq.md`. These exist only in the main checkout `C:\Users\<user>\Desktop\Github\jobapps`, not in the worktree.
-- career-ops checkout: `C:\Users\<user>\Desktop\Job Search\career-ops` (Node). `node scan.mjs --quiet` scans tracked companies and appends rows to `data/scan-history.tsv` (tab-separated, positional; first 7 columns `url, first_seen, portal, title, company, status, location`; up to 14 columns; header `url\t...` only at file creation; cells starting with `'*[=+\-@]` stored with one extra leading `'`). Exits non-zero on fatal errors.
+- Repo: `<repo-root>` (remote `origin` = the GitHub remote). The user's job-application workspace; refer to the user with they/them. Work happens in the worktree `.claude/worktrees/score-gate-and-discovery` on branch `feat/score-gate-and-discovery`.
+- Committed: skills (`.claude/skills/<name>/SKILL.md`), `tools/`, prompts, `docs/`, `knowledge/`. **Local-only, gitignored, never commit:** `profile.md`, `mega-resume-v1.5.tex`, `stories.md`, `answers.md`, `postings/`, `batches/`, `archive/`, `applications.md`, `dlq.md`. These exist only in the main checkout `<repo-root>`, not in the worktree.
+- career-ops checkout: `<career-ops-dir>` (Node). `node scan.mjs --quiet` scans tracked companies and appends rows to `data/scan-history.tsv` (tab-separated, positional; first 7 columns `url, first_seen, portal, title, company, status, location`; up to 14 columns; header `url\t...` only at file creation; cells starting with `'*[=+\-@]` stored with one extra leading `'`). Exits non-zero on fatal errors.
 - Test command (all tasks): `python -m unittest discover -s tests -v` from the worktree root. Static check: `python -m py_compile tools/*.py`.
 
 ## Decisions this plan adds (spec left them to the plan)
@@ -447,7 +447,7 @@ already there) that has no `postings/<dir>/changelog.md`. Those with a `score.md
 Split the rest into chunks of 5 and launch background `general-purpose` subagents with
 `model: sonnet`:
 
-> You are a batch scoring subagent in `C:\Users\<user>\Desktop\Github\jobapps`. Read
+> You are a batch scoring subagent in `<repo-root>`. Read
 > `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
 > `postings/<dir>/posting.md`, `mega-resume-v1.5.tex`, `profile.md` section `## Targeting`, and
 > `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write
@@ -888,7 +888,7 @@ replace them.
 
 1. Run `python tools/discover.py $ARGUMENTS`. The career-ops folder comes from `--career-ops` or
    the `CAREER_OPS_DIR` environment variable; if neither is set, ask the user for the path (career-ops
-   lives at `C:\Users\<user>\Desktop\Job Search\career-ops` on the user's machine) and pass it. The scan
+   lives at `<career-ops-dir>` on the user's machine) and pass it. The scan
    takes a few minutes. Companies, title and location filters live in career-ops' `portals.yml`.
 2. If it prints `no new postings`, say so and stop. If it exits non-zero, show its message
    (node missing, career-ops folder missing, scan failed) and stop.
@@ -926,7 +926,7 @@ git commit -m "/discover skill; document discover.py, tests and the score gate"
 ### Task 5: Local setup and acceptance runs (main checkout data, no commits)
 
 **Files:**
-- Modify (local, gitignored, main checkout): `C:\Users\<user>\Desktop\Github\jobapps\profile.md`, `C:\Users\<user>\Desktop\Github\jobapps\dlq.md`
+- Modify (local, gitignored, main checkout): `<repo-root>\profile.md`, `<repo-root>\dlq.md`
 
 **Depends on:** Task 2, Task 3
 
@@ -947,29 +947,29 @@ git commit -m "/discover skill; document discover.py, tests and the score gate"
 
 - [ ] **Step 2: `dlq.md` header** — in the main checkout's `dlq.md` Reason bullet, after `` `SKIPPED` (the user chose to skip it at confirmation or review) `` add `` , `LOW-SCORE` (the `/batch` score gate: below the threshold or under the pay floor; retried only with `--reason LOW-SCORE`) ``; in the `read_postings.py` paragraph change `CLOSED`/`INELIGIBLE`/`dropped` to `CLOSED`/`INELIGIBLE`/`LOW-SCORE`/`dropped`.
 
-- [ ] **Step 3: Scoring dry run (success criterion 2)** — outside `/batch` (these three dirs have `changelog.md`, so `/batch` would not score them), launch one `general-purpose` subagent with `model: sonnet`, the stage 1a.5 prompt from Task 2 Step 2 item 5, with these two substitutions: "Read `C:\Users\<user>\Desktop\Github\jobapps\.claude\worktrees\score-gate-and-discovery\.claude\skills\batch\scoring.md`" and posting dirs `1. Xsolla-ebb74747`, `2. Spellbook-d92285f3`, `3. GoogleDeepMind-115400405273191110` (data in the main checkout). Expected: Xsolla `PAY-FLOOR`; Spellbook overall ≥ 3.5; DeepMind fit ≤ 2 and overall < 3.5; each `score.md` quotes `mega-resume-v1.5.tex` for every must-have it marks met (open the three files and check). If an expectation fails, read the `score.md`: a rubric ambiguity is fixed in `scoring.md` (commit in the worktree) and the run repeated once; a defensible judgment that differs is recorded in the PR body.
+- [ ] **Step 3: Scoring dry run (success criterion 2)** — outside `/batch` (these three dirs have `changelog.md`, so `/batch` would not score them), launch one `general-purpose` subagent with `model: sonnet`, the stage 1a.5 prompt from Task 2 Step 2 item 5, with these two substitutions: "Read `<repo-root>\.claude\worktrees\score-gate-and-discovery\.claude\skills\batch\scoring.md`" and posting dirs `1. <Company>-<id>`, `2. <Company>-<id>`, `3. <Company>-<id>` (data in the main checkout). Expected: a company `PAY-FLOOR`; a company overall ≥ 3.5; an off-target posting: fit ≤ 2 and overall < 3.5; each `score.md` quotes `mega-resume-v1.5.tex` for every must-have it marks met (open the three files and check). If an expectation fails, read the `score.md`: a rubric ambiguity is fixed in `scoring.md` (commit in the worktree) and the run repeated once; a defensible judgment that differs is recorded in the PR body.
 
 - [ ] **Step 4: career-ops prerequisite check**
 
-Run, in `C:\Users\<user>\Desktop\Job Search\career-ops`: `node doctor.mjs --json`, then `node scan.mjs --dry-run --quiet`, then `grep -n -A16 "^location_filter:" portals.yml`
+Run, in `<career-ops-dir>`: `node doctor.mjs --json`, then `node scan.mjs --dry-run --quiet`, then `grep -n -A16 "^location_filter:" portals.yml`
 Expected: doctor prints `"onboardingNeeded":false`; the dry run exits 0 and prints `(dry run — no files will be written)` near the start (the trailing `run without --dry-run` line appears only when new offers are found); the grep shows `always_allow` Canada, Montreal, Toronto, Vancouver, Ottawa, Quebec, "Remote - Canada", `allow: []`, `block` United States, USA, India, UK, Germany. Anything else: stop and fix career-ops before Step 5.
 
 - [ ] **Step 5: Discovery run (success criterion 3)** — from the worktree:
 
 ```bash
-python tools/discover.py --root "C:/Users/<user>/Desktop/Github/jobapps" --career-ops "C:/Users/<user>/Desktop/Job Search/career-ops"
+python tools/discover.py --root "<repo-root>" --career-ops "<career-ops-dir>"
 ```
 
 If it prints `no new postings`, rerun with `--no-scan --since 60` (P9). Then:
 
 ```bash
-python tools/read_postings.py "C:/Users/<user>/Desktop/Github/jobapps/discovered/<file>.csv" --all
+python tools/read_postings.py "<repo-root>/discovered/<file>.csv" --all
 ```
 
 must print a JSON list without error. Check no URL overlaps (normalized) with the main checkout's trackers:
 
 ```bash
-python -c "import sys; sys.path.insert(0,'tools'); import discover as d, read_postings as r; from pathlib import Path; root=Path(r'C:/Users/<user>/Desktop/Github/jobapps'); f=sorted((root/'discovered').glob('*.csv'))[-1]; got={r.normalize_url(x['url']) for x in r.from_csv(f)}; raw=set(d.URL_RE.findall((root/'applications.md').read_text(encoding='utf-8'))); raw|={x['url'] for x in r.dlq_rows(root/'dlq.md')}; raw|={u for p in (root/'postings').glob('*/posting.md') for u in r.POSTING_URL.findall(p.read_text(encoding='utf-8'))}; known={r.normalize_url(u) for u in raw}; print('rows', len(got), 'overlap', len(got & known))\"
+python -c "import sys; sys.path.insert(0,'tools'); import discover as d, read_postings as r; from pathlib import Path; root=Path(r'<repo-root>'); f=sorted((root/'discovered').glob('*.csv'))[-1]; got={r.normalize_url(x['url']) for x in r.from_csv(f)}; raw=set(d.URL_RE.findall((root/'applications.md').read_text(encoding='utf-8'))); raw|={x['url'] for x in r.dlq_rows(root/'dlq.md')}; raw|={u for p in (root/'postings').glob('*/posting.md') for u in r.POSTING_URL.findall(p.read_text(encoding='utf-8'))}; known={r.normalize_url(u) for u in raw}; print('rows', len(got), 'overlap', len(got & known))\"
 ```
 
 Expected: `rows N` with N > 0 and `overlap 0`. `known` is built only from `applications.md`, `dlq.md` and `posting.md` files, the three sources criterion 3 names.
@@ -986,6 +986,6 @@ Expected: the `check-tools` job passes; `gh run view <run id> --log` shows the `
 ## Success criteria (from the spec)
 
 1. **Unit tests:** `python -m unittest discover -s tests` passes locally (Tasks 1, 3) and in CI (Task 5 Step 7).
-2. **Scoring dry run:** Xsolla `PAY-FLOOR`, Spellbook ≥ 3.5, DeepMind < 3.5, quoted evidence (Task 5 Step 3).
+2. **Scoring dry run:** a company `PAY-FLOOR`, a company ≥ 3.5, an off-target posting < 3.5, quoted evidence (Task 5 Step 3).
 3. **Discovery run:** CSV read by `read_postings.py --all`, no URL already tracked (Task 5 Step 5).
 4. **Static:** `python -m py_compile tools/*.py` passes (every task).

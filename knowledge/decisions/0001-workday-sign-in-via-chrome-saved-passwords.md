@@ -5,8 +5,8 @@
 
 ## Context
 Workday postings are the largest group of blocked applications: every Workday tenant has its own
-candidate account, and `/apply` stopped at the sign-in wall. the user has accounts at many tenants with
-passwords saved in Chrome. A spike on 2026-10-05 (Manulife) showed Chrome autofills the email and
+candidate account, and `/apply` stopped at the sign-in wall. The user has accounts at many tenants with
+passwords saved in Chrome. A spike on 2026-10-05 (a company) showed Chrome autofills the email and
 password when the Sign In dialog opens, and clicking Sign In logs in. Claude's browser rules forbid
 it to type passwords or create accounts on third-party sites.
 

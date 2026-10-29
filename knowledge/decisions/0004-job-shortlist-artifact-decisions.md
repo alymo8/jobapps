@@ -6,7 +6,7 @@
 ## Context
 
 A scheduled weekly run in claude.ai publishes the user's job shortlist as an artifact
-(`https://claude.ai/artifact/<artifact-id>`). Its page's Applied / Not interested buttons
+(its URL is kept in the maintainer's local config). Its page's Applied / Not interested buttons
 write documents to the artifact's `decisions` database collection, and the weekly run hides every
 posting that matches one (by normalised URL or by company + title key). Postings the user applied to
 through Claude Code kept coming back, because Claude Code never told the artifact.

@@ -7,10 +7,10 @@ Supersedes [ADR 0002](0002-claude-docs-are-the-source-of-truth.md).
 
 ## Context
 ADR 0002 made three Claude Docs (the mega resume and both prompts) the only source of truth, with
-Claude Code pulling them and never writing back. the user's profile, stories and answers stayed
+Claude Code pulling them and never writing back. The user's profile, stories and answers stayed
 local-only, so cover letters written in claude.ai could not use them. The profile is also a file
 Claude Code writes: `/apply`, `/batch` and `/followup` save every reusable answer the user gives, and
-`/batch` saves the Workday work history and the Targeting section there. the user chose (2026-10-18) to
+`/batch` saves the Workday work history and the Targeting section there. The user chose (2026-10-18) to
 move all three into docs anyway and let Claude Code write to the Profile doc. A test on a
 throwaway doc showed that inserting a line inside a code block with a Docs find-replace, and
 deleting it again, changes exactly that line.

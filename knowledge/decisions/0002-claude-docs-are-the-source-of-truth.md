@@ -6,7 +6,7 @@
 Superseded by [ADR 0003](0003-claude-code-writes-to-the-profile-doc.md).
 
 ## Context
-the user edits the mega resume and the resume and cover letter prompts in claude.ai, and Claude Code's
+The user edits the mega resume and the resume and cover letter prompts in claude.ai, and Claude Code's
 skills read them from this repo. Keeping two copies meant every change was made twice, and they
 drifted: on 2026-10-17 the skills read `mega-resume-v1.5.tex` while the current version was a
 local, unreferenced v1.6. Claude Docs are reachable from both claude.ai and Claude Code, and a test

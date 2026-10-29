@@ -8,9 +8,9 @@ argument-hint: "[<posting dir | company> ...] [--dry-run]"
 
 All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one LinkedIn
 tab of its own**, per `.claude/skills/linkedin-tab.md`: load `claude-in-chrome` first, open pages
-by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. the user is
-logged in to LinkedIn; check whether his plan is Premium or free before the first send, per
-"the user's plan and each person's message route" in `.claude/skills/linkedin-tab.md` (free: about 3
+by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. The user is
+logged in to LinkedIn; check whether the user's plan is Premium or free before the first send, per
+"The user's plan and each person's message route" in `.claude/skills/linkedin-tab.md` (free: about 3
 personalized invitations a month; Premium: unlimited notes). Invitation notes stay ≤200 characters.
 
 ## Approval rule
@@ -48,7 +48,7 @@ python -c "import datetime as d,sys; a=d.date.fromisoformat(sys.argv[1]); b=d.da
 ```
 
 Calendar days = `(today - from).days`. Use the logged date when there is one for a send Claude
-confirmed (`## Sent`, `nudge sent`, `reply sent`, `invite sent`). For a `typed, the user to send`
+confirmed (`## Sent`, `nudge sent`, `reply sent`, `invite sent`). For a `typed, <word> to send` (any single word)
 message, use the outbound date shown in the LinkedIn thread (the user may send it days later). When only LinkedIn's
 relative label exists ("1 week ago", "Tuesday"), convert it to an absolute date and mark it `~` in
 the manifest (e.g. `~2026-09-27`).
@@ -63,7 +63,7 @@ For each posting in scope read `outreach.md`:
 
 - **`## Sent`**: parse every variant: the pipe bullet
   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` + `>` quote; the same bullet
-  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (Censys). A
+  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (a company). A
   bullet that fits none is listed in the review as `unparsed` with its line; never guess.
 - **`## Follow-up`**: two kinds of bullet. Action bullets
   `- <Name> | <YYYY-MM-DD> | <state> | <action> | text:` are the record: derive state only from
@@ -116,7 +116,7 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume, sent directly with no attachment (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, the user to send` → note `typed <date>, not sent` |
+| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume, sent directly with no attachment (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, <word> to send` (any single word) → note `typed <date>, not sent` |
 | 4 | `silent` | A (b), free message (open profile), InMail (old logs) or direct message sent, no reply, ≥3 business days since the last outbound message, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Add the next new person (step 3b) |
 | 6 | `waiting` | Anything else | None |
@@ -233,7 +233,7 @@ waiting 3–5 seconds between page opens:
   `none left` (the stale person), `none`.
   - A newly added person also gets a standard `## Sent` bullet
     (`- <Name> | <profile URL> | <free message (open profile) | connection request with note | connection request (no note) | message (existing connection)> | <date> | text sent:` + quote).
-  - `typed, the user to send` is an old-log action only: parse it (see Dates and the `accepted` row),
+  - `typed, <word> to send` (any single word) is an old-log action only: parse it (see Dates and the `accepted` row),
     never write it.
   - A reconciled send gets a `## Sent` bullet in the same format, with `(reconciled <date>)`
     after the channel.

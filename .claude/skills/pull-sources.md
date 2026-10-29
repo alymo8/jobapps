@@ -4,7 +4,7 @@ A shared procedure file, not a skill: `/resume`, `/cover-letter`, `/apply`, `/ou
 and `/followup` follow it before reading anything in `sources/`.
 
 The mega resume, both prompts, and the user's profile, stories and answers live in six Claude Docs
-that the user edits in claude.ai; they are the only source of truth. `sources.json` lists them (`path`, `doc_url`, `tab_id`); the doc
+that the user edits in claude.ai; they are the only source of truth. `config.local.json` `sources` lists them (`path`, `doc_url`, `tab_id`); the doc
 id is the UUID at the end of `doc_url`. Each doc holds its content inside one fenced code block.
 Never edit `sources/` by hand: the next pull overwrites it. Claude Code writes only to the Profile
 doc, and only through `.claude/skills/write-source.md`.
@@ -20,7 +20,10 @@ Pulled files may name other sources by their old names (`profile.md`, `stories.m
 
 ## Steps
 
-Run from the repo root, so `sources/...` paths resolve there. For each entry in `sources.json`,
+If `config.local.json` does not exist, stop before any pull and tell the user:
+`config.local.json is missing: this repo is not set up yet (README "Setup").`
+
+Run from the repo root, so `sources/...` paths resolve there. For each entry in `config.local.json` `sources`,
 in order:
 
 1. Docs `create`: object `blob`, engine `blob`, container `{"kind": "project", "id": <doc id>}`,

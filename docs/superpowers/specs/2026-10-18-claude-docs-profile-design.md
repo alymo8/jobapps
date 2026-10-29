@@ -6,13 +6,13 @@
 ## Purpose
 
 [The first change](2026-10-17-claude-docs-sources-design.md) moved the mega resume and both
-prompts into Claude Docs. the user's other three sources, `profile.md`, `stories.md` and `answers.md`,
+prompts into Claude Docs. The user's other three sources, `profile.md`, `stories.md` and `answers.md`,
 still live only on the user's computer, so cover letters written in claude.ai can't use the user's stories,
 past answers, career goals or framing rules. Move them into Claude Docs the same way.
 
 `profile.md` is different from the others: Claude Code writes to it. `/apply`, `/batch` and
 `/followup` save every reusable answer the user gives, and `/batch` saves `## Workday work history` and
-`## Targeting` there. the user chose (2026-10-18) to move it anyway and let Claude Code write to the
+`## Targeting` there. The user chose (2026-10-18) to move it anyway and let Claude Code write to the
 Profile doc, the one exception to "Claude Code never writes back"
 ([ADR 0002](../../../knowledge/decisions/0002-claude-docs-are-the-source-of-truth.md)).
 
@@ -24,9 +24,9 @@ normalised to LF (profile 134, stories 458 and answers 73 lines).
 
 | Local file (new path) | Doc URL | Tab id | Tab body (node) id |
 | --- | --- | --- | --- |
-| `sources/profile.md` | `https://claude.ai/code/artifact/<doc-id>` | `<tab-id>` | `<node-id>` |
-| `sources/stories.md` | `https://claude.ai/code/artifact/<doc-id>` | `<tab-id>` | `d0e05c1e-bdd9` |
-| `sources/answers.md` | `https://claude.ai/code/artifact/<doc-id>` | `<tab-id>` | `44a9a071-d456` |
+| `sources/profile.md` | `<doc_url>` | `<tab_id>` | `<node_id>` |
+| `sources/stories.md` | `<doc_url>` | `<tab_id>` | `<node_id>` |
+| `sources/answers.md` | `<doc_url>` | `<tab_id>` | `<node_id>` |
 
 Also verified 2026-10-18, on a throwaway doc: a Docs `update` on the tab body (`engine "prose"`)
 with `{"op":"replace","target":{"kind":"find","text":"<an exact line>\n"},"with":{"from":{"kind":"inline","content":"<that line>\n<new line>\n"},"as":"text"}}`
@@ -85,9 +85,9 @@ the letter header). `.gitignore` ignores the three root files.
 ### `sources.json` additions
 
 ```json
-{"path": "sources/profile.md", "doc_url": "https://claude.ai/code/artifact/<doc-id>", "tab_id": "<tab-id>", "node_id": "<node-id>", "writable": true},
-{"path": "sources/stories.md", "doc_url": "https://claude.ai/code/artifact/<doc-id>", "tab_id": "<tab-id>"},
-{"path": "sources/answers.md", "doc_url": "https://claude.ai/code/artifact/<doc-id>", "tab_id": "<tab-id>"}
+{"path": "sources/profile.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>", "node_id": "<node_id>", "writable": true},
+{"path": "sources/stories.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>"},
+{"path": "sources/answers.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>"}
 ```
 
 appended to the existing `sources` list. The pull procedure is unchanged and pulls all six.
@@ -103,7 +103,7 @@ own mapping line stays.
 ### The write procedure (`.claude/skills/write-source.md`)
 
 Used whenever a skill saves something to the profile: a reusable answer, an `ASK` replaced by
-the user's answer, `## Workday work history`, `## Targeting`. Only for entries with `"writable": true`.
+The user's answer, `## Workday work history`, `## Targeting`. Only for entries with `"writable": true`.
 
 1. Pull that source alone (the `pull-sources.md` steps for its entry), so the edit starts from the
    doc as it is now. Keep a copy of the pulled file in the scratchpad.

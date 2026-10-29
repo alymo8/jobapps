@@ -17,7 +17,7 @@
 - P4: Before stage 2, a posting counts as Workday when its URL host is Workday, or its dlq.md Detail or posting.md contains myworkdayjobs.com, myworkdaysite.com or "Workday (".
 - P5: The batch review shows per Workday posting the tenant, stop step, quoted consent label and After approval rows; their ASKs join the deduplicated questions.
 - P6: Element refs come from `find`, falling back to `read_page` (interactive).
-- P7: Batch acceptance runs `/batch apply dlq.md --reason BLOCKED` trimmed at confirmation to RBC R-0000182590, Thomson Reuters JREQ202780 and one Workday posting with a non-Workday URL; only the kept rows are marked retried. "No password typed" is evidenced by grepping subagent transcripts.
+- P7: Batch acceptance runs `/batch apply dlq.md --reason BLOCKED` trimmed at confirmation to a posting <req-id>, a posting <req-id> and one Workday posting with a non-Workday URL; only the kept rows are marked retried. "No password typed" is evidenced by grepping subagent transcripts.
 - P8: A required field answered ASK: normal run asks the user that step's ASKs at once and continues; batch subagent leaves the step unsaved and stops there (posting goes to review ready with ASKs); execute mode returns NEEDS USER for later unanswerable fields. Only non-ASK validation errors failing twice are FAILED.
 - P9: When the mega resume gives only a year for a job date, the user is asked for the month; the history section is appended at the end of profile.md.
 

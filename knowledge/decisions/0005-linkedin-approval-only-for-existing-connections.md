@@ -7,7 +7,7 @@
 
 `/outreach` and `/followup` waited for the user's OK on every person and every message. Most outreach
 goes to strangers (recruiters, hiring managers) as connection requests, where the approval step
-slowed runs without protecting much. the user's own 1st-degree connections at a company are the easiest
+slowed runs without protecting much. The user's own 1st-degree connections at a company are the easiest
 people to reach, but they are personal relationships: the user wants to know who is being messaged and
 approve it first.
 

@@ -24,14 +24,15 @@ page opened inside it; several of them at once crashed the user's 16 GB laptop
 - **Close the tab at the end of the run**, including a run that ends early. Exception: on a CAPTCHA,
   rate limit or "restricted activity" warning, leave it open for the user and say which tab it is.
 
-## the user's plan and each person's message route
+## The user's plan and each person's message route
 
 Two different things, both checked, never assumed:
 
-- **the user's plan (once per run, before the first send).** Premium or free decides the note budget and
+- **The user's plan (once per run, before the first send).** Premium or free decides the note budget and
   whether InMail credits exist. Read it from what LinkedIn shows: the invitation dialog says "You
   have unlimited notes with Premium", the message composer shows "Use N of M InMail credits", and
-  "Reactivate Premium" in the top bar means Premium lapsed. If none of these settles it, ask the user.
+  "Reactivate Premium" in the top bar means Premium lapsed. If none of these settles it, use `linkedin_premium` from `config.local.json` if set (true = Premium,
+  false = free), else ask the user.
   Premium: no monthly note cap, notes up to 300 characters. Free: about 3 notes a month, notes up
   to 200 characters. Either way, at most 10 connection requests per run.
 - **Each new person's route (before choosing a connection request).** Open Profile is the

@@ -7,7 +7,7 @@
 
 Workday postings (`*.myworkdayjobs.com`, `*.myworkdaysite.com`) are the largest group of blocked
 applications: `/apply` and every `/batch` subagent stop at the Workday sign-in wall and file the
-posting as `BLOCKED` in `dlq.md`. the user already has Workday candidate accounts at many companies,
+posting as `BLOCKED` in `dlq.md`. The user already has Workday candidate accounts at many companies,
 with the passwords saved in Chrome. This change lets `/apply` sign in through Chrome's saved
 password and fill the full Workday wizard up to the approval point, the same way it handles
 Greenhouse today.
@@ -18,15 +18,13 @@ Greenhouse today.
   site needs an account login or sign-up ... stop and report it as a blocker (don't create accounts)."
 - `.claude/skills/batch/SKILL.md` subagent prompt lists "needs an account login" as a blocker, and
   the DLQ section gives "the user creates a Workday account at <tenant>" as an example `Needs`.
-- `dlq.md` holds 13 open Workday account blockers (Morgan Stanley `ms.wd5` ×2, RBC `rbc.wd3` ×2,
-  Manulife `manulife.wd3` ×2, Thomson Reuters `thomsonreuters.wd5` ×2, PSP `investpsp.wd3`,
-  Intact `intactfc.wd3`, Simpro `simpro.wd3`, Workday `workday.wd5`, and Mastercard with no tenant
-  found). The Salesforce row is resolved (the user applied by hand).
+- `dlq.md` holds 13 open Workday account blockers (one `<tenant>.wdN` per blocked row, several tenants twice, and one row with no tenant
+  found). One row is resolved (the user applied by hand).
 - `profile.md` (local-only, gitignored) has sections `Contact`, `Eligibility`,
   `Compensation & availability`, `Common questions`, `Voluntary self-identification (EEO / diversity)`,
   `Free-text answers`, `Career goals and cover letters`. It has no structured work history.
 
-### Spike findings (2026-10-05, Manulife JR26071949)
+### Spike findings (2026-10-05, a posting <req-id>)
 
 1. Opening the Sign In dialog, Chrome autofilled the email and the saved password. Clicking Sign In
    logged in; the header then shows the email and "Candidate Home". Claude never saw the password.
@@ -76,7 +74,7 @@ Greenhouse today.
 Phase 2. A posting found on another site (company careers page, Built In) whose Apply button leads to
 a Workday host switches to the playbook at that point. The tenant name, used by the playbook, DLQ
 rows and the review sheet:
-- `<tenant>.wdN.myworkdayjobs.com/...` → `<tenant>.wdN` (e.g. `manulife.wd3`).
+- `<tenant>.wdN.myworkdayjobs.com/...` → `<tenant>.wdN` (e.g. `acme.wd3`).
 - `wdN.myworkdaysite.com/[<locale>/]recruiting/<tenant>/<site>/...` → `<tenant>.wdN` (the path
   segment after `/recruiting/`).
 
@@ -152,7 +150,7 @@ Each part is a numbered section in `workday.md`.
 10. **Approval point.** Replaces `/apply` step 6 for Workday: the same summary, plus the tenant, the
     step the run stopped on, the consent checkbox label quoted (or "no consent checkbox"), and the
     `After approval` rows. `applications.md` → `ready` (normal runs only; in batch the
-    orchestrator writes it). Ask "Submit? (ok / edits)". the user's "ok" approves ticking that consent
+    orchestrator writes it). Ask "Submit? (ok / edits)". The user's "ok" approves ticking that consent
     checkbox, filling the `After approval` rows and submitting.
 11. **Submit (Phase 2).** Apply edits. On the stop step, re-fill any field that is empty or differs
     from `application.md` (the unsaved step's values may be gone after a reload or in a new tab).
@@ -248,12 +246,12 @@ Confirmed by the user on 2026-10-05:
    sections; `workday.md` has sections 1–11 as above; `batch/SKILL.md` no longer lists a Workday
    login as an automatic blocker; ADR 0001 exists and is indexed;
    `python -m py_compile tools/*.py` passes.
-2. **End-to-end `/apply`** on https://manulife.wd3.myworkdayjobs.com/MFCJH_Jobs/job/Montreal-Quebec/Agentic-Engineer--Innovation_JR26071949:
+2. **End-to-end `/apply`** on https://<tenant>.wd3.myworkdayjobs.com/<site>/job/<location>/<title>_<id>:
    reaches the approval point with every step before the consent checkbox saved; no `ASK` except
    questions not answerable from the source files; every Work Experience and Education entry on the
    page equals `## Workday work history`; the resume upload shows the tailored PDF's filename.
    Submitting is the user's call and not part of the criterion.
-3. **Batch:** `/batch apply` over at least 2 Workday postings from `dlq.md` (e.g. RBC
-   R-0000182590 and Thomson Reuters). Each ends `ready`, or `NO-WORKDAY-LOGIN <tenant>` with the
+3. **Batch:** `/batch apply` over at least 2 Workday postings from `dlq.md` (e.g. a company
+   <req-id> and a company). Each ends `ready`, or `NO-WORKDAY-LOGIN <tenant>` with the
    sign-in URL in the review's "Workday logins needed" list. No subagent types a password or
    fills Create Account.

@@ -6,7 +6,7 @@
 ## Context
 
 `/outreach` always ran `/apply` first, so messaging people at a company meant submitting an
-application too, and `/batch outreach` skipped every posting already applied to. the user's LinkedIn
+application too, and `/batch outreach` skipped every posting already applied to. The user's LinkedIn
 wording rules lived only in the `## LinkedIn outreach` section of `sources/profile.md`, not in the
 skills: say "interested", never "applied"; attach nothing; never InMail; send a free message when
 LinkedIn offers one.
