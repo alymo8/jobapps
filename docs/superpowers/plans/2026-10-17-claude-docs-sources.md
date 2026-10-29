@@ -58,7 +58,7 @@ Answers to the gate's plan questions, fixed here:
 
 - [ ] **Step 1: Write the failing tests** in `tests/test_pull_sources.py`, importing the module through `sys.path` into `tools/` as `tests/test_discover.py` does, each using a `tempfile.TemporaryDirectory`:
   - `test_latex_block_extracted`: input `"# T\n\nnote\n\n```latex\n\\a{1}\n```\n"` → target bytes `b"\\a{1}\n"`, status `created`, `lines == 1`.
-  - `test_longer_fence_keeps_inner_fences`: block opened by ` ````markdown `, containing `"```\nBest,\nAly\n```"`, closed by ` ```` ` → target holds those four lines exactly.
+  - `test_longer_fence_keeps_inner_fences`: block opened by ` ````markdown `, containing `"```\nBest,\nSam\n```"`, closed by ` ```` ` → target holds those four lines exactly.
   - `test_whitespace_and_escapes_kept`: content lines `" "`, `"      "`, `"\\% \\_ \\& \\# $|$ ·"` → written byte for byte.
   - `test_crlf_input_written_as_lf`: the latex input with `\r\n` → target has no `\r`.
   - `test_zero_blocks_is_error` and `test_two_blocks_is_error`: `pull` returns `"error"` and `code_blocks` 0 / 2; target not created.
