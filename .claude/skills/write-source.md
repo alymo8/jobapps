@@ -14,7 +14,7 @@ replace targets.
 ## Steps
 
 If `config.local.json` does not exist, stop and tell the user:
-`config.local.json is missing: this repo is not set up yet (README "Setup").`
+`config.local.json is missing: this repo is not set up yet (run /onboard, or see README "Setup").`
 
 Run from the repo root.
 

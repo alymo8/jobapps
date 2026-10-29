@@ -21,7 +21,7 @@ Pulled files may name other sources by their old names (`profile.md`, `stories.m
 ## Steps
 
 If `config.local.json` does not exist, stop before any pull and tell the user:
-`config.local.json is missing: this repo is not set up yet (README "Setup").`
+`config.local.json is missing: this repo is not set up yet (run /onboard, or see README "Setup").`
 
 Run from the repo root, so `sources/...` paths resolve there. For each entry in `config.local.json` `sources`,
 in order:

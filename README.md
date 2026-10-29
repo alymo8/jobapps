@@ -5,6 +5,10 @@ and LinkedIn outreach for each posting, driven by Claude Code skills.
 
 ## Setup
 
+Run `/onboard` in Claude Code: it checks prerequisites, asks for your material and targets, creates your six Docs, config, career-ops scan, shortlist and weekly routine.
+
+### Manual setup (fallback)
+
 1. **Prerequisites.** Python 3; `pdflatex` on PATH, or MiKTeX; Chrome with the Claude in Chrome
    extension (for `/apply`, `/outreach`, `/followup`); the Claude Docs connector, signed in to your
    account.
@@ -42,7 +46,8 @@ Git history predates this cleanup and still holds the maintainer's earlier detai
 - [`CLAUDE.md`](CLAUDE.md) — how the workspace is laid out and how to work in it.
 - Local only, not tracked: `applications.md` (status per posting), `postings/` (per-posting
   folders), `batches/` (`/batch` manifests), `discovered/` (`/discover` CSVs), `dlq.md`, and the personal source files.
-- [`.claude/skills/`](.claude/skills/) — `/discover`, `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/followup`, `/batch`.
+- [`.claude/skills/`](.claude/skills/) — `/onboard`, `/discover`, `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/followup`, `/batch`.
+- [`templates/`](templates/) — generic starting material `/onboard` uses.
 - [`knowledge/`](knowledge/README.md) — what the project knows: research, context, domain docs.
 - [`knowledge/decisions/`](knowledge/decisions/README.md) — decision records.
 - [`docs/superpowers/`](docs/superpowers/README.md) — design specs and implementation plans.

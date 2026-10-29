@@ -1,7 +1,9 @@
 # ADR 0004: The shortlist artifact's decisions collection
 
-- **Status:** accepted
+- **Status:** superseded
 - **Date:** 2026-10-18
+
+Superseded by [ADR 0010](0010-onboarding-creates-user-docs-and-shortlist.md).
 
 ## Context
 
