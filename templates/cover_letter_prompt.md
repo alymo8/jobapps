@@ -43,8 +43,8 @@ recrutement,` and `Cordialement,` / `<first name>`. Otherwise English.
 **Truthfulness.** Every claim (metric, technology, scope, date, title, outcome) traces to one of
 the sources above. Rephrase and re-emphasize freely; never invent, inflate, or move a metric or a
 technology from one project to another. Clients are always anonymized (e.g. "a major bank", "a consulting
-client"). <Current employer> is framed as: <the framing rule from
-`sources/profile.md`, "Career goals and cover letters">.
+client"). <Current employer> is framed as:
+<the framing rule from `sources/profile.md`, "Career goals and cover letters">.
 
 **Positive, no gaps.** Never mention a requirement <first name> doesn't meet, never apologize or hedge
 ("although I haven't...", "I may not have..."). Lead with the closest real strength instead, and
@@ -64,9 +64,9 @@ only in the close.
    (`sources/profile.md`: <what you are looking for next>).
 2. **Strongest proof (4-6 sentences).** The one or two experiences that best match the posting's
    top requirements, with their outcomes and numbers.
-3. **Second proof or story (3-5 sentences).** Another angle the posting cares about (<angles that
-   matter in your field, e.g. reliability, client-facing delivery, end-to-end ownership, leadership,
-   speed>), from a project or a `sources/stories.md` story.
+3. **Second proof or story (3-5 sentences).** Another angle the posting cares about
+   (<angles that matter in your field, e.g. reliability, client-facing delivery, end-to-end ownership, leadership, speed>),
+   from a project or a `sources/stories.md` story.
 4. **Close (2-3 sentences).** What <first name> would bring to this team, and enthusiasm for a conversation.
    No restating the resume.
 

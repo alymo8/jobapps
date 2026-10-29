@@ -101,6 +101,22 @@ class SourceTemplatesTest(unittest.TestCase):
         for p in files:
             self.assertIsNone(re.search(r"`{4,}", p.read_text(encoding="utf-8")), str(p))
 
+    def test_template_placeholders_are_single_line(self):
+        # A "<word" with no ">" later on its line is a placeholder split by a line break, which
+        # /onboard's re.findall(r"<[^>\n]+>") would miss. The page's HTML/JS is not a placeholder.
+        files = [p for p in TEMPLATES.rglob("*") if p.is_file() and p.suffix in TEXT_SUFFIXES
+                 and p != SHORTLIST / "index.html"]  # fmt: skip
+        self.assertTrue(files)
+        for p in files:
+            for n, line in enumerate(p.read_text(encoding="utf-8").splitlines(), 1):
+                self.assertNotRegex(line, r"<[A-Za-z][^>]*$", f"{p.name} line {n}")
+
+    def test_mega_resume_skill_lines_end_in_line_break(self):
+        lines = re.findall(r"^%\s+\\textbf\{.*$", read("mega-resume.tex"), re.M)
+        self.assertTrue(lines)
+        for line in lines[:-1]:
+            self.assertTrue(line.endswith(" \\\\"), line)
+
 
 WEEKLY_PLACEHOLDERS = ("<target roles in priority order>", "<target companies>",
                        "<priority companies>", "<location scope>", "<shortlist artifact URL>",
@@ -115,6 +131,7 @@ class WeeklyPromptTemplateTest(unittest.TestCase):
         self.assertTrue(text.startswith("# Weekly job search prompt"))
         for placeholder in WEEKLY_PLACEHOLDERS:
             self.assertIn(placeholder, text)
+        self.assertRegex(text, r"(?m)^<doc links>$")
         self.assertRegex(text, r"(?m)^### Known board-access notes \(from past runs\)$")
 
 

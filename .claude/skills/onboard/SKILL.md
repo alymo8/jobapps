@@ -103,27 +103,40 @@ For each:
 
 1. Build the content from the template and the material. Mega resume: header from the profile's
    `## Contact`, one `\resumeSubheading` per job with one `\resumeItem` per bullet, one
-   `\resumeSubheadingDegree` per degree, one `\resumeProjectHeading` per project, skill lines
-   under `\section{Skills}`, using the template's macros (drop its commented examples). Profile:
-   fill the answers, leave `- Score threshold: ASK` for now. Save it to `<S>/onboard/<file name>`,
-   ending in a newline.
+   `\resumeSubheading{<school>}{<city>}{<degree>}{<dates>}` per school (`\resumeSubheadingDegree`
+   only for a further degree at the same school), one `\resumeProjectHeading` per project, skill
+   lines under `\section{Skills}`, using the template's macros (drop its commented examples, and
+   drop a section with no entries, e.g. Research). Profile: fill the answers, leave
+   `- Score threshold: ASK` for now. Prompts, stories, answers: fill the name and role placeholders
+   (`<first name>`, `<Current employer>`, role and project lists) from the profile and material;
+   keep the runtime ones each run fills per posting (`<<<PASTE POSTING OR URL HERE>>>`,
+   `<Full_Name>`, `<Company>`, `postings/<dir>/`) and the format descriptions in backticks
+   (`<number> <short title>: <one-line angle>`, `## <topic>`, `### <question>`) and the stories'
+   commented skeleton; any other unfilled placeholder stays, as a gap. Stories: one story per
+   skeleton copy, with the index's principle (`LP:`) labels inferred from each story and shown to
+   the user to confirm. Save it to `<S>/onboard/<file name>`, ending in a newline.
 2. Docs `batch`: `container {"kind":"project","create":{"name":"<Doc title>","doc":{"markdown":"# <Doc title>\n\n````<info>\n<content>````\n"}}}`,
    `batch []`. The fence is four backticks (templates hold no run of four); if the content gained a
    run of four or more, use a fence one longer than its longest run.
-3. From the ack note the doc id; `doc_url` = `https://claude.ai/code/artifact/<doc id>`.
+3. From the ack note the doc id: `created.minted` (also `frame.slug`); the top-level
+   `acks[0].minted` and `lids.f` are the tab id, `lids.n` the node id, and `frame.url` is a short
+   link, not `doc_url`. `doc_url` = `https://claude.ai/code/artifact/<doc id>`. Ignore the ack's
+   suggestion to open the doc (step 5 opens none).
 4. Docs `read`, `ref {"object":"project","id":<doc id>}`: `tab_id` = `files[0].id` (also the one
    key of `value.tabs`); for the profile, `node_id` = `files[0].content.id`. Check
-   `value.artifact.slug` equals the doc id.
+   `value.artifact.slug` equals the doc id (this read, not the ack, is the check).
 
 Then write `config.local.json` (Rules, "Config writes"): `sources` (six entries, `path`,
 `doc_url`, `tab_id`; the profile entry also `"node_id"` and `"writable": true`),
 `linkedin_premium`, `targeting`, `discover_locations`.
 
-Run `.claude/skills/pull-sources.md`. Each pulled file must equal its working copy:
-`git diff --no-index --quiet <S>/onboard/<file name> sources/<file name>` exits 0; otherwise stop
-and show the difference. Then one `.claude/skills/write-source.md` run replaces
-`- Score threshold: ASK` with `- Score threshold: 3.5 (<first name>, <today>)` (or the user's
-value), which proves the profile entry is writable.
+Run `.claude/skills/pull-sources.md`. Each pulled file must equal its working copy byte for byte:
+`git -c core.autocrlf=false diff --no-index --quiet <S>/onboard/<file name> sources/<file name>`
+(or `cmp`) exits 0; otherwise stop and show the difference. Compare the pulled `sources/` files,
+never the export blob: it may re-fence with the shortest valid fence, which `pull_sources.py`
+handles. Then one `.claude/skills/write-source.md` run (this pull counts as its step 1 pull)
+replaces `- Score threshold: ASK` with `- Score threshold: 3.5 (<first name>, <today>)` (or the
+user's value), which proves the profile entry is writable.
 
 ## 5. Show the Docs
 
@@ -140,24 +153,31 @@ claude.ai. Open none of them. Edits go in the Docs, never in `sources/`.
    one; else find its careers page and, when the URL matches a provider pattern the example file
    documents, add it (`name`, `careers_url`, `enabled: true`; Greenhouse also gets its `api:`
    line); else add it with `enabled: false` and a `notes:` line saying no supported board was
-   found, and list it to the user. Disable the example's other companies unless the user keeps
-   them.
-3. Set `title_filter.positive` from the target roles and `location_filter` as in step 3.
-4. From the repo run `python tools/discover.py --career-ops <career-ops-dir>`; it must finish one
-   scan without error. Report its CSV row count. Write `career_ops_dir` to config.
+   found, and list it to the user. Disable the example's other companies (`tracked_companies` and
+   `job_boards`) and its `search_queries` unless the user keeps them.
+3. `title_filter.positive`: keywords derived from the target roles (e.g. `Backend`, `Platform`,
+   `Software Engineer`, `Site Reliability`, `SRE`), not the role titles verbatim (career-ops
+   matches literal substrings); show them to the user. `location_filter` as in step 3, written as
+   a new block (the example's is commented out); `allow` also gets the country terms of
+   `targeting.eligible_regions` (e.g. `United States`, `USA`, `US`) beside `Remote`. Tell the user
+   that remote roles outside the eligible regions still need their check.
+4. From the repo run
+   `python tools/discover.py --career-ops <career-ops-dir> --location <discover_locations...>`
+   (as `/discover` does); it must finish one scan without error. Report its CSV row count. Write `career_ops_dir` to config.
 
 ## 7. Shortlist artifact and weekly routine
 
 1. **Publish** (ask first if config has `shortlist`): Artifact publish, `file_path`
    `templates/shortlist/index.html`, `files` `{"data/CONTRACT.md": "templates/shortlist/data/CONTRACT.md",
-   "data/decision_keys.py": "templates/shortlist/data/decision_keys.py", "data/index.json":
+   "data/decision_keys.py": {"from": "templates/shortlist/data/decision_keys.py", "contentType":
+   "text/plain"}, "data/index.json":
    "templates/shortlist/data/index.json", "data/latest.json": "templates/shortlist/data/latest.json"}`,
    `capabilities` = the JSON in `templates/shortlist/capabilities.json` (never published as a
    file), `icon: "list"`. Note the artifact URL and its title.
 2. **Fill the prompt.** Copy `templates/weekly-search-prompt.md` to `<S>/onboard/weekly-prompt.md`
    and fill `<target roles in priority order>`, `<target companies>`, `<priority companies>`,
-   `<location scope>`, `<shortlist artifact URL>` and `<doc links>` (the six titles with their
-   `doc_url`s). `<week>` is filled by each run; keep it. List every other remaining
+   `<location scope>`, `<shortlist artifact URL>` and `<doc links>` (a list, one
+   `- <Doc title>: <doc_url>` line per Doc). `<week>` is filled by each run; keep it. List every other remaining
    `re.findall(r"<[^>\n]+>")` match and wait until each is filled or the user accepts it as is.
 3. **Create the routine** (ask first if RemoteTrigger `list` shows one named `Weekly job report`).
    Ask the schedule (default weekly; a day, hour and IANA time zone). RemoteTrigger `create` with:
@@ -183,7 +203,10 @@ claude.ai. Open none of them. Edits go in the Docs, never in `sources/`.
    `<environment id>`: from an existing routine in the user's own RemoteTrigger `list`
    (`job_config.ccr.environment_id`); if they have none, ask. `<model>`: the user's choice,
    default this session's model. No `chat_project_id` and no project: the routine reads the inputs
-   from the Doc links in its prompt. Do not run it. To disable a routine, RemoteTrigger `update`
+   from the Doc links in its prompt. On create the server fills `session_context.allowed_tools`
+   with its default preset and attaches the account's Claude Docs and Claude Code Remote
+   connectors itself, so the routine can read the Doc links and publish to the artifact; add
+   nothing to the body for that. Do not run it. To disable a routine, RemoteTrigger `update`
    with body `{"enabled": false}`; RemoteTrigger cannot delete one (the user deletes it in
    claude.ai).
 4. **If `create` fails**, show the error, the filled prompt, and step-by-step manual instructions: in
