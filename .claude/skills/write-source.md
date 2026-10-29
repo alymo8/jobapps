@@ -2,16 +2,19 @@
 
 A shared procedure file, not a skill: the only way Claude Code changes a Claude Doc. Skills
 follow it whenever they save something to `sources/profile.md`: a reusable answer, an `ASK`
-replaced by Aly's answer, `## Workday work history`, `## Targeting`. Only entries with
-`"writable": true` in `sources.json` (today the profile) are ever written. Batch subagents never
+replaced by the user's answer, `## Workday work history`, `## Targeting`. Only entries with
+`"writable": true` in `config.local.json` `sources` (today the profile) are ever written. Batch subagents never
 run it; the orchestrator does.
 
 One run per change. A reply with several reusable answers is several runs, in sequence, each
 reporting its own "Saved to profile" line. When runs follow each other with nothing else in
-between, the previous run's step 4 pull serves as the next run's step 1 pull. Never delete a line Aly wrote, except the one line a
+between, the previous run's step 4 pull serves as the next run's step 1 pull. Never delete a line the user wrote, except the one line a
 replace targets.
 
 ## Steps
+
+If `config.local.json` does not exist, stop and tell the user:
+`config.local.json is missing: this repo is not set up yet (README "Setup").`
 
 Run from the repo root.
 
@@ -29,8 +32,8 @@ Run from the repo root.
    Count how often the anchor line occurs in the pulled file (the docs hold nothing else that could
    match). If more than once, extend the anchor upward one line at a time (a multi-line text ending
    with the anchor line) until it occurs once; if it would have to include the line above the
-   section's heading, stop and tell Aly. Never use the `nth` option.
-   New answers keep the profile's form: `- <question>: <answer> (Aly, YYYY-MM-DD)`, with today's date.
+   section's heading, stop and tell the user. Never use the `nth` option.
+   New answers keep the profile's form: `- <question>: <answer> (the user, YYYY-MM-DD)`, with today's date.
 3. **Edit the doc** with Docs `update` (the Claude Docs MCP server's `mcp__<id>__update`, always
    loaded): `ref {"object":"node","id":<node_id>}`, `engine "prose"`,
    `container {"kind":"project","id":<doc id>}`, and
@@ -47,9 +50,9 @@ Run from the repo root.
 
 ## Failure
 
-- The `update` is refused with `find_none` (the doc changed since step 1, for example Aly was
-  editing it): go back to step 1 once. On a second refusal, stop and tell Aly.
-- The step 4 difference is not exactly the intended lines: stop and tell Aly what changed, quoting
+- The `update` is refused with `find_none` (the doc changed since step 1, for example the user was
+  editing it): go back to step 1 once. On a second refusal, stop and tell the user.
+- The step 4 difference is not exactly the intended lines: stop and tell the user what changed, quoting
   the difference. Don't try to repair it.
-- Any other refusal, or a tool that can't be reached: stop and tell Aly. Never write the answer to a
+- Any other refusal, or a tool that can't be reached: stop and tell the user. Never write the answer to a
   local file instead.
