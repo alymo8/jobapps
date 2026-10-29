@@ -5,7 +5,7 @@
 
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
-**Goal:** Add a `/followup` Claude Code skill to the `jobapps` repo. It re-engages the LinkedIn contacts made by earlier `/outreach` runs: it sends the prepared follow-up after a connection is accepted, nudges people who went silent, drafts answers to replies, and replaces stale invitations. Every outgoing message is approved by Aly first.
+**Goal:** Add a `/followup` Claude Code skill to the `jobapps` repo. It re-engages the LinkedIn contacts made by earlier `/outreach` runs: it sends the prepared follow-up after a connection is accepted, nudges people who went silent, drafts answers to replies, and replaces stale invitations. Every outgoing message is approved by the user first.
 
 **Architecture:** A single Markdown skill file (`.claude/skills/followup/SKILL.md`), executed by Claude inline in the main session in its own Chrome tab, in the same style as the existing `apply`, `outreach`, `batch` and `resume` skills. Two small edits keep the neighbours consistent: `outreach/SKILL.md` step 6 and the `applications.md` legend. There is no product code. Date arithmetic is done with a one-line `python -c` command embedded in the skill, not a new tool file.
 
@@ -15,36 +15,36 @@
 
 ## Context for a cold executor
 
-- Repo: `C:\Users\alymo\Desktop\Github\jobapps` (remote `origin` = `https://github.com/alymo8/jobapps.git`, branch `main`). This is Aly's personal job-application workspace. "Aly" is the user; refer to Aly with they/them.
+- Repo: `<repo-root>` (remote `origin` = the GitHub remote, branch `main`). This is the user's personal job-application workspace. Refer to the user with they/them.
 - `postings/<dir>/outreach.md` holds, per posting: a header (posting URL, application status), a shortlist table under a heading that starts with `## Shortlist` (e.g. `## Shortlist (current ... verified ..., 2026-10-04)`; columns `| # | Name | Title | Location | Degree | Profile | Why |`, with an extra `Role`/`Roles` column in the `*-combined` files), per-person drafts, an optional `## Short notes (200-char limit), APPROVED ...` section (these replace note (a) when sending), and a `## Sent` log.
-  - **Draft labels:** (a) is a connection note and (b) is a follow-up to send after acceptance. In older files, HingeHealth has "Connection note" plus "Follow-up message", and Spellbook has an InMail "Subject/Body" plus "Connection note (fallback)". "Connection note" / "Connection note (fallback)" count as (a); "Follow-up message" / InMail Body count as (b).
+  - **Draft labels:** (a) is a connection note and (b) is a follow-up to send after acceptance. In older files, a company has "Connection note" plus "Follow-up message", and a company has an InMail "Subject/Body" plus "Connection note (fallback)". "Connection note" / "Connection note (fallback)" count as (a); "Follow-up message" / InMail Body count as (b).
   - **`## Sent` bullet variants:**
-    - `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by `  > quoted text` (e.g. `postings/GitLab-8698314002/outreach.md`);
-    - the same pipe bullet with no `text sent:` field, followed by an indented `>` quote (BanyanSoftware, Knak, Sardine);
-    - a pipe bullet whose fifth field is the sent text in double quotes, preceded by a prose line giving the channel (Censys).
-- `*-combined` dirs (`postings/Scotiabank-combined`, `postings/ThomsonReuters-combined`) hold the outreach for several postings. Their `applications.md` rows point to the individual dirs. Scotiabank-combined's header names the dirs; ThomsonReuters-combined's header names only req ids (`JREQ202780`, `9090356`).
+    - `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by `  > quoted text` (e.g. `postings/<Company>-<id>/outreach.md`);
+    - the same pipe bullet with no `text sent:` field, followed by an indented `>` quote (a company, a company, a company);
+    - a pipe bullet whose fifth field is the sent text in double quotes, preceded by a prose line giving the channel (a company).
+- `*-combined` dirs (`postings/<Company>-combined`) hold the outreach for several postings. Their `applications.md` rows point to the individual dirs. `<Company>-combined`'s header names the dirs; `<Company>-combined`'s header names only req ids (`<req-id>`, `<req-id>`).
 - `applications.md` is a table `| Date | Company | Role | Location | Posting dir | Status | Notes |`. Its legend line (line 4) currently reads:
   `` Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent`. ``
 - LinkedIn facts (observed 2026-10-04):
   - Premium has lapsed, so there are no InMail credits.
   - A free account gets about 3 personalized invitations per month, and an invitation note is limited to 200 characters.
-  - The message composer is a cross-origin iframe, so Claude cannot attach the resume PDF. Messages that need the resume are typed and left unsent for Aly to attach and send.
-- Batch artifacts live in `batches/<YYYY-MM-DD-HHMM>-<mode>/`. The `/batch` convention for Aly's input is a plain-text `questions.txt` with numbered items and `Answer:` lines, opened for Aly with `Invoke-Item`.
+  - The message composer is a cross-origin iframe, so Claude cannot attach the resume PDF. Messages that need the resume are typed and left unsent for the user to attach and send.
+- Batch artifacts live in `batches/<YYYY-MM-DD-HHMM>-<mode>/`. The `/batch` convention for the user's input is a plain-text `questions.txt` with numbered items and `Answer:` lines, opened for the user with `Invoke-Item`.
 
 ## Prerequisites (do these first, in order)
 
 1. **Clean, current `main`** (workspace rule):
-   - Run `git -C C:/Users/alymo/Desktop/Github/jobapps branch --show-current` (expect `main`), then `git fetch` and `git status -sb`.
-   - Expect `git status --porcelain` to show only `?? docs/` (the spec, gate records and this plan). Commit `docs/superpowers/` on `main` (or as Aly directs) before branching. If anything else is uncommitted, **stop and ask Aly**: a worktree branched from committed `main` would not contain it, and the merge could conflict.
+   - Run `git -C <repo-root> branch --show-current` (expect `main`), then `git fetch` and `git status -sb`.
+   - Expect `git status --porcelain` to show only `?? docs/` (the spec, gate records and this plan). Commit `docs/superpowers/` on `main` (or as the user directs) before branching. If anything else is uncommitted, **stop and ask the user**: a worktree branched from committed `main` would not contain it, and the merge could conflict.
 2. **Worktree:** create one with the `superpowers:using-git-worktrees` skill, on branch `feat/followup-skill`. Tasks 1–2 run there.
-3. Task 3 (dry run) runs in the **main checkout after merge**, because it needs Aly's real `postings/` data, including any changes made since the merge. It also needs Chrome with the claude-in-chrome extension and Aly logged in to LinkedIn.
+3. Task 3 (dry run) runs in the **main checkout after merge**, because it needs the user's real `postings/` data, including any changes made since the merge. It also needs Chrome with the claude-in-chrome extension and the user logged in to LinkedIn.
 
 ## Decisions this plan adds (spec left them to the plan)
 
 1. **Invite budget:**
    - Count the connection requests dated in the current calendar month across all `outreach.md` files. That means `## Sent` bullets whose channel contains `connection request`, plus `## Follow-up` bullets with action `invite sent`.
    - Remaining = max(0, 3 − count).
-   - An exhausted budget does not block proposals. The review flags each replacement `over budget` and Aly decides.
+   - An exhausted budget does not block proposals. The review flags each replacement `over budget` and the user decides.
 2. **`## Follow-up` layout:** two kinds of bullet in one section, in time order.
    - Approval bullets (step 5): `- APPROVED <YYYY-MM-DD> | <Name> | <kind: nudge / reply / follow-up (b) / replacement invite> | text:` + quote.
    - Action bullets (step 7): `- <Name> | <YYYY-MM-DD> | <state> | <action> | text:` + quote.
@@ -55,7 +55,7 @@
    - anyone whose line in the file says skipped, may have left, or not at the company;
    - anyone found `done (left company)` in this sweep.
 5. **Withdrawn or expired invitation** (not pending, not connected, no thread): `done (no-response)`, note `invite withdrawn/expired`.
-6. **(b) counts as sent** when the thread shows any outbound message after the connection was accepted, other than the invitation note itself. A `typed, Aly to send` action with no such message on the next run means the person is `accepted` again, and the review notes `typed <date>, not sent`.
+6. **(b) counts as sent** when the thread shows any outbound message after the connection was accepted, other than the invitation note itself. A `typed, the user to send` action with no such message on the next run means the person is `accepted` again, and the review notes `typed <date>, not sent`.
 7. **Days cell:**
    - `N bd` for `silent` / `waiting` with an outbound message, and for `done` by nudge;
    - `N cd` for `stale-pending` / pending `waiting`;
@@ -69,13 +69,13 @@
     - Reconciling shortlisted people with no logged send uses that page plus the Messaging conversation list. Searching Messaging by name is only for people with a record.
     - Profiles are opened only for people with a record (left-company check, headline/Experience top entry).
     - Wait 3–5 seconds between page opens, using the browser tool's wait action.
-    - If more than 40 people have records, ask Aly to confirm or narrow the run before sweeping.
+    - If more than 40 people have records, ask the user to confirm or narrow the run before sweeping.
 11. **Status side-effects:** none beyond the spec's rules. A reconciled hand send on an `applied` row, or an acceptance on a `no-response` / `closed` row, leaves the status unchanged ("otherwise unchanged"); the outcome goes in Notes.
 12. **"Nothing sent" in a dry run:** the manifest header records the Sent-invitations count at sweep start and at the end. They must be equal, and the run never clicks Send, Connect or Withdraw.
 
 ## Global Constraints
 
-- Nothing is sent to anyone without an explicit `ok` or `edit:` from Aly in this run's `questions.txt`. A blank `Answer:` counts as `skip`.
+- Nothing is sent to anyone without an explicit `ok` or `edit:` from the user in this run's `questions.txt`. A blank `Answer:` counts as `skip`.
 - At most one nudge per person, ever. A nudge is ≤300 characters. A replacement invitation note is ≤200 characters, measured in code.
 - Thresholds: `silent` after ≥3 business days (Mon–Fri, send day not counted); `stale-pending` after ≥10 calendar days; `done` ≥3 business days after a nudge.
 - No people beyond the posting's existing Shortlist table. Every factual claim comes from the posting's tailored resume (`.tex`/`.pdf` in the posting dir) or `profile.md`.
@@ -90,7 +90,7 @@
 
 1. **A person who appears in two postings' shortlists** (same profile URL): they must get one LinkedIn sweep and one state per posting, and at most one nudge in total per run. Task 1's skill text says to dedupe by profile URL, and the Task 1 check greps for it.
 2. **A `## Sent` bullet that matches none of the three known variants:** it must be listed as `unparsed`, never guessed or dropped. Pinned by a Task 1 grep.
-3. **A reply in French** (Aly is bilingual, and the postings are in Montreal): the drafted response is written in the language of the reply. Pinned by a Task 1 grep.
+3. **A reply in French** (the user is bilingual, and the postings are in Montreal): the drafted response is written in the language of the reply. Pinned by a Task 1 grep.
 4. **The run is interrupted between steps 5 and 6** (approved, not sent): on the next run the person must not count as nudged. This is decision 2 above, pinned by a Task 1 grep for `approved, not executed`.
 5. **The date line on LinkedIn is relative** ("1 week ago", "Tuesday"): use the logged date when one exists. Otherwise convert to an absolute date and mark it `~` in the manifest. Pinned by a Task 1 grep for `~`.
 
@@ -134,7 +134,7 @@ need 'over budget'
 need 'weekday()<5'            # business-day one-liner
 need '--dry-run'
 need 'Invoke-Item'
-need 'typed, Aly to send'
+need 'typed, the user to send'
 need 'replacement sent'
 need 'nudged via'
 need 'across **all**'
@@ -153,17 +153,17 @@ Create `.claude/skills/followup/SKILL.md` with exactly this content:
 ````markdown
 ---
 name: followup
-description: Follow up with the LinkedIn contacts from earlier /outreach runs - send the prepared follow-up after a connection is accepted, nudge people who went silent, draft answers to replies, and replace stale invitations from the posting's shortlist; every message is approved by Aly before sending. Use when the user runs /followup or asks to follow up or re-message people from previous outreach batches.
+description: Follow up with the LinkedIn contacts from earlier /outreach runs - send the prepared follow-up after a connection is accepted, nudge people who went silent, draft answers to replies, and replace stale invitations from the posting's shortlist; every message is approved by the user before sending. Use when the user runs /followup or asks to follow up or re-message people from previous outreach batches.
 argument-hint: "[<posting dir | company> ...] [--dry-run]"
 ---
 
 # /followup — re-engage earlier outreach contacts, human-in-the-loop
 
 All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one Chrome
-tab of its own**: load `claude-in-chrome` first, create a new tab, never touch other tabs. Aly is
+tab of its own**: load `claude-in-chrome` first, create a new tab, never touch other tabs. The user is
 logged in to LinkedIn on a free account (no InMail; about 3 personalized invitations a month;
 invitation notes ≤200 characters). **Nothing is sent to anyone without an explicit `ok` or `edit:`
-from Aly in this run's `questions.txt`.**
+from the user in this run's `questions.txt`.**
 
 ## Arguments
 
@@ -194,7 +194,7 @@ For each posting in scope read `outreach.md`:
 
 - **`## Sent`**: parse every variant: the pipe bullet
   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` + `>` quote; the same bullet
-  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (Censys). A
+  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (a company). A
   bullet that fits none is listed in the review as `unparsed` with its line; never guess.
 - **`## Follow-up`**: two kinds of bullet. Action bullets
   `- <Name> | <YYYY-MM-DD> | <state> | <action> | text:` are the record: derive state only from
@@ -216,7 +216,7 @@ date (`done (no-response)` after ≥3 business days with no reply, else `waiting
 
 ## 2. LinkedIn sweep
 
-If more than 40 people have records, ask Aly to confirm or narrow first. Wait 3–5 seconds
+If more than 40 people have records, ask the user to confirm or narrow first. Wait 3–5 seconds
 between page opens (browser wait action).
 
 1. **Sent invitations** (My Network → Manage → Sent), one pass: who is pending and since when.
@@ -232,7 +232,7 @@ between page opens (browser wait action).
 5. Invitation neither pending nor accepted and no thread → `done (no-response)`, note
    `invite withdrawn/expired`.
 
-A CAPTCHA, a rate limit or a "restricted activity" warning: stop, tell Aly, no retries. At the end
+A CAPTCHA, a rate limit or a "restricted activity" warning: stop, tell the user, no retries. At the end
 record `Sent invitations at end: N` in the manifest header.
 
 ## 3. Classify
@@ -243,19 +243,19 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; Aly attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, Aly to send` → note `typed <date>, not sent` |
+| 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; the user attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, the user to send` → note `typed <date>, not sent` |
 | 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Propose the next unused shortlisted person (below) |
 | 6 | `waiting` | Anything else | None |
 
-**Nudge:** the role title, a reminder that Aly applied and messaged earlier, and one question:
-is the role still open, and would they be open to a short chat or to pointing Aly to the right
+**Nudge:** the role title, a reminder that the user applied and messaged earlier, and one question:
+is the role still open, and would they be open to a short chat or to pointing the user to the right
 person. No new claims, no guilt-tripping.
 
 **Reply:** answer only from the posting's tailored resume and `profile.md`, in the language of the
 reply (English or French). Anything neither covers (salary with no `profile.md` rule, specific
 availability, references) becomes a question in `questions.txt`, not a guess. A request to
-schedule → ask Aly for times; never invent any.
+schedule → ask the user for times; never invent any.
 
 **Replacement (stale-pending):** at most one per posting per run. The next person in Shortlist
 order who has no `## Sent`, `## Follow-up` or reconciled send, is not marked skipped / may have
@@ -292,7 +292,7 @@ approved by silence; an approval of one message does not cover another. `--dry-r
 
 ## 5. Record approvals
 
-When Aly says questions.txt is done, re-read it. For each `ok`/`edit:`, append an approval bullet
+When the user says questions.txt is done, re-read it. For each `ok`/`edit:`, append an approval bullet
 to that posting's `## Follow-up` (create the section at the end of `outreach.md` if missing):
 `- APPROVED <date> | <Name> | <nudge / reply / follow-up (b) / replacement invite> | text:` + the
 final text quoted. Save reusable answers to `profile.md` (as a rule when the answer carries
@@ -304,16 +304,16 @@ Approved items only, text verbatim, one at a time:
 
 - **Nudge or reply** (no attachment): send in the thread; confirm it appears there.
 - **Follow-up (b)**, or any approved text that says the resume is attached: type it in the thread
-  and leave it **unsent** in its own tab; list those tabs for Aly, who attaches the PDF and sends.
+  and leave it **unsent** in its own tab; list those tabs for the user, who attaches the PDF and sends.
 - **Replacement invite**: re-check the note is ≤200 characters in code; send the connection
   request with it; confirm it shows as pending.
-- A send that fails or hits a warning: stop and tell Aly. No retries.
+- A send that fails or hits a warning: stop and tell the user. No retries.
 
 ## 7. Log
 
 - **`outreach.md`**, `## Follow-up`, one action bullet per person handled:
   `- <Name> | <date> | <state> | <action> | text:` + the quoted text if any. Actions:
-  `nudge sent`, `reply sent`, `typed, Aly to send`, `invite sent` (the replacement person),
+  `nudge sent`, `reply sent`, `typed, the user to send`, `invite sent` (the replacement person),
   `replacement sent` / `none left` (the stale person), `none`.
   - A replacement person also gets a standard `## Sent` bullet
     (`- <Name> | <profile URL> | connection request with note | <date> | text sent:` + quote).
@@ -332,7 +332,7 @@ Approved items only, text verbatim, one at a time:
   - Every touched row gets a short note with the batch id.
   - Safety net: if the legend line lacks `in-conversation`, update it to
     ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`.``
-- **Manifest** Result column filled. Chat report: sent, typed for Aly (with tab list), skipped,
+- **Manifest** Result column filled. Chat report: sent, typed for the user (with tab list), skipped,
   stopped-on-warning.
 
 ## Guardrails
@@ -404,14 +404,14 @@ Expected: all three FAIL lines, exit 1.
 
 - [ ] **Step 3: Edit `outreach/SKILL.md` step 6**
 
-Read the current step 6 first, because Aly's committed version may differ from the text below. Keep any existing content in it that this edit doesn't cover. The result must be:
+Read the current step 6 first, because the user's committed version may differ from the text below. Keep any existing content in it that this edit doesn't cover. The result must be:
 
 ```markdown
 6. **Log** each send in `postings/<dir>/outreach.md` under `## Sent`, one bullet per send in exactly
    this format (the `/followup` skill parses it):
    `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the text sent as a
    `>` quote on the next line(s). Set the `applications.md` row to `outreach-sent` (or
-   `outreach-ready` if waiting on Aly). Later follow-ups (accepted connections, nudges, replies)
+   `outreach-ready` if waiting on the user). Later follow-ups (accepted connections, nudges, replies)
    are handled by `/followup`.
 ```
 
@@ -437,7 +437,7 @@ git commit -m "docs: point /outreach at /followup; add follow-up statuses to leg
 Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 ```
 
-**Review checkpoint:** after Task 2, integrate the branch into `main` with `superpowers:finishing-a-development-branch` (Aly picks merge or PR). Task 3 runs on `main`.
+**Review checkpoint:** after Task 2, integrate the branch into `main` with `superpowers:finishing-a-development-branch` (the user picks merge or PR). Task 3 runs on `main`.
 
 ### Task 3: Dry-run acceptance on real data (main checkout)
 
@@ -446,13 +446,13 @@ Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>"
 - Scratch only: `$SCRATCH/hashes-before.txt`, `$SCRATCH/hashes-after.txt`, `$SCRATCH/classifier-check.md`
 
 **Interfaces:**
-- Consumes: the merged `/followup` skill and Aly's real `postings/` data.
+- Consumes: the merged `/followup` skill and the user's real `postings/` data.
 - Produces: the evidence for the spec's success criteria.
 
 - [ ] **Step 1: Hash the files the dry run must not touch**
 
 ```bash
-cd C:/Users/alymo/Desktop/Github/jobapps
+cd <repo-root>
 python - > "$SCRATCH/hashes-before.txt" <<'EOF'
 import glob, hashlib
 for p in sorted(["applications.md", "profile.md", *glob.glob("postings/*/outreach.md")]):
@@ -464,7 +464,7 @@ git status --porcelain --untracked-files=all > "$SCRATCH/status-before.txt"
 
 - [ ] **Step 2: Run the dry run**
 
-Make sure Aly is available, since a LinkedIn warning stops the run. If `followup` is not in this session's available-skills list, start a new Claude Code session in the main checkout (or run `/reload-plugins`) first. Then invoke `/followup --dry-run` (Skill tool, skill `followup`, args `--dry-run`) and follow the skill.
+Make sure the user is available, since a LinkedIn warning stops the run. If `followup` is not in this session's available-skills list, start a new Claude Code session in the main checkout (or run `/reload-plugins`) first. Then invoke `/followup --dry-run` (Skill tool, skill `followup`, args `--dry-run`) and follow the skill.
 Expected:
 - A new `batches/<id>-followup/` with three files.
 - A chat summary.
@@ -494,7 +494,7 @@ For every person in every `postings/*/outreach.md` `## Sent` log, plus every `(r
 - They appear in `manifest.md` with exactly one state.
 - That state is the one the step 3 table gives for today's date, using the Days and Last out/in columns.
   - People logged on 2026-10-04 get whichever state the step 3 table gives on the run date (e.g. `stale-pending` from 2026-10-14 for invitations still pending, `silent` from 2026-10-07 for unanswered direct messages).
-  - Reconciled Baseten contacts (Lou, messaged in September; Crystal, pending before 2026-10-04) may be `silent`, `stale-pending` or `done`. Check them with their LinkedIn dates.
+  - Reconciled a company contacts (Lou, messaged in September; Crystal, pending before 2026-10-04) may be `silent`, `stale-pending` or `done`. Check them with their LinkedIn dates.
 
 List any mismatch as a defect.
 
@@ -514,7 +514,7 @@ Expected: every row matches.
 
 - [ ] **Step 6: Report**
 
-Tell Aly:
+Tell the user:
 - the batch dir path and the counts per state;
 - the result of each criterion (hashes, manifest coverage, invitation counts, classifier table), with the evidence lines.
 

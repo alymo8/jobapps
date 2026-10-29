@@ -5,18 +5,18 @@
 
 ## Context
 
-`/outreach` and `/followup` often crashed Aly's laptop (16 GB RAM). Chrome was the cause: a
+`/outreach` and `/followup` often crashed the user's laptop (16 GB RAM). Chrome was the cause: a
 LinkedIn tab takes several hundred MB and keeps growing as pages are opened in it. `/batch` ran up
 to 2 outreach subagents at once, each with its own LinkedIn tab next to the form tabs, and
 `/followup` opened Messaging and a profile for each of up to 40 people in one tab that was never
-reloaded. (Drafts left unsent in their own tabs for Aly to attach the resume were the third cause;
+reloaded. (Drafts left unsent in their own tabs for the user to attach the resume were the third cause;
 ADR 0006 already removed them: messages attach nothing.)
 
 ## Decision
 
 - **One LinkedIn tab at a time.** `.claude/skills/linkedin-tab.md` is the shared procedure: one
   tab per run, pages by direct URL (never the feed), text reads over screenshots, closed at the end
-  (left open only on a CAPTCHA or restriction warning, for Aly).
+  (left open only on a CAPTCHA or restriction warning, for the user).
 - **Recycle the tab every 8 page opens**: close it and open a fresh one, which frees what LinkedIn
   has piled up.
 - **`/batch` does LinkedIn work serially.** Stage 2 fills forms only (2 at a time, `Application

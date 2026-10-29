@@ -5,7 +5,7 @@
 - **Date:** 2026-10-18
 - **Status:** implemented
 
-**Goal:** A `job-shortlist` skill shows Aly's weekly shortlist (from the claude.ai artifact) with decided postings left out, records applied / not-interested decisions in the artifact's `decisions` collection, undoes and reviews them, and the apply flow asks to mark a posting applied.
+**Goal:** A `job-shortlist` skill shows the user's weekly shortlist (from the claude.ai artifact) with decided postings left out, records applied / not-interested decisions in the artifact's `decisions` collection, undoes and reviews them, and the apply flow asks to mark a posting applied.
 
 **Architecture:** A stdlib CLI, `tools/shortlist.py`, does all filtering, sorting, lookup, document building and pending-file work, importing the artifact's published `decision_keys.py` by path for every key. The skill (`.claude/skills/job-shortlist/SKILL.md`) drives the Artifact and ArtifactData tools and calls the CLI. Four existing skills get a "Mark as applied?" hook.
 
@@ -15,20 +15,20 @@
 
 ## Global Constraints
 
-- Artifact URL `https://claude.ai/artifact/JoYdYDgBENqL7McmNjfiE5`, collection `decisions`, pending file `~/.job-shortlist/pending-decisions.jsonl`, keys cache `~/.job-shortlist/decision_keys.py` (spec, Design "Constants").
+- Artifact URL (kept in `config.local.json`), collection `decisions`, pending file `~/.job-shortlist/pending-decisions.jsonl`, keys cache `~/.job-shortlist/decision_keys.py` (spec, Design "Constants").
 - Never write a real decision during implementation or testing; never publish the artifact or touch `data/*`.
 - Keys (`norm_url`, `norm_text`, `norm_company`, `match_key`, `doc_id`) come only from the loaded keys module; `tools/shortlist.py` never reimplements them.
 - The helper runs as `python -I tools/shortlist.py ...`; it is stdlib only and writes JSON to stdout (`--table` for `list` prints Markdown). Errors print `{"ok": false, "error": "..."}` and exit 1.
 - Never commit personal files (`sources/`, `postings/`, `applications.md`, downloaded `data/*`).
 - Before every commit: `python -m py_compile tools/*.py` and `python -m unittest discover -s tests -v` pass.
-- Use "Aly", not pronouns, in new prose.
+- Use "the user", not pronouns, in new prose.
 
 ## Answers to the spec gate's plan questions
 
 1. **Fetch order:** read `data/decision_keys.py` + `data/index.json` + `data/latest.json`, list `decisions` (all pages), then flush pending (`pending-plan` with those keys and decisions, write, `pending-clear`), then list `decisions` again into a fresh dir before any show or record flow (Task 5).
 2. **`--keys` for `pending-add`:** optional for `pending-add` only; without it `url_norm`, `match_key`, `doc_id` are `""`. Every other command requires `--keys` (`pending-plan` recomputes empty keys with it) (Task 4).
 3. **`find --company` without `--title`:** `norm_company(C)` substring of `norm_company(row.company)` only (Task 3).
-4. **Fallback inputs:** pending lines use the URL Aly gave (or the `posting.md` `- URL:` line), the company and title as Aly or `posting.md` gives them, `week_seen: ""`; a `match_key` mismatch with the weekly row is accepted (the `url_norm` still hides it when the URL is the same). Show says the shortlist is unavailable and points to the page (Task 5).
+4. **Fallback inputs:** pending lines use the URL the user gave (or the `posting.md` `- URL:` line), the company and title as the user or `posting.md` gives them, `week_seen: ""`; a `match_key` mismatch with the weekly row is accepted (the `url_norm` still hides it when the URL is the same). Show says the shortlist is unavailable and points to the page (Task 5).
 5. **Undo lookup:** `decisions` gets `--url U` (keeps decisions whose `url_norm == norm_url(U)`) and `--company C --title T` (keeps decisions whose `match_key == match_key(C, T)`), alongside `--match TEXT`; the skill tries `--url`, then the row's company+title, then `--match` (Task 3, Task 5).
 6. **`/batch` finish hook:** runs "Record applied" steps 1-2 for each chosen posting (find, `get`, `doc --existing` when it exists) and then writes them with one `ArtifactData batch` per 50 writes, each existing document with `if_version` (Task 6).
 7. **Fixture bytes:** `.gitattributes` line `tests/fixtures/** -text`, and a test checks the fixture's sha256 equals `f1b302cc2ac8ee16a034568d622ea532de52b5d4130b83123df34528de24f303` (Task 1).
@@ -65,7 +65,7 @@
 - [ ] **Step 1:** Write failing tests (call `shortlist.cmd_list(keys, rows, decisions, opts)` or `main([...])` capturing stdout), with `today = 2026-10-18`:
   - decided rows are left out; output has `total_rows`, `decided_hidden`, `shown`, `week`.
   - sort: rows with deadline `2026-10-22` (rank 50) and `2026-10-20` (rank 80) come first in deadline order, then rank order; deadlines `2026-10-11` (past) and `2026-10-31` (beyond 7 days) sort by rank; `2026-10-25` (today+7) counts as within.
-  - filters: `--new` (`new == "Yes"`), `--priority`, `--location montreal --location toronto` (OR, accent-insensitive: `Montréal` matches), `--company stripe`, `--title engineer`, `--tab main`; combined flags are AND'ed; `--top 2`.
+  - filters: `--new` (`new == "Yes"`), `--priority`, `--location montreal --location toronto` (OR, accent-insensitive: `Montréal` matches), `--company <name>`, `--title engineer`, `--tab main`; combined flags are AND'ed; `--top 2`.
   - chips: `New`, `Priority`, `Province-restricted` (from `canada` containing `province-restricted`, case-insensitive), `Deadline 2026-10-22`, `Deadline 2026-10-11 (past)`.
   - `--table` prints a Markdown table with header `| Rank | Company | Title | Location | Chips | URL |`.
 - [ ] **Step 2: Run** `python -m unittest tests.test_shortlist -v`. Expected: the new tests fail.
@@ -81,10 +81,10 @@
 **Depends on:** Task 2
 
 - [ ] **Step 1:** Write failing tests:
-  - `find --url` matches by `norm_url` (`https://www.Example.com/job/1/` finds `https://example.com/job/1`); `--rank 3` in the first rows file; `--company "Royal Bank" --title "AI Engineer"` exact `match_key`; fuzzy: `--company rbc --title "ai engineer"` finds `RBC` / `Senior AI Engineer (Toronto)`; `--company stripe` alone returns every Stripe row; several `--rows` files: returns matches only from the first file that has any, each with `week`; with optional `--decisions D` each match carries `decided: true|false` (url_norm or match_key rule), without it `decided` is absent.
+  - `find --url` matches by `norm_url` (`https://www.Example.com/job/1/` finds `https://example.com/job/1`); `--rank 3` in the first rows file; `--company "Royal Bank" --title "AI Engineer"` exact `match_key`; fuzzy: `--company <name> --title "ai engineer"` finds `a company` / `Senior AI Engineer (Toronto)`; `--company <name>` alone returns every a company row; several `--rows` files: returns matches only from the first file that has any, each with `week`; with optional `--decisions D` each match carries `decided: true|false` (url_norm or match_key rule), without it `decided` is absent.
   - `doc`: every contract field present; `schema_version` 1, `source` `claude_code`, `url_norm`, `match_key` and `doc_id` equal the fixture functions; `--decided-at 2026-10-17` → `2026-10-17T12:00:00` plus a `+HH:MM`/`-HH:MM` offset; default `decided_at` parses with `datetime.fromisoformat` and has an offset; `--week ""` allowed.
   - `doc --existing FILE`: existing note `"too senior"` kept when no `--note`; new different note → `"too senior; tailored resume"`; same note → unchanged; output `if_version` = existing version (null when not existing).
-  - `decisions`: newest `decided_at` first; `--decision applied`; `--match stripe` (substring of `norm_text` of company or title); `--url` and `--company/--title` filters per plan answer 5.
+  - `decisions`: newest `decided_at` first; `--decision applied`; `--match <name>` (substring of `norm_text` of company or title); `--url` and `--company/--title` filters per plan answer 5.
 - [ ] **Step 2: Run** `python -m unittest tests.test_shortlist -v`. Expected: new tests fail.
 - [ ] **Step 3:** Implement per spec Design → `find`, `doc`, `decisions` and plan answers 3 and 5. `doc` output: `{"doc_id": ..., "if_version": <int|null>, "data": {...}}`. `decided_at` default: `datetime.now().astimezone().isoformat(timespec="seconds")`.
 - [ ] **Step 4: Run** `python -m unittest tests.test_shortlist -v`. Expected: OK; full suite and py_compile → OK.
@@ -126,7 +126,7 @@
 **Depends on:** Task 5
 
 - [ ] **Step 1:** `/apply` Phase 2: new step 6 after step 5: in a normal run (not batch subagent / execute mode) ask `Mark <company> – <title> as applied?`; on yes follow "Record applied" in `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company, title, note `tailored resume + cover letter` or `tailored resume`.
-- [ ] **Step 2:** `/resume` step 8 and `/cover-letter` step 6: append the same ask, only when Aly ran the skill directly (not from `/apply`, `/outreach` or a batch). Note: `/resume` passes `tailored resume`; `/cover-letter` passes `tailored resume + cover letter`.
+- [ ] **Step 2:** `/resume` step 8 and `/cover-letter` step 6: append the same ask, only when the user ran the skill directly (not from `/apply`, `/outreach` or a batch). Note: `/resume` passes `tailored resume`; `/cover-letter` passes `tailored resume + cover letter`.
 - [ ] **Step 3:** `/batch` section 6: when execute confirmed submits, list them and ask once `Mark these <n> as applied?` (yes / pick); on yes per plan answer 6.
 - [ ] **Step 4: Run** (Grep tool, or `rg` where installed) `rg -n "as applied\?" .claude/skills`. Expected: hits in apply, resume, cover-letter, batch (and job-shortlist); each hook line names `.claude/skills/job-shortlist/SKILL.md`.
 - [ ] **Step 5: Commit** the task's files with message `Ask to mark postings applied at the end of the apply flow`.
@@ -162,4 +162,4 @@
 **Depends on:** Task 6, Task 7
 
 - [ ] **Step 1: Run** `git push -u origin feat/job-shortlist`, open the PR (under `/ship`, its PR step does this), then `gh pr checks --watch --fail-fast`. Expected: the `ci` workflow's `check-tools` job passes.
-- [ ] **Step 2:** In the final report to Aly, give verbatim the spec's paste-in line for the claude.ai skills `tailor-resume` and `write-cover-letter` (spec Design, "Hooks into the apply flow"), saying they are not edited by Claude Code.
+- [ ] **Step 2:** In the final report to the user, give verbatim the spec's paste-in line for the claude.ai skills `tailor-resume` and `write-cover-letter` (spec Design, "Hooks into the apply flow"), saying they are not edited by Claude Code.

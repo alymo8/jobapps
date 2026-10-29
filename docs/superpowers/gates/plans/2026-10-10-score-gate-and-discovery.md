@@ -11,7 +11,7 @@
 
 ## Plan-introduced decisions
 
-Approved under Aly's standing instruction for this change: "ship all autonomously, take the recommended decision".
+Approved under the user's standing instruction for this change: "ship all autonomously, take the recommended decision".
 
 - `discover.py` gains a `--root PATH` flag and a `main(argv, today=None)` signature, used by the tests and by Task 5 to run from the worktree against the main checkout's data.
 - `read_postings.py` tests patch the module constants `ROOT` and `DLQ`.
@@ -30,7 +30,7 @@ Approved under Aly's standing instruction for this change: "ship all autonomousl
 - `normalize_url` also drops the URL fragment.
 - A missing `data/scan-history.tsv` exits 1.
 - If the real discovery run finds nothing new, criterion 3 is checked with `--no-scan --since 60`.
-- Outside `/ship`, pushing the branch and opening the PR needs Aly's approval first.
+- Outside `/ship`, pushing the branch and opening the PR needs the user's approval first.
 
 ## Findings fixed
 

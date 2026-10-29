@@ -5,32 +5,32 @@
 
 ## Purpose
 
-After `/outreach` (or `/batch outreach`) has contacted people on LinkedIn, Aly needs to re-engage
+After `/outreach` (or `/batch outreach`) has contacted people on LinkedIn, the user needs to re-engage
 them: send the prepared follow-up once a connection is accepted, nudge people who went quiet,
 answer people who replied, and replace contacts whose invitations sit unanswered. `/followup` does
-this across all earlier postings in one pass, with every outgoing message approved by Aly first.
+this across all earlier postings in one pass, with every outgoing message approved by the user first.
 
 ## Background (current state)
 
 - `/outreach` writes `postings/<dir>/outreach.md`: a shortlist table, per-person drafts — (a) a
   connection note and (b) a follow-up message to send after acceptance — and a `## Sent` log.
-  Older files use other labels and have no short notes: HingeHealth has an unlabelled
-  "Connection note" plus a "Follow-up message" per person; Spellbook has an InMail Subject/Body plus a
+  Older files use other labels and have no short notes: a company has an unlabelled
+  "Connection note" plus a "Follow-up message" per person; a company has an InMail Subject/Body plus a
   "Connection note (fallback)". In this spec a "Connection note" / "Connection note (fallback)"
   counts as (a), and a "Follow-up message" or InMail Body counts as (b).
   The log formats vary today: most bullets are
   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` followed by the quoted text,
-  some (BanyanSoftware, Knak, Sardine) have no `text sent:` field, and Censys has a prose preamble
+  some (a company, a company, a company) have no `text sent:` field, and a company has a prose preamble
   with the text quoted inline. `outreach/SKILL.md` step 6 lists the fields but not a format.
 - Premium has lapsed, so most contacts were made by connection request with a note. A free account
   gets about 3 personalized invitations per month.
 - The LinkedIn message composer is a cross-origin iframe: Claude cannot attach the resume PDF.
-  Messages that need the resume are typed and left unsent in their own tab for Aly to attach and send.
-- Aly sent some messages by hand, so some contacts are not in any `## Sent` log
-  (e.g. Baseten, Cresta: drafts in `outreach.md`, no `## Sent` section, status `applied`).
-- Some `outreach.md` files cover several postings (`Scotiabank-combined`, `ThomsonReuters-combined`);
-  their `applications.md` rows point to the individual posting dirs. Scotiabank-combined names those
-  dirs in its header; ThomsonReuters-combined names only the req ids (JREQ202780, 9090356).
+  Messages that need the resume are typed and left unsent in their own tab for the user to attach and send.
+- The user sent some messages by hand, so some contacts are not in any `## Sent` log
+  (e.g. a company, a company: drafts in `outreach.md`, no `## Sent` section, status `applied`).
+- Some `outreach.md` files cover several postings (`<Company>-combined`, `<Company>-combined`);
+  their `applications.md` rows point to the individual posting dirs. `<Company>-combined` names those
+  dirs in its header; `<Company>-combined` names only the req ids (<req-id>, <req-id>).
 - `applications.md` statuses today: `resume` → `ready` → `applied` → `outreach-ready` → `outreach-sent`.
 
 ## Scope
@@ -56,7 +56,7 @@ this across all earlier postings in one pass, with every outgoing message approv
 `/followup [<posting dir | company> ...] [--dry-run]`
 
 - No argument: every `postings/*/outreach.md` (any posting with a shortlist), so postings where
-  Aly sent by hand are swept too. Postings with no `## Sent` entries and nothing found on LinkedIn
+  The user sent by hand are swept too. Postings with no `## Sent` entries and nothing found on LinkedIn
   are listed once as `no contacts` and dropped.
 - `<company>` matches posting dirs whose name starts with it (case-insensitive), including
   `*-combined` dirs.
@@ -91,7 +91,7 @@ follow-up state and date, and whether a nudge has been sent.
   `## Sent` entry (sent by hand), record it in the manifest as `(reconciled <date>)` with the text
   visible on LinkedIn. In a normal run step 7 also writes it to `## Sent`; `--dry-run` does not.
 - A profile that now shows a different current employer: state `done`, note `left company`.
-- A CAPTCHA, a rate-limit or a "restricted activity" warning: stop the sweep and tell Aly. No retries.
+- A CAPTCHA, a rate-limit or a "restricted activity" warning: stop the sweep and tell the user. No retries.
 
 #### 3. Classify
 
@@ -102,20 +102,20 @@ day. Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company, or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere), or nudged already and still no reply after ≥3 business days since the nudge, or a stale invitation whose replacement was already handled (its `## Follow-up` shows `replacement sent` or `none left`) and that is still not accepted and has no inbound message | None. The log's state field records `done (no-response)`, `done (closed)` or `done (left company)`; its action is `none` |
 | 2 | `replied` | An inbound message newer than the last outbound one | A one-line summary of their reply, their text verbatim, and a drafted response |
-| 3 | `accepted` | Connected, and follow-up (b) (or an equivalent message) not yet sent | The posting's existing (b) draft, re-checked against the resume; the resume is attached by Aly. With no (b) (or equivalent, see Background) for that person, a new follow-up drafted from the posting's existing draft and tailored resume, marked new in questions.txt |
+| 3 | `accepted` | Connected, and follow-up (b) (or an equivalent message) not yet sent | The posting's existing (b) draft, re-checked against the resume; the resume is attached by the user. With no (b) (or equivalent, see Background) for that person, a new follow-up drafted from the posting's existing draft and tailored resume, marked new in questions.txt |
 | 4 | `silent` | Outbound message (b), an InMail or a direct message was sent, no reply, ≥3 business days, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation still pending ≥10 calendar days after sending | Leave the invitation. Propose the next unused person from that posting's shortlist. The note is that person's entry in the posting's "Short notes (200-char limit)" section if there is one, else a new ≤200-character note condensed from their (a) note or its equivalent (see Background), or from their only draft when they have neither (length measured in code), shown in questions.txt as a new message needing approval |
 | 6 | `waiting` | Anything else (under the thresholds) | None. Listed for information |
 
-**Nudge content:** the role title, a reminder that Aly applied and messaged earlier, and one
+**Nudge content:** the role title, a reminder that the user applied and messaged earlier, and one
 question about whether the role is still open and whether they'd be open to a short chat or to
-pointing Aly to the right person. No new claims, no guilt-tripping phrasing.
+pointing the user to the right person. No new claims, no guilt-tripping phrasing.
 
 **Reply content:**
 - Answer only from the posting's tailored resume and `profile.md`.
 - If the reply asks for something neither covers (salary when `profile.md` has no rule, specific
   availability, references), that becomes a question in `questions.txt` instead of a guess.
-- If the reply asks to schedule something, propose that Aly suggests times. Don't invent any.
+- If the reply asks to schedule something, propose that the user suggests times. Don't invent any.
 
 **stale-pending replacements:** the free-account invite budget (about 3 a month) is shown in the
 review. No more than one replacement per posting per run. Postings with no unused shortlisted
@@ -133,7 +133,7 @@ Create `batches/<YYYY-MM-DD-HHMM>-followup/`:
   replied, accepted, silent, stale-pending. For `replied`, the person's reply text verbatim above
   the draft. Then `waiting` and `done` as short tables. At the top: counts per state and the
   invite budget.
-- `questions.txt`: what Aly fills in, in the `/batch` convention. One numbered item per proposed
+- `questions.txt`: what the user fills in, in the `/batch` convention. One numbered item per proposed
   message: the message verbatim, then an `Answer:` line (`ok` / `edit: <text>` / `skip`). Only an
   explicit `ok` or `edit:` approves; a blank `Answer:` counts as `skip`. Unlike `/batch`, there are no
   suggested answers and no "leave blank to accept" line. Next,
@@ -152,20 +152,20 @@ posting's `## Follow-up` section, marked `APPROVED <date>`. Save reusable answer
 
 - **Nudge or reply, no attachment needed:** send it in the thread, then confirm it appears there.
 - **(b) message, or any message whose approved text says the resume is attached:** type it in the
-  thread and leave it unsent in its own tab. List the tabs for Aly, who attaches the PDF and sends.
-  Log it as `typed, Aly to send`.
+  thread and leave it unsent in its own tab. List the tabs for the user, who attaches the PDF and sends.
+  Log it as `typed, the user to send`.
 - **stale-pending replacement:** send the connection request with the approved note (≤200
   characters, the free-account limit, measured in code), then confirm it appears as pending.
-- Any send that fails or hits a warning: stop and tell Aly. No retries.
+- Any send that fails or hits a warning: stop and tell the user. No retries.
 
 #### 7. Log
 
 - In each posting's `outreach.md`, add or extend `## Follow-up`, one bullet per action:
-  `- <Name> | <date> | <state> | <action: nudge sent / reply sent / typed, Aly to send / invite sent / replacement sent / none left / none> | text:`
+  `- <Name> | <date> | <state> | <action: nudge sent / reply sent / typed, the user to send / invite sent / replacement sent / none left / none> | text:`
   followed by the quoted text, if any.
 - In `applications.md` (`/followup` is its only writer in this run), update the row(s) for each
   posting. A plain posting dir maps to the row whose Posting dir is that dir. A `*-combined` dir
-  maps to every row whose Posting dir, after `postings/`, starts with the same company prefix (e.g. `ThomsonReuters-`)
+  maps to every row whose Posting dir, after `postings/`, starts with the same company prefix (e.g. `a company-`)
   and whose dir name or req id appears in the combined file's header.
   - Status changes only when the current Status is `applied`, `outreach-ready`, `outreach-sent`,
     `in-conversation`, `no-response` or `closed` (the application is submitted), so a late reply
@@ -180,7 +180,7 @@ posting's `## Follow-up` section, marked `APPROVED <date>`. Save reusable answer
   implementation, per Scope; this is only a safety net), update it to: `resume` → `ready` (form filled, awaiting OK) →
   `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`, keeping the
   existing parenthetical.
-- Fill the manifest's Result column. Report in chat: sent, typed for Aly, skipped, and the tabs left open.
+- Fill the manifest's Result column. Report in chat: sent, typed for the user, skipped, and the tabs left open.
 
 ### Guardrails
 
@@ -190,12 +190,12 @@ posting's `## Follow-up` section, marked `APPROVED <date>`. Save reusable answer
 - Every factual claim comes from the posting's tailored resume (`.tex`/`.pdf` in the posting dir)
   or `profile.md`.
 - Stop on CAPTCHA, rate-limit or restriction warnings.
-- The first real send happens only in a later, non-dry run after Aly's approval, and is confirmed
+- The first real send happens only in a later, non-dry run after the user's approval, and is confirmed
   in the LinkedIn thread (a post-ship check, not part of done).
 
 ## Decisions
 
-Confirmed by Aly on 2026-10-04:
+Confirmed by the user on 2026-10-04:
 
 1. Handles four situations: accepted → send (b); silent → nudge; replied → draft a response;
    invitation pending too long → act.
@@ -204,7 +204,7 @@ Confirmed by Aly on 2026-10-04:
 3. A stale pending invitation is left in place, and the next unused shortlisted person is proposed.
 4. One inline pass with one review sheet, not a `/batch` mode with subagents.
 5. Nudges, replies and replacement invitations are sent by Claude after approval. Messages that
-   need the resume are typed and left unsent for Aly to attach the PDF.
+   need the resume are typed and left unsent for the user to attach the PDF.
 6. New `applications.md` statuses: `in-conversation`, `no-response` and `closed` (everyone done,
    and at least one person declined or closed the conversation).
 7. The 3-day threshold counts business days.
@@ -212,8 +212,8 @@ Confirmed by Aly on 2026-10-04:
 
 ## Success criteria
 
-1. **Dry run on real data:** `/followup --dry-run` over the current postings (Artefact, 11x, GitLab,
-   Guidepoint, Knak, Block, Baseten and any others with sends).
+1. **Dry run on real data:** `/followup --dry-run` over the current postings (a company, a company, a company,
+   a company, a company, Block, a company and any others with sends).
    - Every person in a `## Sent` log, plus any found by reconciliation, appears in `manifest.md`
      with exactly one state.
    - Each person gets the state the step 3 table gives for the run date, and the manifest shows
@@ -224,7 +224,7 @@ Confirmed by Aly on 2026-10-04:
      are under `batches/<id>-followup/`.
 2. **Classifier table check:** the verifier works these synthetic cases out by hand against the step 3
    rules and records them in the verification notes; the skill does not produce them (logged sends
-   are dated 2026-10-04; hand-sent contacts found by reconciliation, e.g. Baseten's Lou (September)
+   are dated 2026-10-04; hand-sent contacts found by reconciliation, e.g. a company's Lou (September)
    and Crystal (pending before 2026-10-04), may reach other states in the criterion-1 run and are
    checked against the step 3 table with their LinkedIn dates): Thu (b) message sent → Tue check = 3
    business days → `silent`; Fri send → Mon check = 1 → `waiting`; invite pending 10 days →

@@ -245,7 +245,7 @@ line, with a suggested answer where there is an obvious one ("leave blank to acc
 parts, in this order:
 1. Reusable answers, deduplicated, each with the postings that ask it.
 2. One-off form questions.
-3. Drafted free-text answers to OK or edit, each pasted **in full, verbatim**: exactly the text that will go into the form. Never show a summary or a shorthand note. If `application.md` holds only a note for a free-text field, write the full answer first. A note in a free-text cell is not an approvable draft, and the execute subagent must never type a note into a form (Censys, 2026-10-04). Cover letters belong here too: the full `cover_letter.md` text, verbatim.
+3. Drafted free-text answers to OK or edit, each pasted **in full, verbatim**: exactly the text that will go into the form. Never show a summary or a shorthand note. If `application.md` holds only a note for a free-text field, write the full answer first. A note in a free-text cell is not an approvable draft, and the execute subagent must never type a note into a form (a company, 2026-10-04). Cover letters belong here too: the full `cover_letter.md` text, verbatim.
 4. Decisions: which applications to submit, blocked or odd postings, retries.
 5. LinkedIn per company: **the names of the user's existing connections** to message, each with its message
    verbatim to OK or edit; then the new people for information only (they get connection requests at

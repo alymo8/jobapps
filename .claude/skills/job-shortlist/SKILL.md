@@ -113,7 +113,7 @@ run), plus an optional date ("yesterday" → that date) and note.
 
 ## Undo
 
-("undo the Stripe one", "I didn't actually apply")
+("undo the Okta one", "I didn't actually apply")
 
 1. Find the document: `decisions --decisions <D> --url <U>` when a URL is known; else
    `--company C --title T` from the shortlist row; else `--match <words>`. Several → ask which.

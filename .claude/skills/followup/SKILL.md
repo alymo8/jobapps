@@ -63,7 +63,7 @@ For each posting in scope read `outreach.md`:
 
 - **`## Sent`**: parse every variant: the pipe bullet
   `- <Name> | <profile URL> | <channel> | <YYYY-MM-DD> | text sent:` + `>` quote; the same bullet
-  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (Censys). A
+  without `text sent:` + an indented `>` quote; and the pipe bullet whose fifth field is the sent text in double quotes, after a prose line naming the channel (a company). A
   bullet that fits none is listed in the review as `unparsed` with its line; never guess.
 - **`## Follow-up`**: two kinds of bullet. Action bullets
   `- <Name> | <YYYY-MM-DD> | <state> | <action> | text:` are the record: derive state only from

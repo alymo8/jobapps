@@ -5,7 +5,7 @@
 - **Date:** 2026-10-19
 - **Status:** implemented
 
-**Goal:** `/outreach` and `/batch outreach` message people on LinkedIn without applying unless Aly asks (`--apply`). New `outreach-only-*` statuses keep "messaged but not applied" visible, and the skills follow Aly's standing LinkedIn rules: "interested", no attachment, never InMail.
+**Goal:** `/outreach` and `/batch outreach` message people on LinkedIn without applying unless the user asks (`--apply`). New `outreach-only-*` statuses keep "messaged but not applied" visible, and the skills follow the user's standing LinkedIn rules: "interested", no attachment, never InMail.
 
 **Architecture:** One small code change: `tools/read_postings.py` gets a `--for outreach` skip set, with unit tests. The rest are Markdown skill edits in `.claude/skills/{outreach,apply,batch,followup}/`, plus `CLAUDE.md` and ADR 0006.
 
@@ -13,11 +13,11 @@
 
 **Spec:** `docs/superpowers/specs/2026-10-19-outreach-without-apply-design.md` (approved; its gate record is under docs/superpowers/gates/ with the same file name). Read the spec's Design section before each skill task. It is the source for every rule below, and this plan does not repeat it in full.
 
-## Why (from the spec, settled with Aly 2026-10-19; do not relitigate)
+## Why (from the spec, settled with the user 2026-10-19; do not relitigate)
 
-- `/outreach` is LinkedIn-only by default. It applies only with `--apply` or when Aly asks in plain words. When unsure, it does not apply.
+- `/outreach` is LinkedIn-only by default. It applies only with `--apply` or when the user asks in plain words. When unsure, it does not apply.
 - The tailored resume is still built (`/resume`, no form) because messages quote it.
-- There are new statuses `outreach-only-ready` / `outreach-only-sent`. Reusing `outreach-*` was rejected because the in-place Status cell would lose whether Aly applied.
+- There are new statuses `outreach-only-ready` / `outreach-only-sent`. Reusing `outreach-*` was rejected because the in-place Status cell would lose whether the user applied.
 - The `sources/profile.md` `## LinkedIn outreach` rules are folded in: say "interested", never "applied"; attach nothing and never say a resume is attached; never InMail; send a free message when LinkedIn offers one (Open Profile), else a connection request; send approved messages directly.
 - ADR 0005's approval classes (existing connection vs new) and all caps stay unchanged.
 
@@ -30,7 +30,7 @@
 - Legend safety net (same wording in outreach, apply, batch, followup): when the skill writes an `applications.md` row and the legend line lacks `outreach-only`, rewrite the legend line to the line above.
 - Re-message guard (outreach batch execute mode and `/followup`'s existing behaviour aside): no run ever sends a new outreach message or request to a person already listed under `## Sent` in that posting's `outreach.md`.
 - Shell: run every `rg` check whose pattern starts with `/` in PowerShell, or in Bash with `MSYS_NO_PATHCONV=1` (Git Bash rewrites such patterns into Windows paths and the check then falsely finds nothing).
-- `## Sent` channels: `message (existing connection)`, `free message (open profile)`, `connection request with note`, `connection request (no note)`. Old logs with `InMail` or `typed, Aly to send` stay parseable.
+- `## Sent` channels: `message (existing connection)`, `free message (open profile)`, `connection request with note`, `connection request (no note)`. Old logs with `InMail` or `typed, the user to send` stay parseable.
 - Notes-cell texts: `form filled <date>, not submitted`, `form filled <date>, awaiting OK`, `outreach again <date>`, `outreach again <date>, approval pending`.
 - The repo is public-safe for this repo's rules: no private repo names or usernames in tracked files.
 - `tools/` code is not ruff-clean by design. Match the surrounding style. CI runs `python -m py_compile tools/*.py` and `python -m unittest discover -s tests -v`.
@@ -41,7 +41,7 @@
 - An `outreach-only-*` posting must still be picked by `/batch apply` (default skip set). Covered by Task 1's tests.
 - `--for` with a value other than `outreach` keeps today's behaviour. Covered by Task 1's `test_for_other_value_is_default`.
 - Re-running `/outreach` (with or without `--apply`) on an already-messaged row never messages the same people again. Checked in Task 7 Step 4a (re-run walk-through), recorded in the PR body's Paths table.
-- No message text says Aly applied, mentions InMail, or attaches a resume. Checked by Task 7's `rg` check.
+- No message text says the user applied, mentions InMail, or attaches a resume. Checked by Task 7's `rg` check.
 
 ---
 
@@ -117,11 +117,11 @@ def test_for_other_value_is_default(self):
 - [ ] **Step 1: Frontmatter.** Set `argument-hint: <posting URL> | <posting dir> [--apply]`. Set `description` to the spec's text (Design, "`/outreach` arguments"), verbatim. Retitle the H1 to `# /outreach — LinkedIn messages (apply only with --apply)`.
 - [ ] **Step 2: Arguments section.** Add a short `## Apply or not` section after the intro. It covers the spec's `--apply` / plain-request / "when unsure, don't apply" rule, and says the final report mentions `/apply <posting>` when it didn't apply.
 - [ ] **Step 3: Step 1.** Replace "Apply first" with the spec's step 1 for both paths. Without `--apply`: resolve the dir, run `/resume` (build only) if there is no compiled resume, the stop list, the `*-ready` resume, and the `approval pending` note treated like `*-ready`. With `--apply`: today's "Apply first", plus the exceptions for `outreach-only-*`/`in-conversation`/`no-response`/`closed` (apply only, skip steps 2–6) and for `outreach-ready`/`outreach-sent` (skip `/apply`, then follow the no-apply rules).
-- [ ] **Step 4: Step 3 wording.** In all drafts, "that Aly applied" becomes "that Aly is interested in the role". Remove the InMail subject and the "With Premium InMail credits…" sentence. Add the spec's wording rules as bullets: interested, never applied; never say a resume is attached and attach nothing.
+- [ ] **Step 4: Step 3 wording.** In all drafts, "that the user applied" becomes "that the user is interested in the role". Remove the InMail subject and the "With Premium InMail credits…" sentence. Add the spec's wording rules as bullets: interested, never applied; never say a resume is attached and attach nothing.
 - [ ] **Step 5: Step 5 routes.** An existing connection gets the approved text sent directly, with no attachment. Delete the 2026-10-04 iframe/attach bullet and the "type the text, leave it unsent" path. A new person gets a free message carrying (b) when the profile offers "Free message" (Open Profile); otherwise the request with note (a) or no note per budget. Never InMail: if only InMail is offered, send the request.
-- [ ] **Step 6: Step 6 log and status.** Set the channel list to the Global Constraints list (old values stay parseable by `/followup`). Remove `typed, Aly to send` from new logs. Status writes follow the spec's "Statuses": `outreach-only-*` vs `outreach-*` by prior row; `ready` gets the `form filled <date>, not submitted` note; a continued run keeps the status and adds the `outreach again` note. Add the legend safety net (exact line from Global Constraints) when the legend lacks `outreach-only`. In the final report, remove "tabs waiting for Aly".
+- [ ] **Step 6: Step 6 log and status.** Set the channel list to the Global Constraints list (old values stay parseable by `/followup`). Remove `typed, the user to send` from new logs. Status writes follow the spec's "Statuses": `outreach-only-*` vs `outreach-*` by prior row; `ready` gets the `form filled <date>, not submitted` note; a continued run keeps the status and adds the `outreach again` note. Add the legend safety net (exact line from Global Constraints) when the legend lacks `outreach-only`. In the final report, remove "tabs waiting for the user".
 - [ ] **Step 7: Budget section.** Rename it to `## Invitation budget` and drop the InMail sentence.
-- [ ] **Step 8: Batch sections.** "Running as a batch subagent": the prompt's mode line decides. With `Mode: outreach only (no application)`, skip `/apply` and run steps 2–3. With `Mode: outreach + apply`, today's text, except that when the prompt carries the line `Application only`, run `/apply` Phase 1 only and skip steps 2–3. "Batch execute mode": the application part runs only with `Mode: outreach + apply` and an `APPROVED <date>: submit`. When the execute prompt carries the line `Application only` (Task 4 sets it), run the submit only and skip step 5 entirely. Otherwise step 5 runs as today (new people need no mark; existing connections need their per-person `APPROVED <date>`), applying the re-message guard from Global Constraints. Drop "attachment impossible" from the `NEEDS ALY` list.
+- [ ] **Step 8: Batch sections.** "Running as a batch subagent": the prompt's mode line decides. With `Mode: outreach only (no application)`, skip `/apply` and run steps 2–3. With `Mode: outreach + apply`, today's text, except that when the prompt carries the line `Application only`, run `/apply` Phase 1 only and skip steps 2–3. "Batch execute mode": the application part runs only with `Mode: outreach + apply` and an `APPROVED <date>: submit`. When the execute prompt carries the line `Application only` (Task 4 sets it), run the submit only and skip step 5 entirely. Otherwise step 5 runs as today (new people need no mark; existing connections need their per-person `APPROVED <date>`), applying the re-message guard from Global Constraints. Drop "attachment impossible" from the `NEEDS USER` list.
 - [ ] **Step 9: Verify.**
   Run: `rg -n -i "applied|InMail|attach" .claude/skills/outreach`
   Expected: every hit is a status name, `--apply`, a "never" rule, or old-channel parsing.
@@ -155,7 +155,7 @@ def test_for_other_value_is_default(self):
 - [ ] **Step 3: Stage 2 prompt.** Add the mode line (Global Constraints) to the prepare prompt in outreach mode. With `--apply`, a posting whose pre-run status is `outreach-only-*`/`in-conversation`/`no-response`/`closed` gets the application part only: its prepare prompt carries the extra line `Application only`.
 - [ ] **Step 3b: Model routing.** In the Model routing table, the stage-5 row "Send an approved LinkedIn message" cell "verbatim text, attach, send" becomes "verbatim text, send".
 - [ ] **Step 4: Review sheet and questions.txt.** In outreach-only mode, postings have no application, form-question or submit parts: only the LinkedIn part (questions.txt part 5) and decisions.
-- [ ] **Step 5: Stage 4.** In outreach-only mode, skip the `application.md` `APPROVED <date>: submit` write. For each posting Aly did not skip, write `APPROVED <date>: outreach` as the last line of `## Shortlist` in `outreach.md`; Aly's reply without a `skip` for the posting is the go. Per-person existing-connection marks work as today.
+- [ ] **Step 5: Stage 4.** In outreach-only mode, skip the `application.md` `APPROVED <date>: submit` write. For each posting the user did not skip, write `APPROVED <date>: outreach` as the last line of `## Shortlist` in `outreach.md`; the user's reply without a `skip` for the posting is the go. Per-person existing-connection marks work as today.
 - [ ] **Step 6: Stage 5.** "Only for postings with a recorded approval" also counts the `APPROVED <date>: outreach` mark. Add the mode line to the execute prompt, and in `outreach + apply` mode add the line `Application only` for a posting whose pre-run status is `outreach-only-*`/`in-conversation`/`no-response`/`closed`.
 - [ ] **Step 7: Finish (`applications.md` writes).** Statuses follow the spec's "Statuses", using the pre-run status. Outreach-only: `outreach-only-*`, or `outreach-*` when the pre-run status was `applied`/`outreach-ready`. Prepare on an `outreach-only-*` row keeps the status and adds Notes `form filled <date>, awaiting OK`. Post-submit mapping in `apply` and `outreach --apply`: `outreach-only-ready` → `outreach-ready`, `outreach-only-sent` → `outreach-sent`, else `applied`. Add the legend safety net (Global Constraints, same trigger). Ask "Mark these <n> as applied?" only when something was submitted.
 - [ ] **Step 8: Verify.**
@@ -170,8 +170,8 @@ def test_for_other_value_is_default(self):
 
 **Depends on:** none
 
-- [ ] **Step 1:** Change the nudge text: "a reminder that Aly applied and messaged earlier" becomes "a reminder that Aly is interested in it and messaged earlier".
-- [ ] **Step 2:** In the `accepted` row and the send rules, (b) is sent directly with no attachment. Remove the "type it in the thread, Aly attaches the resume" bullet and its "Aly attaches the resume" text. Keep the `typed <date>, not sent` note for old logs. In the existing-connection send bullet, "send (or type for Aly when it carries the resume)" becomes "send". `typed, Aly to send` stays only as an old-log value (parsing), not a new action; drop "typed for Aly (with tab list)" from the chat report. Add `free message (open profile)` to the `## Sent` channel list for a newly added person. Add "Never InMail."
+- [ ] **Step 1:** Change the nudge text: "a reminder that the user applied and messaged earlier" becomes "a reminder that the user is interested in it and messaged earlier".
+- [ ] **Step 2:** In the `accepted` row and the send rules, (b) is sent directly with no attachment. Remove the "type it in the thread, the user attaches the resume" bullet and its "the user attaches the resume" text. Keep the `typed <date>, not sent` note for old logs. In the existing-connection send bullet, "send (or type for the user when it carries the resume)" becomes "send". `typed, the user to send` stays only as an old-log value (parsing), not a new action; drop "typed for the user (with tab list)" from the chat report. Add `free message (open profile)` to the `## Sent` channel list for a newly added person. Add "Never InMail."
 - [ ] **Step 3:** In step 3b (adding a new person), use the free message carrying (b) when offered, else the connection request (with note while the budget lasts), never InMail. Classify a `free message (open profile)` entry like a sent (b): `replied`/`silent`/`waiting`, never `accepted`/`stale-pending`.
 - [ ] **Step 4:** Status transitions start from the current list plus `outreach-only-ready`, `outreach-only-sent`. Replace the legend safety-net line with the exact Global Constraints line, and change its trigger from "lacks `in-conversation`" to "lacks `outreach-only`".
 - [ ] **Step 5: Verify.**
@@ -222,7 +222,7 @@ Run on branch `outreach-without-apply` after Tasks 1–6 merged (ripgrep isn't o
 - followup 11: the free-account "no InMail" note. 72: the old draft heading "InMail Body". 116, 208, 209: "sent directly, no attachment". 117: "InMail (old logs)". 151, 215: the never-InMail / attach-nothing rules. 238: status names. 247: the legend.
 
 **Step 3 (criterion 4).** Hits of `/apply|Submit|submit`:
-- `outreach/SKILL.md`: 3 (description: "unless Aly asks (`--apply`…)"); 15–19 (Apply or not: never `/apply` by default, a forbid rule); 48–56 (step 1, `--apply` path only); 151–153 (batch subagent, `Mode: outreach + apply` only); 155 ("submit nothing", a forbid rule); 163–166 (batch execute application part, `outreach + apply` only).
+- `outreach/SKILL.md`: 3 (description: "unless the user asks (`--apply`…)"); 15–19 (Apply or not: never `/apply` by default, a forbid rule); 48–56 (step 1, `--apply` path only); 151–153 (batch subagent, `Mode: outreach + apply` only); 155 ("submit nothing", a forbid rule); 163–166 (batch execute application part, `outreach + apply` only).
 - `batch/SKILL.md`: 3, 25, 33, 63, 224, 245, 273–279, 284 (`apply` mode or the general flow); 172 (a forbid rule); 178–182 (outreach-only skips `/apply`; `Application only` is `--apply` only); 236, 248, 271 (outreach-only: no submit parts, no submit write, "nothing is submitted"); 258 (approval gate); 296–303 (status mapping in `apply` / `outreach --apply`; the shortlist prompt only when something was submitted).
 - None of these hits is on the no-`--apply` path.
 
@@ -237,7 +237,7 @@ Run on branch `outreach-without-apply` after Tasks 1–6 merged (ripgrep isn't o
 
 **Step 4a (re-runs).** No case messages anyone twice:
 - `/outreach` on `outreach-only-ready` / `outreach-ready`: resumes the pending approval; step 5 skips everyone under `## Sent`.
-- `/outreach` on `outreach-only-sent` / `outreach-sent` / `in-conversation`: stops, unless Aly says continue; a continued run still skips `## Sent`.
+- `/outreach` on `outreach-only-sent` / `outreach-sent` / `in-conversation`: stops, unless the user says continue; a continued run still skips `## Sent`.
 - `/outreach --apply` on `outreach-only-*` / `in-conversation`: `/apply` only, steps 2–6 skipped.
 - `/outreach --apply` on `outreach-ready` / `outreach-sent`: no reapply; then the same stop / resume as without `--apply`.
 - `/batch outreach` on a `*-sent` or conversation row: not picked (`OUTREACH_DONE`). An `*-ready` row is also not picked.

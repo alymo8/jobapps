@@ -25,13 +25,13 @@
 - round 1 [blocking] `/followup` legend trigger unchanged: trigger is now "lacks `outreach-only`" in all four skills (Global Constraints).
 - round 1 [minor] Git Bash path conversion of `/`-leading patterns: those `rg` checks run in PowerShell.
 - round 1 [minor] Test helpers undefined: `write_apps` and `status_urls` given.
-- round 1 [minor] `/followup` typed-for-Aly leftovers: listed in Task 5.
+- round 1 [minor] `/followup` typed-for-the user leftovers: listed in Task 5.
 - round 1 [minor] Stage 1b protected only `applied`: extended, Notes text named; scoring left as today per spec.
 - round 1 [minor] Review Focus cited a missing read-through: Task 7 Step 4a added; CI-green deferred to shipping flow.
 - round 2 [blocking] Test snippet didn't compile: one-line f-string with `\n`; `STATUSES` placed at module level.
 - round 2 [blocking] Prepare subagent couldn't learn "application only": `Application only` line in the stage-2 prompt too.
 - round 2 [minor] Step 0.2 skip sentence stale: reworded.
-- round 2 [minor] "attachment impossible" in batch execute NEEDS ALY: dropped.
+- round 2 [minor] "attachment impossible" in batch execute NEEDS USER: dropped.
 - round 3 [blocking] Criterion 4 evidence had no home: Task 7 Step 5b appends `## Verification evidence` to the plan; PR copies it.
 - round 3 [minor] Legend `rg -F -c` quoting: uses `-f <scratch file>`.
 - round 3 [minor] Batch model-routing row said "attach": Task 4 Step 3b.

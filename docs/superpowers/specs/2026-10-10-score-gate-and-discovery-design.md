@@ -5,12 +5,12 @@
 
 ## Purpose
 
-Two gaps in the pipeline, both borrowed from career-ops (`C:\Users\alymo\Desktop\Job Search\career-ops`,
+Two gaps in the pipeline, both borrowed from career-ops (`<career-ops-dir>`,
 MIT):
 
 1. **Score gate.** `/batch` pays for an `opus` tailored resume for every live, Canada-eligible
-   posting, and only learns at the review step that a posting wasn't worth it (Xsolla: pay
-   $50-70k USD; Google DeepMind: off-target). A cheap `sonnet` scoring stage between pre-screen and
+   posting, and only learns at the review step that a posting wasn't worth it (a company: pay
+   $50-70k USD; a company: off-target). A cheap `sonnet` scoring stage between pre-screen and
    resume drops clear mismatches first.
 2. **Discovery.** Target lists come from outside the repo (`filtered list - oct3 2026.xlsx`).
    career-ops' `scan.mjs` scans tracked companies' ATS boards with zero LLM tokens. jobapps calls it
@@ -18,7 +18,7 @@ MIT):
    lists.
 
 The two parts are independent: they share only the CSV handoff (`/batch <mode> <discovered csv>`)
-and can each work without the other. Aly asked for them together, so they ship in one change; the
+and can each work without the other. The user asked for them together, so they ship in one change; the
 plan builds them as separate tasks, score gate first.
 
 ## Background (current state)
@@ -47,10 +47,10 @@ plan builds them as separate tasks, score gate first.
   `- Location:`, often `- Fetched:`), some use bold `**Company:**` lines, and 7
   start with YAML frontmatter (`---`, `company:`, `location:`, `apply_url:` in all 7, `posting_url:`
   in some), e.g.
-  `postings/CIMAPlus-10580034/posting.md`; one numbers its URLs (`- URL 1:`) and one has no URL
-  line (`Artefact-8731229002`, which also titles with `**Position:**`). Discovery's dedupe does
+  `postings/<Company>-<id>/posting.md`; one numbers its URLs (`- URL 1:`) and one has no URL
+  line (`<Company>-<id>`, which also titles with `**Position:**`). Discovery's dedupe does
   not see those two (accepted: `read_postings.py` doesn't see such a copy as applied either, so it reaches `/batch`
-  and Aly drops it at the step-0 confirmation). 13 carry a `- Posted:`
+  and the user drops it at the step-0 confirmation). 13 carry a `- Posted:`
   line, absolute (`May 12, 2026`) or relative (`3 days ago (per Built In, 2026-10-04)`); some have
   no `- Fetched:`.
 - CI runs only `python -m py_compile tools/*.py`; there are no tests.
@@ -86,7 +86,7 @@ plan builds them as separate tasks, score gate first.
 
 ### `## Targeting` in `profile.md`
 
-A new section in the local `profile.md`, so Aly's numbers stay out of git. The skill names the keys,
+A new section in the local `profile.md`, so the user's numbers stay out of git. The skill names the keys,
 never the values:
 
 ```
@@ -102,7 +102,7 @@ never the values:
 
 `--min-score` is ignored when the section is missing (no pay floor or rate to score against), and
 the confirmation says so. If the section is missing, the step-0 confirmation says so and offers to add it with these values
-before launching. If Aly declines, the run goes on without stage 1a.5 and the gate (Score column
+before launching. If the user declines, the run goes on without stage 1a.5 and the gate (Score column
 `n/a`), and the confirmation says so.
 
 ### Stage 1a.5: score (`sonnet`)
@@ -113,7 +113,7 @@ incomplete report gets one retry at `opus` (the existing escalation rule).
 
 Subagent prompt (in `batch/SKILL.md`):
 
-> You are a batch scoring subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
+> You are a batch scoring subagent in `<repo-root>`. Read
 > `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
 > `postings/<dir>/posting.md`, `mega-resume-v1.5.tex`, `profile.md` section `## Targeting`, and
 > `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write `postings/<dir>/score.md` for each. Do not ask the user anything. Final reply: one
@@ -304,34 +304,34 @@ jobapps change.
   through `read_postings.py`.
 - CI: add `python -m unittest discover -s tests`.
 - Manual: a scoring dry run, run directly with a scoring subagent outside `/batch` (these three
-  dirs already have `changelog.md`, so `/batch` would not score them), on Xsolla-ebb74747 (expect
-  `PAY-FLOOR`), Spellbook-d92285f3 (pass),
-  GoogleDeepMind-115400405273191110 (fit 2 or lower, overall below 3.5); one real `discover.py` run read back by
+  dirs already have `changelog.md`, so `/batch` would not score them), on <Company>-<id> (expect
+  `PAY-FLOOR`), <Company>-<id> (pass),
+  <Company>-<id> (fit 2 or lower, overall below 3.5); one real `discover.py` run read back by
   `read_postings.py`.
 
 ## Decisions
 
-- Discovery supplements the external lists (Aly, 2026-10-10).
-- Call career-ops' scanner rather than port or vendor it (Aly, 2026-10-10).
-- Low scores are auto-skipped to `dlq.md` and listed, without pausing the run (Aly, 2026-10-10).
-- Pay floor: top of posted range below 100k CAD (Aly, 2026-10-10).
-- Threshold 3.5 (Aly, 2026-10-10).
+- Discovery supplements the external lists (the user, 2026-10-10).
+- Call career-ops' scanner rather than port or vendor it (the user, 2026-10-10).
+- Low scores are auto-skipped to `dlq.md` and listed, without pausing the run (the user, 2026-10-10).
+- Pay floor: top of posted range below 100k CAD (the user, 2026-10-10).
+- Threshold 3.5 (the user, 2026-10-10).
 - `sonnet` for scoring: `haiku` too noisy for judgment, `opus` costs as much as the resume it saves.
 - `scan-history.tsv` over `pipeline.md`: it has location and first-seen date; its repeated rows
   are collapsed by normalized URL.
-- One change for both parts, at Aly's request; they stay independent tasks in the plan. This is
-  an accepted override of the one-subsystem-per-spec rule (Aly, 2026-10-10: "build 1 and 2", then
+- One change for both parts, at the user's request; they stay independent tasks in the plan. This is
+  an accepted override of the one-subsystem-per-spec rule (the user, 2026-10-10: "build 1 and 2", then
   "ship all autonomously").
 - `--reason LOW-SCORE` retries bypass the gate, so the override works without extra flags.
 - No web research in scoring, to keep it cheap; career-ops' full evaluation stays available for
-  postings Aly wants a deep look at.
+  postings the user wants a deep look at.
 
 ## Success criteria
 
 1. **Unit tests:** `python -m unittest discover -s tests` passes locally and in CI, covering the
    `LOW-SCORE` retry rule and every `discover.py` behaviour listed under Tests and CI.
 2. **Scoring dry run:** a scoring subagent run per `.claude/skills/batch/scoring.md` on
-   Xsolla-ebb74747, Spellbook-d92285f3 and GoogleDeepMind-115400405273191110 gives `PAY-FLOOR`,
+   <Company>-<id>, <Company>-<id> and <Company>-<id> gives `PAY-FLOOR`,
    a score of 3.5 or more, and a score below 3.5 respectively; each `score.md` quotes
    `mega-resume-v1.5.tex` for every must-have it marks met.
 3. **Discovery run:** `python tools/discover.py --career-ops <career-ops dir>` writes a CSV that

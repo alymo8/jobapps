@@ -12,7 +12,7 @@
 
 ## Plan-introduced decisions
 
-- Anchor rule for profile writes: the heading line when the section is empty. When the anchor occurs more than once, extend the find text upward one line at a time until it is unique. Stop and tell Aly if the section start is reached first. Never use `nth` (Task 2). Spec says: "Express the change as one edit against a line that appears exactly once in the pulled file".
+- Anchor rule for profile writes: the heading line when the section is empty. When the anchor occurs more than once, extend the find text upward one line at a time until it is unique. Stop and tell the user if the section start is reached first. Never use `nth` (Task 2). Spec says: "Express the change as one edit against a line that appears exactly once in the pulled file".
 - Several reusable answers in one reply are saved as several write-procedure runs in sequence, each with its own "Saved to profile" line (Task 2). Spec says: nothing.
 - The missing-profile error report keeps `md`, `words`, `greeting_ok` and `signoff_ok` beside `"ok": false` and `"error"`. The check runs before the `.tex` is written, so a run before a pull leaves no `.tex` (Task 1). Spec says: "prints a JSON report with `"ok": false` and `"error": ...` and exits 1".
 
