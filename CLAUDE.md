@@ -83,8 +83,9 @@ python -m py_compile tools/*.py                                  # CI runs this 
   `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>` instead, which shows the
   invite dialog directly. When a profile's Message button opens nothing, use Messaging → New message.
 - `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
-  `shortlist.py` treats a missing directory as no decisions. Its saved files also carry no
-  `version`, so `shortlist.py` returns `if_version: null`: undo or changing an existing decision fails (open bug).
+  `shortlist.py` treats a missing directory as no decisions. Its saved files carry no `version`
+  (only the tool's result text shows `version N`), so `shortlist.py doc --existing` and `pending-plan`
+  take it as `--version` and fail rather than emit `if_version: null`.
 - Git Bash heredocs turn `\\` into `\`: write LaTeX with the Write/Edit tools, not `cat <<EOF`.
 - The Artifact tool publishes only files under the session's working directory or scratchpad: from a
   worktree outside the repo, copy `templates/shortlist/` to the scratchpad first.
