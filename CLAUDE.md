@@ -20,6 +20,7 @@ python tools/build_cover_letter.py postings/<dir>/cover_letter.md [--check]
 python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all] [--for outreach]
 python tools/discover.py [--since N] [--exclude <list>] [--location <kw> ...] [--career-ops <dir>]  # -> discovered/<date>.csv
 python tools/pull_sources.py <downloaded.md> <target>                      # doc code block -> sources/ (see .claude/skills/pull-sources.md)
+python tools/pull_sources.py --local <local file> <target>             # local source file -> sources/
 python -I tools/shortlist.py list --keys <decision_keys.py> --rows <latest.json> --decisions <dir> --top 10 --table  # see job-shortlist skill
 python -m unittest discover -s tests -v                                     # unit tests (CI runs them)
 python -m py_compile tools/*.py                                  # CI runs this and the tests
@@ -27,10 +28,11 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 ## Architecture in brief
 
-- Sources of truth: six Claude Docs (listed in `config.local.json` `sources`) for the mega resume, both prompts,
+- Sources of truth: six Claude Docs or six local files outside the repo, chosen at /onboard (listed in `config.local.json` `sources`) for the mega resume, both prompts,
   the profile, stories and answers, pulled into gitignored `sources/` per
-  `.claude/skills/pull-sources.md`. Of the six source Docs, Claude Code writes only to the Profile doc, through
-  `.claude/skills/write-source.md` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md)).
+  `.claude/skills/pull-sources.md`. Of the six sources, Claude Code writes only to the profile source (Doc or local file), through
+  `.claude/skills/write-source.md` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md),
+  [ADR 0011](knowledge/decisions/0011-local-source-files-option.md)).
 - Skills in `.claude/skills/`: `/onboard` sets up a new user (templates in `templates/`); `/discover` (career-ops scanner → CSV) → `/resume` → `/apply`; `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
   `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
   `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
@@ -62,7 +64,7 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - `build_cover_letter.py` reads the letter header (name, phone, email, links) from the
   `## Contact` bullets of `sources/profile.md` (pull first); keep those keys when editing the
   Profile doc.
-- Edit the sources in the Claude Docs (claude.ai), never in `sources/`: the next pull overwrites
+- Edit the sources in the Claude Docs (claude.ai) or in their `local_path` files, never in `sources/`: the next pull overwrites
   local edits.
 - `tools/` scripts aren't ruff-clean at the default 88-column limit; CI byte-compiles them and runs the unittest suite (no linter).
 - CI (`ci.yml`) runs only on pull requests and pushes to `main`; a feature-branch push runs only

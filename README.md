@@ -5,7 +5,7 @@ and LinkedIn outreach for each posting, driven by Claude Code skills.
 
 ## Setup
 
-Run `/onboard` in Claude Code: it checks prerequisites, asks for your material and targets, creates your six Docs, config, career-ops scan, shortlist and weekly routine.
+Run `/onboard` in Claude Code: it checks prerequisites, asks for your material and targets, creates your six Docs (or six local files), config, career-ops scan, shortlist and weekly routine (or a local scheduled task).
 
 ### Manual setup (fallback)
 
@@ -13,7 +13,8 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
    extension (for `/apply`, `/outreach`, `/followup`); the Claude Docs connector, signed in to your
    account.
 2. **Create your six source Docs** in Claude Docs, each holding its content in one fenced code
-   block (the Mega resume in a `latex` block, the rest in `markdown` blocks): Mega resume, Resume
+   block (the Mega resume in a `latex` block, the rest in `markdown` blocks), or six local files in
+   a folder outside the repo (no code fence): Mega resume, Resume
    prompt, Cover letter prompt, Application profile, Behavioral stories, Free-text answer bank.
    The local files they are pulled into are the six `path` values in `config.example.json`
    (`sources/mega-resume.tex`, `sources/resume_prompt.md`, `sources/cover_letter_prompt.md`,
@@ -21,7 +22,8 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
    `## Contact` section (`Full name`, `Preferred first name`, phone, email, links).
 3. **Copy `config.example.json` to `config.local.json`** (gitignored) and fill it in. One line per key:
    - `sources` (required): one entry per Doc with its `path`, `doc_url` and `tab_id`; the Profile
-     entry also has its `node_id` and `"writable": true`. Without the file, skills stop and say
+     entry also has its `node_id` and `"writable": true`; or, for local files, `path` and `local_path`
+     (the file's absolute path), the Profile entry also `"writable": true`. Without the file, skills stop and say
      the repo is not set up yet.
    - `shortlist` (optional): `artifact_url` and `title` of your weekly shortlist artifact. Absent:
      `/job-shortlist` says the shortlist is not set up.
