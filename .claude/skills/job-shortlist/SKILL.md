@@ -40,6 +40,9 @@ published `data/*` files, the weekly run) is built and owned elsewhere; this ski
 2. `ArtifactData list`, `collection: "decisions"`, `query: {"limit": 1000}`,
    `out_dir: <S>/decisions-<timestamp>` (`<D>`). While the result has a `next_cursor`, repeat with
    `query.cursor` and the same `out_dir`.
+   The saved files hold only each document's body: its version is only in the result text, one
+   `"<doc_id>"  <size>  version N  "<path>"` line per document. Every write to an existing document
+   needs that `N` as `if_version`; never pass `if_version: null`.
 3. If the pending file exists and is non-empty, flush it (Pending fallback, "Flush"), then list
    `decisions` again into a new `<D>`.
 
@@ -55,10 +58,11 @@ warning on stderr.
 
 - `list --rows <latest> --decisions <D> [--top N] [--new] [--priority] [--tab main|below_cut|all] [--location KW]... [--company KW] [--title KW] [--table]`
 - `find --rows <latest> [<older week files, newest first>] --decisions <D> (--url U | --rank N | --company C [--title T])`
-- `doc --url U --company C --title T --decision applied|not_interested --week W [--note TEXT] [--decided-at YYYY-MM-DD|ISO] [--existing FILE]`
-  → `{doc_id, if_version, data}`
+- `doc --url U --company C --title T --decision applied|not_interested --week W [--note TEXT] [--decided-at YYYY-MM-DD|ISO] [--existing FILE --version N]`
+  → `{doc_id, if_version, data}`. With `--existing`, `--version` is the version the `get` result lists;
+  without it the command fails rather than emit `if_version: null`.
 - `decisions --decisions <D> [--decision applied|not_interested] [--url U] [--company C --title T] [--match TEXT]`
-- `pending-add` (same flags as `doc`, `--keys` optional), `pending-plan --decisions <D>`, `pending-clear`
+- `pending-add` (same flags as `doc`, `--keys` optional), `pending-plan --decisions <D> [--version DOC_ID=N]...`, `pending-clear`
 
 ## Show the shortlist
 
@@ -86,8 +90,9 @@ run), plus an optional date ("yesterday" → that date) and note.
      title, `--week ""`. No URL known → ask the user for it.
 2. **Build and write.** `doc ... --decision applied` → `doc_id`. `ArtifactData get` that `doc_id`
    with `out_dir: <S>/get-<doc_id>`.
-   - It exists → rebuild with `doc ... --existing <saved file>` (keeps the existing note) and
-     `ArtifactData set` with `data` and `if_version` from the output.
+   - It exists → rebuild with `doc ... --existing <saved file> --version <N>`, `N` from the `get`
+     result's `version N` (keeps the existing note), and `ArtifactData set` with `data` and
+     `if_version` from the output.
    - It doesn't → `ArtifactData set` with `data`, no `if_version`.
    - Note: a flow run passes `tailored resume + cover letter` or `tailored resume` (per what was
      built); "I applied to X" with no reason → `applied by the user on the site`; otherwise the user's words.
@@ -105,7 +110,8 @@ run), plus an optional date ("yesterday" → that date) and note.
 2. Show the exact list (rank, company, title, location, URL). More than 3 → wait for the user's OK
    (the user may drop some). 3 or fewer → go on.
 3. For each: `doc ... --decision not_interested --week <its week> [--note "<the user's reason>"]`, and
-   `ArtifactData get` its `doc_id`; for existing ones rebuild with `--existing`.
+   `ArtifactData get` its `doc_id`; for existing ones rebuild with `--existing <saved file> --version <N>`
+   (`N` from the `get` result).
 4. One posting → `ArtifactData set`. Several → `ArtifactData batch` with
    `writes: [{op: "set", collection: "decisions", doc_id, data, if_version (existing only)}]`,
    one batch per 50 writes.
@@ -118,7 +124,8 @@ run), plus an optional date ("yesterday" → that date) and note.
 1. Find the document: `decisions --decisions <D> --url <U>` when a URL is known; else
    `--company C --title T` from the shortlist row; else `--match <words>`. Several → ask which.
 2. Show it (decision, company, title, decided_at, source, note, doc_id).
-3. `ArtifactData delete` with its `doc_id` and `if_version` = its `version`.
+3. `ArtifactData get` its `doc_id` (no `out_dir`; the result shows `"version": N`), then
+   `ArtifactData delete` with its `doc_id` and `if_version: N`.
 4. Confirm: `Removed: <decision> — <company>, <title>. It can appear in the list again.`
 
 ## Review
@@ -140,8 +147,10 @@ When `ArtifactData` or the Artifact tool isn't in the session (not listed and no
    the posting.
 3. "Show" with the Artifact tool unavailable: say the shortlist can't be read now and point the user to the page.
 
-**Flush** (fetch step 3): `pending-plan --decisions <D>` → for each `write` entry, `ArtifactData set`
-(`if_version` when given), or one `batch` when more than one; `skip` entries are already recorded.
+**Flush** (fetch step 3): `pending-plan --decisions <D>`. If it fails naming doc_ids whose version
+is unknown, rerun it with `--version <doc_id>=<N>` for each, `N` from the fetch step 2 list result
+(or an `ArtifactData get` of that doc_id). Then for each `write` entry, `ArtifactData set`
+(`if_version` when not null; null means a new document), or one `batch` when more than one; `skip` entries are already recorded.
 Only after every write succeeded, `pending-clear`. Tell the user in one line how many were flushed.
 
 ## Running inside other skills

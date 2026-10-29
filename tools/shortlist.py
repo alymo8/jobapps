@@ -8,6 +8,10 @@ never computes keys another way. Inputs are files the skill saved with the Artif
 ArtifactData tools; nothing here talks to the network. Output is JSON on stdout (`list --table`
 prints Markdown). Errors print {"ok": false, "error": "..."} and exit 1.
 
+Files ArtifactData saves with `out_dir` hold only the document body; its version appears only in
+the tool's result text ("version N"). Writes to an existing document need that version, so `doc`
+and `pending-plan` take it as `--version` and refuse to emit `if_version: null` for one.
+
 Commands (see .claude/skills/job-shortlist/SKILL.md and the spec
 docs/superpowers/specs/2026-10-18-job-shortlist-design.md):
   list            rows of one week, decided ones left out, deadlines in the next 7 days first
@@ -241,7 +245,7 @@ def decided_at(value):
     return value
 
 
-def build_doc(keys, args, existing=None):
+def build_doc(keys, args, existing=None, version=None):
     note = args.note or ""
     if existing is not None:
         note = merge_note(existing["body"].get("note"), note)
@@ -259,11 +263,22 @@ def build_doc(keys, args, existing=None):
         "note": note,
     }
     return {"doc_id": keys.doc_id(args.url) if keys else "",
-            "if_version": existing["version"] if existing else None, "data": data}
+            "if_version": version, "data": data}
 
 
 def cmd_doc(keys, args):
-    return build_doc(keys, args, load_decision_file(args.existing) if args.existing else None)
+    if not args.existing:
+        if args.version is not None:
+            raise ValueError("--version is only for an existing document; pass --existing too")
+        return build_doc(keys, args)
+    existing = load_decision_file(args.existing)
+    if existing is None:
+        raise ValueError(f"--existing {args.existing} is not a decision document")
+    version = args.version if args.version is not None else existing["version"]
+    if version is None:
+        raise ValueError("the existing document's version is unknown (out_dir files hold no version): "
+                         "pass --version N from the ArtifactData get result")
+    return build_doc(keys, args, existing, version)
 
 
 def sort_time(decision):
@@ -316,7 +331,19 @@ def merge_note(old, new):
     return f"{old}; {new}" if old else new
 
 
+def parse_versions(values):
+    """{doc_id: version} from repeated `--version DOC_ID=N` flags."""
+    out = {}
+    for value in values or []:
+        doc_id, sep, n = value.rpartition("=")
+        if not sep or not doc_id or not n.strip().isdigit():
+            raise ValueError(f"--version {value!r}: expected DOC_ID=N")
+        out[doc_id] = int(n)
+    return out
+
+
 def cmd_pending_plan(keys, args):
+    versions = parse_versions(args.version)
     existing = {d["doc_id"]: d for d in load_decisions(args.decisions)}
     latest = {}  # one write per document: the last pending line for a doc_id wins
     for entry in read_pending(args.file):
@@ -326,16 +353,21 @@ def cmd_pending_plan(keys, args):
         data["match_key"] = data.get("match_key") or keys.match_key(data["company"], data["title"])
         latest.pop(doc_id, None)
         latest[doc_id] = data
-    plan = []
+    plan, unknown = [], []
     for doc_id, data in latest.items():
         current = existing.get(doc_id)
+        version = versions.get(doc_id, current["version"]) if current else None
         if current:
             data["note"] = merge_note(current["body"].get("note"), data.get("note"))
         if current and current["body"].get("decision") == data["decision"]:
-            plan.append({"action": "skip", "doc_id": doc_id, "if_version": current["version"], "data": data})
+            plan.append({"action": "skip", "doc_id": doc_id, "if_version": version, "data": data})
         else:
-            plan.append({"action": "write", "doc_id": doc_id,
-                         "if_version": current["version"] if current else None, "data": data})
+            if current and version is None:
+                unknown.append(doc_id)
+            plan.append({"action": "write", "doc_id": doc_id, "if_version": version, "data": data})
+    if unknown:
+        raise ValueError("version unknown for existing document(s) " + ", ".join(unknown)
+                         + ": pass --version DOC_ID=N for each, from the ArtifactData list or get result")
     return plan
 
 
@@ -388,6 +420,7 @@ def parser():
         s.add_argument("--decided-at")
         if name == "doc":
             s.add_argument("--existing")
+            s.add_argument("--version", type=int, help="the existing document's version (from the get result)")
         else:
             s.add_argument("--file", default=str(DEFAULT_PENDING))
 
@@ -402,6 +435,8 @@ def parser():
     s = add("pending-plan")
     s.add_argument("--file", default=str(DEFAULT_PENDING))
     s.add_argument("--decisions", required=True)
+    s.add_argument("--version", action="append", metavar="DOC_ID=N",
+                   help="an existing document's version (from the list or get result); repeatable")
 
     s = sub.add_parser("pending-clear")
     s.add_argument("--file", default=str(DEFAULT_PENDING))

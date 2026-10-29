@@ -260,6 +260,29 @@ class FindDocDecisionsTest(Base):
         self.assertEqual(out["if_version"], 7)
         self.assertEqual(self.doc("--existing", p, "--note", "too senior")["data"]["note"], "too senior")
 
+    def test_doc_existing_bare_file_needs_version(self):
+        # ArtifactData `out_dir` files hold only the body; the version is in the tool's result text.
+        p = self.dir / "u-x.json"
+        p.write_text(json.dumps(body("https://jobs.lever.co/x/1", "Mistral AI", "FDE", note="too senior")))
+        code, out = self.run_cli("doc", "--keys", FIXTURE_KEYS, "--url", "https://jobs.lever.co/x/1",
+                                 "--company", "Mistral AI", "--title", "FDE", "--decision", "applied",
+                                 "--week", "2026-10-17", "--existing", p)
+        self.assertEqual(code, 1)
+        self.assertFalse(out["ok"])
+        self.assertIn("--version", out["error"])
+        out = self.doc("--existing", p, "--version", "4")
+        self.assertEqual(out["if_version"], 4)
+        self.assertEqual(out["data"]["note"], "too senior")
+
+    def test_doc_version_overrides_file_and_needs_existing(self):
+        p = self.dir / "existing.json"
+        p.write_text(json.dumps({"id": "u-x", "version": 7, "data": body("https://jobs.lever.co/x/1", "Mistral AI", "FDE")}))
+        self.assertEqual(self.doc("--existing", p, "--version", "9")["if_version"], 9)
+        code, out = self.run_cli("doc", "--keys", FIXTURE_KEYS, "--url", "https://a.com/1", "--company", "A",
+                                 "--title", "T", "--decision", "applied", "--week", "", "--version", "3")
+        self.assertEqual(code, 1)
+        self.assertIn("--existing", out["error"])
+
     def test_decisions(self):
         d = self.decisions_dir([
             body("https://acme.com/2", "Acme", "Backend Engineer", decided_at="2026-10-01T10:00:00-04:00"),
@@ -333,6 +356,31 @@ class PendingTest(Base):
         self.assertEqual(len(plan), 1)
         self.assertEqual((plan[0]["action"], plan[0]["data"]["decision"]), ("write", "applied"))
         self.assertEqual(plan[0]["data"]["note"], "too senior; applied on site")
+
+    def test_plan_bare_files_need_versions(self):
+        pending = self.dir / "pending.jsonl"
+        self.add(pending, url="https://same.com/1")
+        self.add(pending, url="https://diff.com/1", decision="not_interested")
+        self.add(pending, url="https://new.com/1")
+        d = self.decisions_dir([body("https://same.com/1", "A", "T"), body("https://diff.com/1", "A", "T")],
+                               wrapped=False)
+        base = ("pending-plan", "--keys", FIXTURE_KEYS, "--file", pending, "--decisions", d)
+        code, out = self.run_cli(*base)
+        self.assertEqual(code, 1)
+        diff_id, same_id = KEYS.doc_id("https://diff.com/1"), KEYS.doc_id("https://same.com/1")
+        self.assertIn(diff_id, out["error"])
+        self.assertNotIn(same_id, out["error"])  # a skip writes nothing, so it needs no version
+        code, plan = self.run_cli(*base, "--version", f"{diff_id}=5")
+        self.assertEqual(code, 0)
+        self.assertEqual([p["action"] for p in plan], ["skip", "write", "write"])
+        self.assertEqual(plan[1]["if_version"], 5)
+        self.assertIsNone(plan[2]["if_version"])
+
+    def test_plan_bad_version_flag(self):
+        code, out = self.run_cli("pending-plan", "--keys", FIXTURE_KEYS, "--file", self.dir / "nope.jsonl",
+                                 "--decisions", self.dir, "--version", "u-x")
+        self.assertEqual(code, 1)
+        self.assertIn("DOC_ID=N", out["error"])
 
     def test_plan_missing_file(self):
         code, plan = self.run_cli("pending-plan", "--keys", FIXTURE_KEYS, "--file", self.dir / "nope.jsonl",
