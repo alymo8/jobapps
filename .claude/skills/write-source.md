@@ -63,8 +63,10 @@ Run from the repo root.
 - The `update` is refused with `find_none` (the doc changed since step 1, for example the user was
   editing it): go back to step 1 once. On a second refusal, stop and tell the user.
 - A local profile with CR line endings: stop (step 3, local).
-- A local Edit that finds the old text zero or several times, or reports the file changed since it
-  was read: go back to step 1 once; the second time, stop and tell the user.
+- A local Edit that finds the old text zero or several times: go back to step 1 once; the second
+  time, stop and tell the user. An Edit that notes the file changed on disk since it was read still
+  applies: do not retry (a retry would add the change twice); go on to step 4, whose check stops on
+  the user's other changes.
 - The step 4 difference is not exactly the intended lines: stop and tell the user what changed, quoting
   the difference. Don't try to repair it.
 - Any other refusal, or a tool that can't be reached: stop and tell the user. Never write it anywhere but

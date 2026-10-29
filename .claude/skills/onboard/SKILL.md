@@ -198,7 +198,8 @@ profile has no `- Score threshold: ASK` line, leave that line as it is. `/onboar
 with `ASK` on a `## Targeting` line.
 
 **Local mode** (no Docs calls). For each source in the table: build the working copy as in 1
-(`<S>/onboard/<file name>`, without the fence, ending in a newline). If `<folder>/<file name>`
+(`<S>/onboard/<file name>`, without the fence, ending in a newline, with LF line endings: on
+Windows the templates may check out with CRLF, so convert them). If `<folder>/<file name>`
 exists, say so and overwrite it only on a yes (Rules, "Redo"); then
 `cp "<S>/onboard/<file name>" "<folder>/<file name>"` (a byte copy, so the file is LF, with no
 fence). Then write `config.local.json` (Rules, "Config writes"): `sources` (six entries, `path`
