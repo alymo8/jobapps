@@ -33,7 +33,7 @@ class PullSourcesTest(unittest.TestCase):
         self.assertEqual(report["lines"], 1)
 
     def test_longer_fence_keeps_inner_fences(self):
-        inner = "```\nBest,\nAly\n```"
+        inner = "```\nBest,\nJordan\n```"
         target = self.dir / "out.md"
         pull_sources.pull(self.doc(f"# T\n\n````markdown\n{inner}\n````\n"), target)
         self.assertEqual(target.read_text(encoding="utf-8"), inner + "\n")

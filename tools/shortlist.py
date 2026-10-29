@@ -1,4 +1,4 @@
-"""Helper for the job-shortlist skill: Aly's weekly shortlist artifact and its `decisions`.
+"""Helper for the job-shortlist skill: the user's weekly shortlist artifact and its `decisions`.
 
 Usage: python -I tools/shortlist.py <command> --keys <decision_keys.py> ...
 

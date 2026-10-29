@@ -1,18 +1,21 @@
 """Check a cover_letter.md and, unless --check, build a one-page PDF from it.
 
-Usage: python tools/build_cover_letter.py <postings/<dir>/cover_letter.md> [--check]
+Usage: python tools/build_cover_letter.py <postings/<dir>/cover_letter.md> [--check] [--profile <path>]
 
 The .md is plain paste-ready text: paragraphs separated by blank lines, starting with
 the greeting line and ending with the sign-off (see sources/cover_letter_prompt.md).
+--profile defaults to sources/profile.md; its "## Contact" section gives the sign-off
+name, the letter header and the output file name.
 Prints a JSON report:
   words           word count of the whole letter (target 300-400)
   greeting_ok     first line is the exact greeting (English or French form)
-  signoff_ok      last two lines are the exact sign-off matching that greeting
+  signoff_ok      last two lines are the closing word for that greeting and the
+                  profile's "Preferred first name" (else the first word of "Full name")
   pages           page count of the PDF (must be 1; omitted with --check)
-  pdf             Aly_Mohamed_Hussein_Cover_Letter_<Company>.pdf next to the .md
+  pdf             <Full_Name>_Cover_Letter_<Company>.pdf next to the .md
   png             rendered page preview, in the temp dir
   ok              all checks pass (looking at the PNG is still on you)
-  error           without --check only: sources/profile.md is missing (pull the sources first)
+  error           sources/profile.md (or --profile) is missing, in either mode
 """
 
 import json
@@ -27,9 +30,9 @@ sys.path.insert(0, str(Path(__file__).parent))
 from build_resume import compile_tex, preview_png  # noqa: E402
 
 WORDS_MIN, WORDS_MAX = 300, 400
-FORMS = {  # greeting -> sign-off lines
-    "Dear hiring team,": ["Best,", "Aly"],
-    "Bonjour à l'équipe de recrutement,": ["Cordialement,", "Aly"],
+FORMS = {  # greeting -> closing word
+    "Dear hiring team,": "Best,",
+    "Bonjour à l'équipe de recrutement,": "Cordialement,",
 }
 
 PREAMBLE = r"""\documentclass[letterpaper,11pt]{article}
@@ -73,60 +76,84 @@ def escape(text: str) -> str:
     return "".join(SPECIALS.get(c, c) for c in text)
 
 
-def check(lines: list[str]) -> dict:
+def check(lines: list[str], name: str) -> dict:
     greeting = lines[0] if lines else ""
-    signoff = FORMS.get(greeting)
+    closing = FORMS.get(greeting)
     words = len(re.findall(r"\S+", "\n".join(lines)))
     return {
         "words": words,
-        "greeting_ok": signoff is not None,
-        "signoff_ok": signoff is not None and lines[-2:] == signoff,
+        "greeting_ok": closing is not None,
+        "signoff_ok": closing is not None and lines[-2:] == [closing, name],
     }
 
 
-def contact() -> dict:
-    """Header fields from the "## Contact" bullets ("- Key: value") of sources/profile.md."""
-    text = PROFILE.read_text(encoding="utf-8")
+def contact_fields(profile: Path) -> dict[str, str]:
+    """Every "## Contact" bullet ("- Key: value") of the profile, trailing note dropped."""
+    text = profile.read_text(encoding="utf-8")
     section = text.split("## Contact", 1)[1].split("\n## ", 1)[0]
     fields = dict(re.findall(r"^- ([^:\n]+): *(\S.*?) *$", section, re.M))
-    # Values may carry a trailing note for Aly, e.g. "https://... (www form; ...)": drop it.
-    c = {k: re.sub(r"\s*\([^()]*\)$", "", fields[v]) for k, v in CONTACT_KEYS.items()}
+    # Values may carry a trailing note for the user, e.g. "https://... (www form; ...)": drop it.
+    return {k: re.sub(r"\s*\([^()]*\)$", "", v) for k, v in fields.items()}
+
+
+def contact(profile: Path) -> dict:
+    """Header fields from the profile's "## Contact" bullets."""
+    fields = contact_fields(profile)
+    c = {k: fields[v] for k, v in CONTACT_KEYS.items()}
     c["city"] = c["city"].split(",")[0]
     for k in ("linkedin", "github"):
         c[f"{k}_bare"] = re.sub(r"^https?://(www\.)?", "", c[k])
     return c
 
 
-def preamble() -> str:
+def signoff_name(profile: Path) -> str:
+    fields = contact_fields(profile)
+    return fields.get("Preferred first name") or fields["Full name"].split()[0]
+
+
+def letter_tex_path(md: Path, profile: Path) -> Path:
+    full = "_".join(contact_fields(profile)["Full name"].split())
+    company = md.parent.name.split("-")[0]
+    return md.with_name(f"{full}_Cover_Letter_{company}.tex")
+
+
+def preamble(profile: Path) -> str:
     out = PREAMBLE
-    for k, v in contact().items():
+    for k, v in contact(profile).items():
         out = out.replace(f"<<{k}>>", v)
     return out
 
 
-def to_tex(text: str) -> str:
+def to_tex(text: str, profile: Path) -> str:
     paragraphs = [p.strip() for p in re.split(r"\n\s*\n", text.strip())]
     body = []
     for p in paragraphs:
         body.append(r" \\ ".join(escape(line.strip()) for line in p.splitlines()))
     today = date.today()
     dated = f"{today:%B} {today.day}, {today.year}"
-    return preamble() + dated + "\n\n" + "\n\n".join(body) + "\n\\end{document}\n"
+    return preamble(profile) + dated + "\n\n" + "\n\n".join(body) + "\n\\end{document}\n"
 
 
 def main(argv: list[str]) -> int:
-    md = Path(argv[0]).resolve()
+    profile = PROFILE
+    if "--profile" in argv:
+        i = argv.index("--profile")
+        profile = Path(argv[i + 1])
+        rest = argv[:i] + argv[i + 2:]
+    else:
+        rest = argv
+    md = Path(next(a for a in rest if a != "--check")).resolve()
     text = md.read_text(encoding="utf-8")
     lines = [line.strip() for line in text.strip().splitlines() if line.strip()]
-    report = {"md": str(md), **check(lines)}
-    report["ok"] = (WORDS_MIN <= report["words"] <= WORDS_MAX
+    has_profile = profile.exists()
+    report = {"md": str(md), **check(lines, signoff_name(profile) if has_profile else "")}
+    report["ok"] = (has_profile and WORDS_MIN <= report["words"] <= WORDS_MAX
                     and report["greeting_ok"] and report["signoff_ok"])
-    if "--check" not in argv and not PROFILE.exists():
-        report.update(ok=False, error=MISSING_PROFILE)
+    if not has_profile:
+        report.update(ok=False, signoff_ok=False, error=MISSING_PROFILE)
     elif "--check" not in argv:
-        company = md.parent.name.split("-")[0]
-        tex = md.with_name(f"Aly_Mohamed_Hussein_Cover_Letter_{company}.tex")
-        tex.write_text(to_tex(text), encoding="utf-8")
+        tex = letter_tex_path(md, profile)
+        tex.write_text(to_tex(text, profile), encoding="utf-8")
         errors, overfull = compile_tex(tex)
         report.update(errors=errors, overfull=overfull)
         pdf = tex.with_suffix(".pdf")
