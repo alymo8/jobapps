@@ -1,6 +1,6 @@
 ---
 name: followup
-description: Follow up with the LinkedIn contacts from earlier /outreach runs - re-message people who accepted the connection request, nudge people who went silent, draft answers to replies, and find, add and message new people at the company. Messages to Aly's existing connections and replies are approved by Aly (names shown first); requests and messages to new connections go out without approval. Use when the user runs /followup or asks to follow up or re-message people from previous outreach batches.
+description: Follow up with the LinkedIn contacts from earlier /outreach runs - re-message people who accepted the connection request, nudge people who went silent, draft answers to replies, and find, add and message new people at the company. Messages to the user's existing connections and replies are approved by the user (names shown first); requests and messages to new connections go out without approval. Use when the user runs /followup or asks to follow up or re-message people from previous outreach batches.
 argument-hint: "[<posting dir | company> ...] [--dry-run]"
 ---
 
@@ -8,23 +8,23 @@ argument-hint: "[<posting dir | company> ...] [--dry-run]"
 
 All paths are relative to `jobapps/`. Runs inline in this session (no subagents) in **one LinkedIn
 tab of its own**, per `.claude/skills/linkedin-tab.md`: load `claude-in-chrome` first, open pages
-by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. Aly is
-logged in to LinkedIn; check whether his plan is Premium or free before the first send, per
-"Aly's plan and each person's message route" in `.claude/skills/linkedin-tab.md` (free: about 3
+by direct URL, recycle the tab every 8 page opens, never touch other tabs, close it at the end. The user is
+logged in to LinkedIn; check whether the user's plan is Premium or free before the first send, per
+"The user's plan and each person's message route" in `.claude/skills/linkedin-tab.md` (free: about 3
 personalized invitations a month; Premium: unlimited notes). Invitation notes stay ≤200 characters.
 
 ## Approval rule
 
 Each person has a **class**, fixed when they were first found (step 1):
 
-- **Existing connection**: Aly's 1st-degree connection before any request from us. Every message
-  to them needs an explicit `ok` or `edit:` from Aly in this run's `questions.txt`, and the chat
+- **Existing connection**: the user's 1st-degree connection before any request from us. Every message
+  to them needs an explicit `ok` or `edit:` from the user in this run's `questions.txt`, and the chat
   summary names them.
 - **New**: everyone else, including people who have since accepted our request. Connection
   requests, the follow-up (b) after acceptance, and nudges go out **without approval** and are
   reported after.
 - **Replies** to an inbound message always need approval, whatever the class: they answer real
-  questions (availability, salary, scheduling) in Aly's name.
+  questions (availability, salary, scheduling) in the user's name.
 
 ## Arguments
 
@@ -48,8 +48,8 @@ python -c "import datetime as d,sys; a=d.date.fromisoformat(sys.argv[1]); b=d.da
 ```
 
 Calendar days = `(today - from).days`. Use the logged date when there is one for a send Claude
-confirmed (`## Sent`, `nudge sent`, `reply sent`, `invite sent`). For a `typed, Aly to send`
-message, use the outbound date shown in the LinkedIn thread (Aly may send it days later). When only LinkedIn's
+confirmed (`## Sent`, `nudge sent`, `reply sent`, `invite sent`). For a `typed, <word> to send` (any single word)
+message, use the outbound date shown in the LinkedIn thread (the user may send it days later). When only LinkedIn's
 relative label exists ("1 week ago", "Tuesday"), convert it to an absolute date and mark it `~` in
 the manifest (e.g. `~2026-09-27`).
 
@@ -88,7 +88,7 @@ date (`done (no-response)` after ≥3 business days with no reply, else `waiting
 
 ## 2. LinkedIn sweep
 
-If more than 40 people have records, ask Aly to confirm or narrow first. Wait 3–5 seconds
+If more than 40 people have records, ask the user to confirm or narrow first. Wait 3–5 seconds
 between page opens (browser wait action), and count page opens for the tab recycling in
 `.claude/skills/linkedin-tab.md`.
 
@@ -105,7 +105,7 @@ between page opens (browser wait action), and count page opens for the tab recyc
 5. Invitation neither pending nor accepted and no thread → `done (no-response)`, note
    `invite withdrawn/expired`.
 
-A CAPTCHA, a rate limit or a "restricted activity" warning: stop, tell Aly, no retries. At the end
+A CAPTCHA, a rate limit or a "restricted activity" warning: stop, tell the user, no retries. At the end
 record `Sent invitations at end: N` in the manifest header.
 
 ## 3. Classify
@@ -116,7 +116,7 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume, sent directly with no attachment (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, Aly to send` → note `typed <date>, not sent` |
+| 3 | `accepted` | Connected after our request, and no outbound message after acceptance other than the invitation note | Re-message them: the person's (b), re-checked against the resume, sent directly with no attachment (no approval: they are `new`). No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new draft`. A previous `typed, <word> to send` (any single word) → note `typed <date>, not sent` |
 | 4 | `silent` | A (b), free message (open profile), InMail (old logs) or direct message sent, no reply, ≥3 business days since the last outbound message, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Add the next new person (step 3b) |
 | 6 | `waiting` | Anything else | None |
@@ -124,14 +124,14 @@ Exactly one state per person, checked in this order:
 A `## Sent` or `## Follow-up` entry on channel `free message (open profile)` is classified like a
 sent (b): it can be `replied`, `silent` or `waiting`, never `accepted` or `stale-pending`.
 
-**Nudge:** the role title, a reminder that Aly is interested in it and messaged earlier, and one question:
-is the role still open, and would they be open to a short chat or to pointing Aly to the right
+**Nudge:** the role title, a reminder that the user is interested in it and messaged earlier, and one question:
+is the role still open, and would they be open to a short chat or to pointing the user to the right
 person. No new claims, no guilt-tripping.
 
 **Reply:** answer only from the posting's tailored resume and `sources/profile.md`,
 in the language of the reply (English or French). Anything neither covers (salary with no `sources/profile.md` rule, specific
 availability, references) becomes a question in `questions.txt`, not a guess. A request to
-schedule → ask Aly for times; never invent any.
+schedule → ask the user for times; never invent any.
 
 ## 3b. Find new people
 
@@ -145,14 +145,14 @@ and up to **10 connection requests per run** in total:
 - **Who, in order:** (1) the next person in Shortlist order who has no `## Sent`, `## Follow-up` or
   reconciled send, is not marked skipped / may have left / not at the company, and was not found
   `done (left company)`; (2) when the Shortlist runs out, a fresh LinkedIn people search at the
-  company (current employees), as in `/outreach` step 2: Aly's 1st-degree connections first, then
+  company (current employees), as in `/outreach` step 2: the user's 1st-degree connections first, then
   recruiters for the posting's location and the likely hiring manager. Skip anyone already in any
   `outreach.md` (by profile URL). Check the current position. Append each person found to the
   Shortlist table (as a table row, above any `APPROVED <date>: outreach` line) with `added <date>` in the why column, and their class.
 - **What:** a **new** person whose message composer says "Free message" (Open Profile; read the
   composer for every new person, per `.claude/skills/linkedin-tab.md`) gets their (b) as that free
   message. Otherwise a **new** person gets a
-  connection request (no InMail unless Aly OKs that person and text: if the composer shows InMail
+  connection request (no InMail unless the user OKs that person and text: if the composer shows InMail
   credits, send the connection request instead); with a note while the budget lasts (their
   "Short notes (200-char limit)" entry, else a new note ≤200 characters condensed from their (a),
   else written from the posting's drafts and tailored resume), otherwise without a note. Length
@@ -194,12 +194,12 @@ Create `batches/<YYYY-MM-DD-HHMM>-followup/`:
 Post a short summary in chat: counts per state, the note budget, no-contact postings, and **the
 names of the existing connections awaiting approval** (`Your connections to OK: <Name> (<company>),
 ...`). If nothing needs approval, go straight to step 6. Otherwise go to step 6 for the
-`not needed` items now, and wait for Aly before the approval items. Nothing is approved by
+`not needed` items now, and wait for the user before the approval items. Nothing is approved by
 silence; an approval of one message does not cover another. `--dry-run` ends here.
 
 ## 5. Record approvals
 
-When Aly says questions.txt is done, re-read it. For each `ok`/`edit:`, append an approval bullet
+When the user says questions.txt is done, re-read it. For each `ok`/`edit:`, append an approval bullet
 to that posting's `## Follow-up` (create the section at the end of `outreach.md` if missing):
 `- APPROVED <date> | <Name> | <reply / message (existing connection)> | text:` + the
 final text quoted. Save reusable answers to `sources/profile.md` through `.claude/skills/write-source.md` (as a rule when the answer carries
@@ -217,11 +217,11 @@ waiting 3–5 seconds between page opens:
 - **New connection request**: re-check any note is ≤200 characters in code; send the request;
   confirm it shows as pending.
 - **Existing connection message**: only with its approval; send in the thread.
-- No InMail unless Aly OKs that person and text in chat. Attach nothing, and never say a resume is attached.
+- No InMail unless the user OKs that person and text in chat. Attach nothing, and never say a resume is attached.
 - After each confirmed send, write its action bullet immediately
   to that posting's `## Follow-up` (format in step 7), before the next item. A run that stops
   midway then never loses the record of a nudge already sent.
-- A send that fails or hits a warning: stop and tell Aly. No retries.
+- A send that fails or hits a warning: stop and tell the user. No retries.
 
 ## 7. Log
 
@@ -233,7 +233,7 @@ waiting 3–5 seconds between page opens:
   `none left` (the stale person), `none`.
   - A newly added person also gets a standard `## Sent` bullet
     (`- <Name> | <profile URL> | <free message (open profile) | connection request with note | connection request (no note) | message (existing connection)> | <date> | text sent:` + quote).
-  - `typed, Aly to send` is an old-log action only: parse it (see Dates and the `accepted` row),
+  - `typed, <word> to send` (any single word) is an old-log action only: parse it (see Dates and the `accepted` row),
     never write it.
   - A reconciled send gets a `## Sent` bullet in the same format, with `(reconciled <date>)`
     after the channel.
