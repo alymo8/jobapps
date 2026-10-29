@@ -18,9 +18,11 @@ Outside `/onboard`, `write-source.md` and `/job-shortlist` rules are unchanged.
 ## Rules
 
 - **Re-runnable.** Read `config.local.json` first if it exists. At each step, say what already
-  exists (its config keys; Docs that pull; the shortlist artifact; routines from RemoteTrigger
-  `list`) and ask "keep / redo" before touching it. Never create, overwrite or replace a Doc,
-  artifact, routine or config key without a yes.
+  exists (its config keys; Docs that pull; the career-ops folder and its `portals.yml`; the
+  shortlist artifact; routines from RemoteTrigger `list`) and ask "keep / redo" before touching
+  it. Never create, overwrite or replace a Doc, artifact, routine, career-ops folder or file, or
+  config key without a yes. When the six Docs already pull, steps 2-3 read the pulled
+  `sources/profile.md` and ask only about its `ASK` lines and what the user wants to change.
 - **Config writes** read the file, merge the new keys, and write the whole JSON back (2-space
   indent, UTF-8, keys in `config.example.json` order); never delete a key.
 - **Truth rule.** Every fact written about the user comes from their material or answers; nothing
@@ -136,7 +138,8 @@ Run `.claude/skills/pull-sources.md`. Each pulled file must equal its working co
 never the export blob: it may re-fence with the shortest valid fence, which `pull_sources.py`
 handles. Then one `.claude/skills/write-source.md` run (this pull counts as its step 1 pull)
 replaces `- Score threshold: ASK` with `- Score threshold: 3.5 (<first name>, <today>)` (or the
-user's value), which proves the profile entry is writable.
+user's value), which proves the profile entry is writable. On a re-run with the Docs kept, skip
+the creation; if the profile has no `- Score threshold: ASK` line, leave it as it is.
 
 ## 5. Show the Docs
 
@@ -144,6 +147,9 @@ List the six Doc links and the gap list (Doc, field or placeholder) so the user 
 claude.ai. Open none of them. Edits go in the Docs, never in `sources/`.
 
 ## 6. career-ops
+
+If config has `career_ops_dir` or the folder exists, say so and ask "keep / redo" before cloning
+or rewriting `portals.yml`; on keep, go to 6.4.
 
 1. Ask for a folder outside the repo (`<career-ops-dir>`), then
    `git clone https://github.com/santifer/career-ops <career-ops-dir>` and `npm install` in it
@@ -179,7 +185,8 @@ claude.ai. Open none of them. Edits go in the Docs, never in `sources/`.
    `<location scope>`, `<shortlist artifact URL>` and `<doc links>` (a list, one
    `- <Doc title>: <doc_url>` line per Doc). `<week>` is filled by each run; keep it. List every other remaining
    `re.findall(r"<[^>\n]+>")` match and wait until each is filled or the user accepts it as is.
-3. **Create the routine** (ask first if RemoteTrigger `list` shows one named `Weekly job report`).
+3. **Create the routine** (ask first if RemoteTrigger `list` shows one whose name starts with `Weekly job report`
+   or whose prompt holds the shortlist artifact URL).
    Ask the schedule (default weekly; a day, hour and IANA time zone). RemoteTrigger `create` with:
 
    ```json
