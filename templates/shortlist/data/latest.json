@@ -1,0 +1,23 @@
+{
+  "schema_version": 1,
+  "week": null,
+  "generated_at": null,
+  "baseline_compared": null,
+  "counts": {
+    "total": 0,
+    "ranked": 0,
+    "below_cut": 0,
+    "new": 0,
+    "new_in_ranked": 0,
+    "priority": 0,
+    "province_restricted": 0,
+    "unverified": 0,
+    "likely_live": 0,
+    "hidden_applied": 0,
+    "hidden_not_interested": 0
+  },
+  "summary_md": "",
+  "rows": [],
+  "coverage": [],
+  "flags": []
+}

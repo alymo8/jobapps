@@ -30,13 +30,13 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - Sources of truth: six Claude Docs (listed in `config.local.json` `sources`) for the mega resume, both prompts,
   the profile, stories and answers, pulled into gitignored `sources/` per
   `.claude/skills/pull-sources.md`. Of the six source Docs, Claude Code writes only to the Profile doc, through
-  `.claude/skills/write-source.md` ([ADR 0003](knowledge/decisions/0003-claude-code-writes-to-the-profile-doc.md)).
-- Skills in `.claude/skills/`: `/discover` (career-ops scanner → CSV) → `/resume` → `/apply`; `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
+  `.claude/skills/write-source.md` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md)).
+- Skills in `.claude/skills/`: `/onboard` sets up a new user (templates in `templates/`); `/discover` (career-ops scanner → CSV) → `/resume` → `/apply`; `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
   `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
   `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
 - Weekly shortlist: a claude.ai artifact (URL in `config.local.json` `shortlist`). Claude Code
   reads its `data/*` and writes only its `decisions` collection, keys from its `decision_keys.py`
-  via `tools/shortlist.py` ([ADR 0004](knowledge/decisions/0004-job-shortlist-artifact-decisions.md)).
+  via `tools/shortlist.py` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md)).
   The apply flow asks "Mark <company> – <title> as applied?".
 - `/batch` stage 1a.5 scores each posting (`.claude/skills/batch/scoring.md`, `sonnet`) against `## Targeting` in `sources/profile.md` and dead-letters low scores as `LOW-SCORE` before resumes.
 - Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`,
@@ -71,7 +71,8 @@ python -m py_compile tools/*.py                                  # CI runs this 
   batch, followup); change a status rule or the legend in all four, byte-identical.
 - `tests/fixtures/decision_keys.py`: the key functions match the shortlist artifact's keys file; the
   docstring is neutral, so the file is not byte-identical to it (`-text` in `.gitattributes`);
-  refreshing the functions also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
+  refreshing the functions also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`;
+  `templates/shortlist/data/decision_keys.py` is pinned to the same hash, so refresh it with them.
 - `tests/test_no_personal_data.py` scans every tracked file; on the maintainer's machine it also
   checks the gitignored `.personal-terms`. For ad-hoc checks use `git grep -n -i -w -F -f
   .personal-terms`; plain `grep -F -f .personal-terms` core-dumps in Git Bash.
@@ -82,7 +83,11 @@ python -m py_compile tools/*.py                                  # CI runs this 
   `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>` instead, which shows the
   invite dialog directly. When a profile's Message button opens nothing, use Messaging → New message.
 - `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
-  `shortlist.py` treats a missing directory as no decisions.
+  `shortlist.py` treats a missing directory as no decisions. Its saved files also carry no
+  `version`, so `shortlist.py` returns `if_version: null`: undo or changing an existing decision fails (open bug).
+- Git Bash heredocs turn `\\` into `\`: write LaTeX with the Write/Edit tools, not `cat <<EOF`.
+- The Artifact tool publishes only files under the session's working directory or scratchpad: from a
+  worktree outside the repo, copy `templates/shortlist/` to the scratchpad first.
 
 ## Pointers
 

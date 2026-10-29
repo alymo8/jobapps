@@ -9,14 +9,14 @@ argument-hint: [show <filters> | applied <posting> | not-interested <postings> |
 All paths are relative to `jobapps/` (the project root). The claude.ai side (the page, its
 published `data/*` files, the weekly run) is built and owned elsewhere; this skill only reads
 `data/*` and writes the `decisions` collection
-([ADR 0004](../../../knowledge/decisions/0004-job-shortlist-artifact-decisions.md)).
+([ADR 0010](../../../knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md)).
 
 ## Constants
 
 - Artifact: `config.local.json` "shortlist" — "artifact_url" (the page) and "title".
 - If `config.local.json` does not exist, tell the user:
-  `config.local.json is missing: this repo is not set up yet (README "Setup").` and stop. If it has no `shortlist` key, tell the user:
-  `The shortlist is not set up: add "shortlist" to config.local.json (README "Setup").` and stop.
+  `config.local.json is missing: this repo is not set up yet (run /onboard, or see README "Setup").` and stop. If it has no `shortlist` key, tell the user:
+  `The shortlist is not set up: run /onboard, or add "shortlist" to config.local.json (README "Setup").` and stop.
 - Collection: `decisions`. Document id: `doc_id(url)` from the artifact's `data/decision_keys.py`.
 - Data contract: `data/CONTRACT.md` in the artifact (source of truth; read it when a field is unclear).
 - Pending file: `~/.job-shortlist/pending-decisions.jsonl`. Keys cache: `~/.job-shortlist/decision_keys.py`.
