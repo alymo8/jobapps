@@ -1,7 +1,7 @@
 # Templates and /onboard for new users: design
 
 - **Date:** 2026-10-28
-- **Status:** approved
+- **Status:** implemented
 
 ## Purpose
 

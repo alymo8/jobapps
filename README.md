@@ -37,7 +37,8 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
    email, phone, Doc ids); `tests/test_no_personal_data.py` then also checks tracked files for them
    locally (CI runs only the generic patterns).
 5. **Optional:** set up career-ops for `/discover`, and the weekly shortlist artifact for
-   `/job-shortlist`.
+   `/job-shortlist`: publish `templates/shortlist/` as the artifact and schedule a weekly routine
+   from `templates/weekly-search-prompt.md` (filled in).
 
 Git history predates this cleanup and still holds the maintainer's earlier details.
 

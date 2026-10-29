@@ -1,6 +1,6 @@
 ---
 name: onboard
-description: Guided first-time setup for a new user of this repo - checks the prerequisites, collects the user's resume and material, interviews them, creates their six source Claude Docs and config.local.json from templates/, sets up career-ops, publishes their weekly shortlist artifact and routine, and builds a first resume. Use when the user runs /onboard, asks to set up or onboard, is a new user, or uses the repo for the first time. Re-runnable; asks before changing anything that exists.
+description: Guided first-time setup for a new user of this repo - checks the prerequisites, collects the user's resume and material, interviews them, creates their six source Claude Docs and config.local.json from templates/, sets up career-ops, publishes their weekly shortlist artifact and routine, and builds a first resume. Use when the user runs /onboard, asks to set up this repo or onboard, is a new user, or uses the repo for the first time. Re-runnable; asks before changing anything that exists.
 argument-hint: [step]
 ---
 
@@ -23,8 +23,12 @@ Outside `/onboard`, `write-source.md` and `/job-shortlist` rules are unchanged.
   it. Never create, overwrite or replace a Doc, artifact, routine, career-ops folder or file, or
   config key without a yes. When the six Docs already pull, steps 2-3 read the pulled
   `sources/profile.md` and ask only about its `ASK` lines and what the user wants to change.
+- **Redo** creates a new Doc, artifact or routine and points config at it; the old one stays.
+  For the artifact, warn first that the old artifact's decisions do not carry over; for the
+  routine, offer RemoteTrigger `update` with body `{"enabled": false}` on the old one and send it
+  only on a yes. Never edit an existing Doc, except the Profile through `write-source.md`.
 - **Config writes** read the file, merge the new keys, and write the whole JSON back (2-space
-  indent, UTF-8, keys in `config.example.json` order); never delete a key.
+  indent, UTF-8, keys in `config.example.json` order, without `_comment`); never delete a key.
 - **Truth rule.** Every fact written about the user comes from their material or answers; nothing
   invented. Gaps: `ASK` in the profile, `<placeholders>` in the prompts and the weekly prompt,
   left out of the mega resume. Keep a gap list and show it in steps 5 and 7.
@@ -37,6 +41,8 @@ Outside `/onboard`, `write-source.md` and `/job-shortlist` rules are unchanged.
 - Claude Docs: `mcp__<id>__batch`, `mcp__<id>__update` (always listed), `mcp__<id>__read` and
   `mcp__<id>__create` (load deferred ones with ToolSearch, `select:mcp__<id>__read,mcp__<id>__create`),
   `<id>` = the server id of the always-listed `guide` / `batch` / `update` tools.
+- Claude in Chrome: load its deferred tools with one ToolSearch `select:` call (including
+  `mcp__claude-in-chrome__tabs_context_mcp`) before step 1 calls `tabs_context_mcp`.
 - RemoteTrigger: load it with ToolSearch `select:RemoteTrigger` if deferred.
 - Artifact (always loaded); load the `artifact-capabilities` skill before step 7's publish.
 
@@ -59,7 +65,8 @@ Check each and report one table (item | found | fix); continue with what works.
 Ask for everything the user wants used: resume (PDF, DOCX, LaTeX or text), cover letters, LinkedIn
 profile (export file or profile URL), past application answers, anything else. Read PDF, text and
 LaTeX with the Read tool; DOCX with `python -I -c` over stdlib `zipfile` + `xml.etree`, printing
-the `w:p` paragraphs of `word/document.xml`; a LinkedIn URL in Chrome (read only). Note per item
+the `w:p` paragraphs of `word/document.xml`; a LinkedIn URL in Chrome (read only, following
+`.claude/skills/linkedin-tab.md`). Note per item
 what it gave.
 
 ## 3. Interview
@@ -72,7 +79,8 @@ Ask, in a few grouped rounds, only what the material does not settle. Where each
 | work authorisation per country, sponsorship, relocation, remote/hybrid/onsite | profile `## Eligibility` |
 | salary expectation, notice period | profile `## Compensation & availability` |
 | target roles in priority order | profile `## Targeting` `Target roles`; weekly prompt `<target roles in priority order>`; `portals.yml` `title_filter.positive` |
-| seniority / years of experience | profile `Years of experience` |
+| seniority / years of experience | profile `## Common questions` `Years of professional experience` and `## Targeting` `Years of experience` |
+| "Score threshold for /batch, default 3.5?" | profile `Score threshold` (written in step 4) |
 | salary floor | profile `Pay floor: skip when the top of the posted range is below <amount> <currency>` (none → `none`) |
 | deal-breakers | profile `Deal-breakers` (none → `none`) |
 | target companies, priority companies | weekly prompt `<target companies>`, `<priority companies>`; `portals.yml` `tracked_companies` |
@@ -81,10 +89,13 @@ Ask, in a few grouped rounds, only what the material does not settle. Where each
 | eligible regions, home city, salary currency, phone country for forms | config `targeting` (`eligible_regions`, `home_city`, `currency`, `phone_country`) |
 | behavioural stories (prompted per resume project) | stories Doc |
 
-Defaults: `Score threshold` 3.5, written in step 4. `USD to <currency> rate`: left out when
+`Score threshold`: the user's answer, or the default 3.5 once they accept it; written in step 4.
+`USD to <currency> rate`: left out when
 `currency` is `USD`; otherwise the user's value, or a rate looked up and written only on the user's
 yes, as `- USD to <currency> rate: <rate> (<first name>, YYYY-MM-DD)`. Unanswered profile fields stay
-`ASK`. `discover_locations`: the location keywords verbatim (cities, regions, countries, plus
+`ASK`, except `## Targeting`: every line there needs an answer (`Pay floor` and `Deal-breakers` may
+be `none`), so keep asking until each has one. `discover_locations`: the location keywords
+verbatim (cities, regions, countries, plus
 `Remote` if the user accepts remote); the same list goes in `location_filter.allow`, with
 `home_city` also in `always_allow`.
 
@@ -104,7 +115,8 @@ Sources, in `config.example.json` order (Doc title, template, code-block info st
 For each:
 
 1. Build the content from the template and the material. Mega resume: header from the profile's
-   `## Contact`, one `\resumeSubheading` per job with one `\resumeItem` per bullet, one
+   `## Contact`, one `\resumeSubheading` per job (`\resumeSubheadingContinued` for a further role
+   at the same company) with one `\resumeItem` per bullet, one
    `\resumeSubheading{<school>}{<city>}{<degree>}{<dates>}` per school (`\resumeSubheadingDegree`
    only for a further degree at the same school), one `\resumeProjectHeading` per project, skill
    lines under `\section{Skills}`, using the template's macros (drop its commented examples, and
@@ -113,7 +125,8 @@ For each:
    (`<first name>`, `<Current employer>`, role and project lists) from the profile and material;
    keep the runtime ones each run fills per posting (`<<<PASTE POSTING OR URL HERE>>>`,
    `<Full_Name>`, `<Company>`, `postings/<dir>/`) and the format descriptions in backticks
-   (`<number> <short title>: <one-line angle>`, `## <topic>`, `### <question>`) and the stories'
+   (`<number> <short title>: <one-line angle>`, `## <topic>`, `### <question>`, the prompts'
+   "Unfilled rules" `<placeholder>`) and the stories'
    commented skeleton; any other unfilled placeholder stays, as a gap. Stories: one story per
    skeleton copy, with the index's principle (`LP:`) labels inferred from each story and shown to
    the user to confirm. Save it to `<S>/onboard/<file name>`, ending in a newline.
@@ -132,19 +145,24 @@ Then write `config.local.json` (Rules, "Config writes"): `sources` (six entries,
 `doc_url`, `tab_id`; the profile entry also `"node_id"` and `"writable": true`),
 `linkedin_premium`, `targeting`, `discover_locations`.
 
-Run `.claude/skills/pull-sources.md`. Each pulled file must equal its working copy byte for byte:
+Run `.claude/skills/pull-sources.md`. The byte comparison applies only to Docs created in this run;
+kept Docs only need a successful pull. Each created Doc's pulled file must equal its working copy:
 `git -c core.autocrlf=false diff --no-index --quiet <S>/onboard/<file name> sources/<file name>`
 (or `cmp`) exits 0; otherwise stop and show the difference. Compare the pulled `sources/` files,
 never the export blob: it may re-fence with the shortest valid fence, which `pull_sources.py`
 handles. Then one `.claude/skills/write-source.md` run (this pull counts as its step 1 pull)
-replaces `- Score threshold: ASK` with `- Score threshold: 3.5 (<first name>, <today>)` (or the
-user's value), which proves the profile entry is writable. On a re-run with the Docs kept, skip
-the creation; if the profile has no `- Score threshold: ASK` line, leave it as it is.
+replaces `- Score threshold: ASK` with `- Score threshold: <value> (<first name>, <today>)`, the
+user's answer or the default they accepted (the attribution stands because they gave or accepted
+it), which proves the profile entry is writable; the same run fills any other `## Targeting` line
+still `ASK` with the user's answer. On a re-run with the Docs kept, skip the creation; if the
+profile has no `- Score threshold: ASK` line, leave that line as it is. `/onboard` never finishes
+with `ASK` on a `## Targeting` line.
 
 ## 5. Show the Docs
 
 List the six Doc links and the gap list (Doc, field or placeholder) so the user can edit them in
-claude.ai. Open none of them. Edits go in the Docs, never in `sources/`.
+claude.ai. Open none of them. Edits go in the Docs, never in `sources/`. List any `## Targeting`
+line still `ASK` as a blocker: ask for it and write it through `write-source.md` before going on.
 
 ## 6. career-ops
 

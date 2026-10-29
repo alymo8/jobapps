@@ -71,7 +71,8 @@ python -m py_compile tools/*.py                                  # CI runs this 
   batch, followup); change a status rule or the legend in all four, byte-identical.
 - `tests/fixtures/decision_keys.py`: the key functions match the shortlist artifact's keys file; the
   docstring is neutral, so the file is not byte-identical to it (`-text` in `.gitattributes`);
-  refreshing the functions also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
+  refreshing the functions also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`;
+  `templates/shortlist/data/decision_keys.py` is pinned to the same hash, so refresh it with them.
 - `tests/test_no_personal_data.py` scans every tracked file; on the maintainer's machine it also
   checks the gitignored `.personal-terms`. For ad-hoc checks use `git grep -n -i -w -F -f
   .personal-terms`; plain `grep -F -f .personal-terms` core-dumps in Git Bash.

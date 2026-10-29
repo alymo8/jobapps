@@ -53,7 +53,8 @@
   \item\small{{#1 \vspace{-2pt}}}
 }
  
-% Standard heading: Company/School + Date | Role/Degree + Location
+% Standard heading. Args: job {Company} {Date range} {Role | Tech} {Location};
+% school {School} {Location} {Degree} {Date range}
 \newcommand{\resumeSubheading}[4]{
   \vspace{-2pt}\item
     \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
@@ -73,7 +74,7 @@
 }
  
 % Additional degree at the SAME institution (no repeated school name)
-% Arg: {Degree name}
+% Args: {Degree name} {Date range}
 \newcommand{\resumeSubheadingDegree}[2]{
   \vspace{2pt}
     \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}

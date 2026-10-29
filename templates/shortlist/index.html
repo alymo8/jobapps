@@ -228,7 +228,7 @@ function listView(which){
     <span class="count">${out.length} of ${rows.length}${hidden?` · ${hidden} decided hidden`:""}</span></div>
     <div class="list">${out.length?out.map(r=>{const d=decisionFor(r);return `<article class="row${d?" decided":""}"><div class="rk">${r.rank}</div>
       <div class="main"><div class="co">${esc(r.company)} <span class="score">· ${esc(r.company_type)} · score ${r.score}</span></div>
-      <div class="ti"><a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a></div>
+      <div class="ti">${/^https?:/.test(r.url||"")?`<a href="${esc(r.url)}" target="_blank" rel="noopener">${esc(r.title)}</a>`:esc(r.title)}</div>
       <div class="meta">${esc(r.location)}</div><div class="note">${esc(r.fit_notes)}</div></div>
       <div class="side"><div class="chips">${chips(r,d)}</div>${actions(r,d)}</div></article>`}).join(""):'<div class="empty">No postings match these filters.</div>'}</div>`;
 }
@@ -238,7 +238,7 @@ function decisionsView(){
   if(!all.length)return '<div class="empty">No decisions yet. Mark a posting as Applied or Not interested on the Ranked or Below the cut tab, or let Claude Code record the ones you apply to. Marked postings stop appearing in next week\'s list.</div>';
   const src={user:"You (page)",claude_code:"Claude Code",user_manual:"You (manual)"};
   return `<div class="tablewrap"><table><thead><tr><th>Decision</th><th>Date</th><th>Company</th><th>Title</th><th>Recorded by</th><th>Note</th><th></th></tr></thead><tbody>${
-    all.map(([id,d])=>`<tr><td><span class="chip ${d.decision==="applied"?"c-ap":"c-ni"}">${dlabel(d)}</span></td><td class="num">${esc(ddate(d))}</td><td><b>${esc(d.company)}</b></td><td>${d.url?`<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a>`:esc(d.title)}</td><td>${esc(src[d.source]||d.source||"")}</td><td>${esc(d.note||"")}</td><td>${canWrite?`<button class="act" data-undo="${esc(id)}"${busy.has(id)?" disabled":""}>Undo</button>`:""}</td></tr>`).join("")}</tbody></table></div>`;
+    all.map(([id,d])=>`<tr><td><span class="chip ${d.decision==="applied"?"c-ap":"c-ni"}">${dlabel(d)}</span></td><td class="num">${esc(ddate(d))}</td><td><b>${esc(d.company)}</b></td><td>${d.url&&/^https?:/.test(d.url)?`<a href="${esc(d.url)}" target="_blank" rel="noopener">${esc(d.title)}</a>`:esc(d.title)}</td><td>${esc(src[d.source]||d.source||"")}</td><td>${esc(d.note||"")}</td><td>${canWrite?`<button class="act" data-undo="${esc(id)}"${busy.has(id)?" disabled":""}>Undo</button>`:""}</td></tr>`).join("")}</tbody></table></div>`;
 }
 function coverageView(){
   return `<div class="tablewrap"><table><thead><tr><th>Company</th><th>Result</th><th>Qualifying</th><th>Board checked</th><th>Notes</th></tr></thead><tbody>${
@@ -246,7 +246,7 @@ function coverageView(){
 }
 function flagsView(){
   return doc.flags.map(s=>`<div class="flagsec"><h3>${esc(s.section)} <span class="score">${s.items.length}</span></h3>${
-    s.items.map(i=>`<div class="fi"><div><b>${esc(i.company)}</b>${i.item?(i.company?" · ":"")+esc(i.item):""}</div>${(i.location_or_status||i.detail)?`<div class="d">${esc([i.location_or_status,i.detail].filter(Boolean).join(" · "))}</div>`:""}${i.url?`<div class="d"><a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.url)}</a></div>`:""}</div>`).join("")}</div>`).join("");
+    s.items.map(i=>`<div class="fi"><div><b>${esc(i.company)}</b>${i.item?(i.company?" · ":"")+esc(i.item):""}</div>${(i.location_or_status||i.detail)?`<div class="d">${esc([i.location_or_status,i.detail].filter(Boolean).join(" · "))}</div>`:""}${i.url?`<div class="d">${/^https?:/.test(i.url)?`<a href="${esc(i.url)}" target="_blank" rel="noopener">${esc(i.url)}</a>`:esc(i.url)}</div>`:""}</div>`).join("")}</div>`).join("");
 }
 function md(s){
   const lines=esc(s).split("\n");let h="",inL=0;

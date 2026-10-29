@@ -31,6 +31,9 @@ Deliver:
 
 **One page, filled.** Exactly one page, and roughly **95% full**. A one-page resume with a half-empty bottom third is a failed output, not a safe one. Verified by compiling and looking at it, not by estimating.
 
+
+**Unfilled rules.** A rule that still holds a `<placeholder>` does not apply; say so in the changelog.
+
 ---
 
 ## Content selection

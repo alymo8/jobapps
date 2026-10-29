@@ -10,9 +10,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 TEMPLATES = ROOT / "templates"
 sys.path.insert(0, str(ROOT / "tools"))
+sys.path.insert(0, str(ROOT / "tests"))
 
 import build_cover_letter  # noqa: E402
-from tests.test_shortlist import FIXTURE_SHA256  # noqa: E402
+from test_shortlist import FIXTURE_SHA256  # noqa: E402
 
 SOURCE_TEMPLATES = ("resume_prompt.md", "cover_letter_prompt.md", "mega-resume.tex",
                     "profile.md", "stories.md", "answers.md")  # fmt: skip
@@ -74,7 +75,8 @@ class SourceTemplatesTest(unittest.TestCase):
 
     def test_mega_resume_examples_are_comments(self):
         call = re.compile(r"\\(resumeSubheading|resumeItem|resumeProjectHeading"
-                          r"|resumeSubheadingDegree)\b")  # fmt: skip
+                          r"|resumeSubheadingDegree|resumeSubHeadingListStart"
+                          r"|resumeSubHeadingListEnd|resumeItemListStart|resumeItemListEnd)\b")  # fmt: skip
         for n, line in enumerate(read("mega-resume.tex").splitlines(), 1):
             if "\\newcommand" in line or "\\renewcommand" in line:
                 continue

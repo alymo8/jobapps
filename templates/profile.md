@@ -38,7 +38,7 @@ Answers marked `ASK` are unknown: ask the user the first time one is needed, the
 ## Common questions
 
 - Years of professional experience: ASK
-- Accommodations needed for interviews (AODA or other): ASK
+- Accommodations needed for interviews (local accessibility law or other): ASK
 - Available for an in-person interview: ASK
 - Background check consent: ASK
 - Privacy notice / data-processing consent (required to apply): ASK
@@ -67,12 +67,12 @@ Answers marked `ASK` are unknown: ask the user the first time one is needed, the
 - Gender: ASK
 - Race / ethnicity: ASK
 - Hispanic / Latino: ASK
-- Visible minority (Canada self-ID): ASK
+- Visible minority / national self-ID category: ASK
 - Veteran status: ASK
 - Disability status: ASK
 - Pronouns: ASK
 - Indigenous / Aboriginal: ASK
-- 2SLGBTQI+ / transgender: ASK
+- LGBTQ+ / transgender: ASK
 - Age bracket, sexual orientation: ASK
 - Default when the user prefers not to say: ASK
 

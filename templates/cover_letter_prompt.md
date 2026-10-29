@@ -34,8 +34,8 @@ Best,
 <first name>
 ```
 
-If the posting is written in French, write the letter in French with `Bonjour à l'équipe de
-recrutement,` and `Cordialement,` / `<first name>`. Otherwise English.
+The letter's language matches the posting's: for a posting not in English, use that language's
+equivalents of the greeting and sign-off (`<first name>` unchanged).
 
 **Length: about one page.** 300 to 400 words including the greeting and sign-off, in 4 paragraphs
 (5 at most).
@@ -54,6 +54,9 @@ never claim the missing skill.
 own requirements or problems, in the posting's vocabulary where it honestly applies, and connect
 each to concrete evidence. A sentence that would fit any company's letter unchanged earns its place
 only in the close.
+
+
+**Unfilled rules.** A rule that still holds a `<placeholder>` does not apply; say so in the changelog.
 
 ---
 

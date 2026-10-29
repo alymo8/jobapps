@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 - **Date:** 2026-10-28
-- **Status:** approved
+- **Status:** implemented
 
 **Goal:** A new job seeker clones the repo, runs `/onboard`, and ends up with their own six source Docs, `config.local.json`, career-ops scan, weekly shortlist artifact and routine, built from tracked generic `templates/`, while the maintainer's own setup is untouched.
 
