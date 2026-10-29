@@ -99,5 +99,21 @@ class SourceTemplatesTest(unittest.TestCase):
             self.assertIsNone(re.search(r"`{4,}", p.read_text(encoding="utf-8")), str(p))
 
 
+WEEKLY_PLACEHOLDERS = ("<target roles in priority order>", "<target companies>",
+                       "<priority companies>", "<location scope>", "<shortlist artifact URL>",
+                       "<doc links>")  # fmt: skip
+
+
+class WeeklyPromptTemplateTest(unittest.TestCase):
+    def test_weekly_prompt_placeholders(self):
+        path = TEMPLATES / "weekly-search-prompt.md"
+        self.assertTrue(path.is_file())
+        text = path.read_text(encoding="utf-8")
+        self.assertTrue(text.startswith("# Weekly job search prompt"))
+        for placeholder in WEEKLY_PLACEHOLDERS:
+            self.assertIn(placeholder, text)
+        self.assertRegex(text, r"(?m)^### Known board-access notes \(from past runs\)$")
+
+
 if __name__ == "__main__":
     unittest.main()
