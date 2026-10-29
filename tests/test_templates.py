@@ -1,5 +1,7 @@
 """Structure of the tracked starting material in templates/ (used by /onboard)."""
 
+import hashlib
+import json
 import re
 import sys
 import unittest
@@ -10,6 +12,7 @@ TEMPLATES = ROOT / "templates"
 sys.path.insert(0, str(ROOT / "tools"))
 
 import build_cover_letter  # noqa: E402
+from tests.test_shortlist import FIXTURE_SHA256  # noqa: E402
 
 SOURCE_TEMPLATES = ("resume_prompt.md", "cover_letter_prompt.md", "mega-resume.tex",
                     "profile.md", "stories.md", "answers.md")  # fmt: skip
@@ -113,6 +116,41 @@ class WeeklyPromptTemplateTest(unittest.TestCase):
         for placeholder in WEEKLY_PLACEHOLDERS:
             self.assertIn(placeholder, text)
         self.assertRegex(text, r"(?m)^### Known board-access notes \(from past runs\)$")
+
+
+SHORTLIST = TEMPLATES / "shortlist"
+SHORTLIST_FILES = ("index.html", "capabilities.json", "data/CONTRACT.md", "data/decision_keys.py",
+                   "data/index.json", "data/latest.json")  # fmt: skip
+COUNT_KEYS = ("total", "ranked", "below_cut", "new", "new_in_ranked", "priority",
+              "province_restricted", "unverified", "likely_live", "hidden_applied",
+              "hidden_not_interested")  # fmt: skip
+
+
+class ShortlistTemplateTest(unittest.TestCase):
+    def load(self, name):
+        return json.loads((SHORTLIST / name).read_text(encoding="utf-8"))
+
+    def test_shortlist_files_exist(self):
+        for name in SHORTLIST_FILES:
+            self.assertTrue((SHORTLIST / name).is_file(), name)
+
+    def test_shortlist_capabilities(self):
+        self.assertEqual(self.load("capabilities.json"), {"db": {}, "user": {}})
+
+    def test_shortlist_keys_match_fixture(self):
+        data = (SHORTLIST / "data" / "decision_keys.py").read_bytes()
+        self.assertEqual(hashlib.sha256(data).hexdigest(), FIXTURE_SHA256)
+
+    def test_shortlist_empty_data(self):
+        latest = self.load("data/latest.json")
+        self.assertEqual(latest["schema_version"], 1)
+        self.assertIsNone(latest["week"])
+        self.assertEqual(latest["rows"], [])
+        self.assertEqual(latest["coverage"], [])
+        self.assertEqual(latest["flags"], [])
+        self.assertEqual(latest["counts"], dict.fromkeys(COUNT_KEYS, 0))
+        index = self.load("data/index.json")
+        self.assertEqual(index, {"schema_version": 1, "latest": None, "weeks": []})
 
 
 if __name__ == "__main__":
