@@ -2,11 +2,11 @@
 
 ## Task
 
-Read my sources from these Claude Docs first:
+Read my sources first:
 
-<doc links>
+<sources list>
 
-The mega resume is my full profile; read the other Docs when a posting's fit depends on them.
+The mega resume is my full profile; read the other sources when a posting's fit depends on them.
 
 Search for currently open job postings that fit my profile (the mega resume above). Return a
 ranked Excel file, and publish the same results to my shortlist artifact (see "Publish the

@@ -122,7 +122,7 @@ class SourceTemplatesTest(unittest.TestCase):
 
 WEEKLY_PLACEHOLDERS = ("<target roles in priority order>", "<target companies>",
                        "<priority companies>", "<location scope>", "<shortlist artifact URL>",
-                       "<doc links>")  # fmt: skip
+                       "<sources list>")  # fmt: skip
 
 
 class WeeklyPromptTemplateTest(unittest.TestCase):
@@ -133,7 +133,8 @@ class WeeklyPromptTemplateTest(unittest.TestCase):
         self.assertTrue(text.startswith("# Weekly job search prompt"))
         for placeholder in WEEKLY_PLACEHOLDERS:
             self.assertIn(placeholder, text)
-        self.assertRegex(text, r"(?m)^<doc links>$")
+        self.assertRegex(text, r"(?m)^<sources list>$")
+        self.assertNotIn("Claude Docs", text.split("## Target roles", 1)[0])
         self.assertRegex(text, r"(?m)^### Known board-access notes \(from past runs\)$")
 
 
