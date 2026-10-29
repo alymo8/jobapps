@@ -1,0 +1,103 @@
+"""Structure of the tracked starting material in templates/ (used by /onboard)."""
+
+import re
+import sys
+import unittest
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parent.parent
+TEMPLATES = ROOT / "templates"
+sys.path.insert(0, str(ROOT / "tools"))
+
+import build_cover_letter  # noqa: E402
+
+SOURCE_TEMPLATES = ("resume_prompt.md", "cover_letter_prompt.md", "mega-resume.tex",
+                    "profile.md", "stories.md", "answers.md")  # fmt: skip
+TEXT_SUFFIXES = {".md", ".tex", ".py", ".json", ".html", ".csv", ".txt", ".yml", ".yaml"}
+
+
+def read(name: str) -> str:
+    return (TEMPLATES / name).read_text(encoding="utf-8")
+
+
+def section(text: str, heading: str) -> str:
+    return text.split(heading + "\n", 1)[1].split("\n## ", 1)[0]
+
+
+def bullets(text: str) -> dict[str, str]:
+    return dict(re.findall(r"^- ([^:\n]+): *(.*?) *$", text, re.M))
+
+
+class SourceTemplatesTest(unittest.TestCase):
+    def test_source_templates_exist(self):
+        for name in SOURCE_TEMPLATES:
+            self.assertTrue((TEMPLATES / name).is_file(), name)
+
+    def test_profile_contact_keys_are_ask(self):
+        fields = build_cover_letter.contact_fields(TEMPLATES / "profile.md")
+        for key in [*build_cover_letter.CONTACT_KEYS.values(), "Preferred first name"]:
+            self.assertEqual(fields.get(key), "ASK", key)
+
+    def test_profile_targeting_keys(self):
+        targeting = bullets(section(read("profile.md"), "## Targeting"))
+        self.assertEqual(
+            list(targeting),
+            ["Pay floor", "Score threshold", "Years of experience", "Target roles",
+             "Deal-breakers"],  # fmt: skip
+        )
+        self.assertEqual(set(targeting.values()), {"ASK"})
+
+    def test_profile_has_sections(self):
+        headings = re.findall(r"^## .*$", read("profile.md"), re.M)
+        for h in ("## Contact", "## Eligibility", "## Compensation & availability",
+                  "## Common questions", "## Voluntary self-identification (EEO / diversity)",
+                  "## Free-text answers", "## Career goals and cover letters",
+                  "## LinkedIn outreach", "## Targeting"):  # fmt: skip
+            self.assertIn(h, headings)
+        self.assertNotIn("## Workday work history", headings)
+
+    def test_profile_has_no_placeholders(self):
+        text = read("profile.md")
+        self.assertIsNone(re.search(r"<[^>\n]+>", text))
+        values = bullets(text)
+        self.assertTrue(values)
+        for key, value in values.items():
+            self.assertEqual(value, "ASK", key)
+
+    def test_mega_resume_sections(self):
+        text = read("mega-resume.tex")
+        self.assertIn(r"\section{Skills}", text)
+        self.assertNotIn("Technical Skills", text)
+
+    def test_mega_resume_examples_are_comments(self):
+        call = re.compile(r"\\(resumeSubheading|resumeItem|resumeProjectHeading"
+                          r"|resumeSubheadingDegree)\b")  # fmt: skip
+        for n, line in enumerate(read("mega-resume.tex").splitlines(), 1):
+            if "\\newcommand" in line or "\\renewcommand" in line:
+                continue
+            if "<" in line or call.search(line):
+                self.assertTrue(line.lstrip().startswith("%"), f"line {n}: {line}")
+
+    def test_prompt_templates_keep_sections(self):
+        expected = {
+            "resume_prompt.md": ["## Inputs", "## Task", "## Hard rules", "## Content selection",
+                                 "## Skills section", "## Fitting the page",
+                                 "## Compile and verify", "## What to report"],
+            "cover_letter_prompt.md": ["## Inputs", "## Task", "## Hard rules", "## Structure",
+                                       "## Voice", "## Verify before delivering",
+                                       "## What to report"],
+        }  # fmt: skip
+        for name, headings in expected.items():
+            found = re.findall(r"^## .*$", read(name), re.M)
+            for h in headings:
+                self.assertIn(h, found, f"{name}: {h}")
+
+    def test_template_backtick_runs_are_short(self):
+        files = [p for p in TEMPLATES.rglob("*") if p.is_file() and p.suffix in TEXT_SUFFIXES]
+        self.assertTrue(files)
+        for p in files:
+            self.assertIsNone(re.search(r"`{4,}", p.read_text(encoding="utf-8")), str(p))
+
+
+if __name__ == "__main__":
+    unittest.main()
