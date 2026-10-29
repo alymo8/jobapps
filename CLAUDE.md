@@ -73,7 +73,11 @@ python -m py_compile tools/*.py                                  # CI runs this 
   docstring is neutral, so the file is not byte-identical to it (`-text` in `.gitattributes`);
   refreshing the functions also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
 - `tests/test_no_personal_data.py` scans every tracked file; on the maintainer's machine it also
-  checks the gitignored `.personal-terms`.
+  checks the gitignored `.personal-terms`. For ad-hoc checks use `git grep -n -i -w -F -f
+  .personal-terms`; plain `grep -F -f .personal-terms` core-dumps in Git Bash.
+- A new git worktree has none of the gitignored local files (`config.local.json`, `.personal-terms`,
+  `sources/`): copy the first two in from the main checkout and pull the sources there; copy any
+  new ones back before removing the worktree.
 - LinkedIn's profile Connect button sometimes opens no dialog (or freezes the tab); open
   `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>` instead, which shows the
   invite dialog directly. When a profile's Message button opens nothing, use Messaging → New message.
