@@ -29,7 +29,10 @@ and LinkedIn outreach for each posting, driven by Claude Code skills.
    - `targeting` (optional): `eligible_regions`, `home_city`, `currency`, `phone_country`. Absent:
      no eligibility screen, no city or region preference, amounts in USD with no conversion, and
      Workday asks you for the phone country.
-4. **Optional:** set up career-ops for `/discover`, and the weekly shortlist artifact for
+4. **Optional:** create a gitignored `.personal-terms` file, one term per line (your name, handles,
+   email, phone, Doc ids); `tests/test_no_personal_data.py` then also checks tracked files for them
+   locally (CI runs only the generic patterns).
+5. **Optional:** set up career-ops for `/discover`, and the weekly shortlist artifact for
    `/job-shortlist`.
 
 Git history predates this cleanup and still holds the maintainer's earlier details.

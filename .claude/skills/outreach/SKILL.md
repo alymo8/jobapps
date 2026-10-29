@@ -64,10 +64,11 @@ approves an existing-connection message; an approval of one message does not cov
       refer or forward); rank engineers / managers on the posting's team, then recruiters, then
       the rest.
    2. **Then new people**: recruiter / talent acquisition / technical recruiter at the company,
-      preferring ones covering the posting's location or `<eligible_regions>` (config `targeting`); and the likely
+      preferring ones covering the posting's location, `<eligible_regions>`, or a wider region that
+      contains them (e.g. a continent); and the likely
       hiring manager (the eng/AI manager or lead for the team the posting describes, in the
-      posting's location, or the user's `<home_city>` (config `targeting`) if the posting names several;
-      with no `targeting`: only the posting's location).
+      posting's location, or the user's `<home_city>` if the posting names several). `<eligible_regions>` and
+      `<home_city>` come from config `targeting` (no `targeting`: only the posting's location).
    - Write the shortlist (`## Shortlist` table in `postings/<dir>/outreach.md`): name, title,
      location, connection degree, **class** (`existing connection` / `new`), profile URL, and one
      line on why they fit. Up to 5 candidates, existing connections at the top.

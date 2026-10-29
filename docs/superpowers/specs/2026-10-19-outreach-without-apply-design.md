@@ -12,7 +12,7 @@ explicitly. Applying stays `/apply`'s job.
 
 The same change brings the outreach wording in line with the user's standing rules in
 `sources/profile.md` (`## LinkedIn outreach`, 2026-10-16), which the skill text still contradicts:
-never InMail, say the user is *interested* (never that he applied), never say a resume is attached.
+never InMail, say the user is *interested* (never that the user applied), never say a resume is attached.
 
 ## Background (current state)
 
@@ -21,7 +21,7 @@ Verified 2026-10-19 on `main` at `ab9c676` (#17):
 - `.claude/skills/outreach/SKILL.md` step 1 runs the full `/apply` skill; "Running as a batch
   subagent" runs `/apply` Phase 1; "Batch execute mode" submits the application first. Messages say
   "that the user applied"; existing-connection messages are typed with the resume attached and left for
-  The user to send; InMail is offered "with Premium".
+  the user to send; InMail is offered "with Premium".
 - `.claude/skills/followup/SKILL.md`: the nudge reminds the reader "that the user applied"; an accepted
   connection's follow-up (b) is typed for the user to attach the resume; status changes start only from
   `applied`, `outreach-ready`, `outreach-sent`, `in-conversation`, `no-response`, `closed`.
@@ -117,7 +117,7 @@ pending approval on `outreach-ready`.
 
 ### Wording rules (all messages, both modes, and `/followup`)
 
-- Say the user is **interested** in the role. Never say he applied, even when he has.
+- Say the user is **interested** in the role. Never say the user applied, even when he has.
 - Never say a resume is attached, and attach nothing.
 - 1–2 concrete facts from the posting's tailored resume (from `sources/mega-resume.tex` only), no
   flattery filler, no claims beyond the resume (unchanged).
@@ -133,7 +133,7 @@ pending approval on `outreach-ready`.
   request instead.
 - The `## Sent` channel list becomes `message (existing connection)`, `free message (open profile)`,
   `connection request with note`, `connection request (no note)`. Existing logs with `InMail` or
-  `typed, the user to send` stay valid for `/followup` to parse.
+  `typed, <word> to send` stay valid for `/followup` to parse.
 - The "Invitation and InMail budget" section becomes "Invitation budget"; the InMail-credit
   sentence goes.
 
@@ -274,7 +274,7 @@ be messaged without an application; the applied fact is lost once a row reaches
 2. `python -m py_compile tools/*.py` succeeds; CI is green on the PR.
 3. `rg -n -i "applied|InMail|attach" .claude/skills/outreach .claude/skills/followup` shows no
    instruction to say the user applied, to use InMail or to attach a resume in a message; the only hits
-   are the status names, `--apply`, the "never say he applied / never InMail / attach nothing"
+   are the status names, `--apply`, the "never say the user applied / never InMail / attach nothing"
    rules, and parsing of old log channels and old draft headings (e.g. "InMail Body").
 4. `rg -n "/apply|Submit|submit" .claude/skills/outreach/SKILL.md .claude/skills/batch/SKILL.md`,
    with every hit in the outreach skill and in batch's outreach-mode text attributed in the PR

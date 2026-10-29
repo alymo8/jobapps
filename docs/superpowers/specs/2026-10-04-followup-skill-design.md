@@ -56,7 +56,7 @@ this across all earlier postings in one pass, with every outgoing message approv
 `/followup [<posting dir | company> ...] [--dry-run]`
 
 - No argument: every `postings/*/outreach.md` (any posting with a shortlist), so postings where
-  The user sent by hand are swept too. Postings with no `## Sent` entries and nothing found on LinkedIn
+  the user sent by hand are swept too. Postings with no `## Sent` entries and nothing found on LinkedIn
   are listed once as `no contacts` and dropped.
 - `<company>` matches posting dirs whose name starts with it (case-insensitive), including
   `*-combined` dirs.
@@ -153,7 +153,7 @@ posting's `## Follow-up` section, marked `APPROVED <date>`. Save reusable answer
 - **Nudge or reply, no attachment needed:** send it in the thread, then confirm it appears there.
 - **(b) message, or any message whose approved text says the resume is attached:** type it in the
   thread and leave it unsent in its own tab. List the tabs for the user, who attaches the PDF and sends.
-  Log it as `typed, the user to send`.
+  Log it as `typed, <word> to send`.
 - **stale-pending replacement:** send the connection request with the approved note (≤200
   characters, the free-account limit, measured in code), then confirm it appears as pending.
 - Any send that fails or hits a warning: stop and tell the user. No retries.
@@ -161,7 +161,7 @@ posting's `## Follow-up` section, marked `APPROVED <date>`. Save reusable answer
 #### 7. Log
 
 - In each posting's `outreach.md`, add or extend `## Follow-up`, one bullet per action:
-  `- <Name> | <date> | <state> | <action: nudge sent / reply sent / typed, the user to send / invite sent / replacement sent / none left / none> | text:`
+  `- <Name> | <date> | <state> | <action: nudge sent / reply sent / typed, <word> to send / invite sent / replacement sent / none left / none> | text:`
   followed by the quoted text, if any.
 - In `applications.md` (`/followup` is its only writer in this run), update the row(s) for each
   posting. A plain posting dir maps to the row whose Posting dir is that dir. A `*-combined` dir

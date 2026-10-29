@@ -47,7 +47,7 @@
 - Replacement invitee logging: ## Sent and/or ## Follow-up invite sent; source of first-send date (Design › steps 3, 7)
 - "Unused" shortlisted person: order and exclusions (skipped, left, previously declined) (Design › Classify)
 - Withdrawn/expired invitations (neither pending nor connected): which state? (Design › Classify)
-- What marks (b) as sent; how a "typed, the user to send" (b) that was never sent is treated next run (Design › Classify)
+- What marks (b) as sent; how a "typed, <word> to send" (b) that was never sent is treated next run (Design › Classify)
 - Days cell for states without a count (Design › Review sheet)
 - Plain-dir arguments covered by a *-combined file, and company matches with no outreach.md (Design › Invocation)
 - Where "no contacts" postings are listed (Design › Invocation)

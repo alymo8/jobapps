@@ -55,7 +55,7 @@
    - anyone whose line in the file says skipped, may have left, or not at the company;
    - anyone found `done (left company)` in this sweep.
 5. **Withdrawn or expired invitation** (not pending, not connected, no thread): `done (no-response)`, note `invite withdrawn/expired`.
-6. **(b) counts as sent** when the thread shows any outbound message after the connection was accepted, other than the invitation note itself. A `typed, the user to send` action with no such message on the next run means the person is `accepted` again, and the review notes `typed <date>, not sent`.
+6. **(b) counts as sent** when the thread shows any outbound message after the connection was accepted, other than the invitation note itself. A `typed, <word> to send` action with no such message on the next run means the person is `accepted` again, and the review notes `typed <date>, not sent`.
 7. **Days cell:**
    - `N bd` for `silent` / `waiting` with an outbound message, and for `done` by nudge;
    - `N cd` for `stale-pending` / pending `waiting`;
@@ -134,7 +134,7 @@ need 'over budget'
 need 'weekday()<5'            # business-day one-liner
 need '--dry-run'
 need 'Invoke-Item'
-need 'typed, the user to send'
+need 'typed, <word> to send'
 need 'replacement sent'
 need 'nudged via'
 need 'across **all**'
@@ -243,7 +243,7 @@ Exactly one state per person, checked in this order:
 |---|-------|------|---------------------|
 | 1 | `done` | Left the company; or the conversation was closed by either side (declined, "not hiring", told to apply elsewhere); or nudged and no reply ≥3 business days after the nudge; or a stale invitation whose `## Follow-up` shows `replacement sent` or `none left`, still not accepted and with no inbound message; or withdrawn/expired | None. State recorded as `done (no-response)`, `done (closed)` or `done (left company)` |
 | 2 | `replied` | An inbound message newer than the last outbound one | One-line summary, their text verbatim, a drafted response |
-| 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; the user attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, the user to send` → note `typed <date>, not sent` |
+| 3 | `accepted` | Connected, and no outbound message after acceptance other than the invitation note | The person's (b), re-checked against the resume; the user attaches the resume. No (b) → a new follow-up from the posting's drafts and tailored resume, marked `new`. A previous `typed, <word> to send` → note `typed <date>, not sent` |
 | 4 | `silent` | A (b), InMail or direct message sent, no reply, ≥3 business days, no nudge yet | One nudge, ≤300 characters |
 | 5 | `stale-pending` | Invitation pending ≥10 calendar days | Leave the invitation. Propose the next unused shortlisted person (below) |
 | 6 | `waiting` | Anything else | None |
@@ -313,7 +313,7 @@ Approved items only, text verbatim, one at a time:
 
 - **`outreach.md`**, `## Follow-up`, one action bullet per person handled:
   `- <Name> | <date> | <state> | <action> | text:` + the quoted text if any. Actions:
-  `nudge sent`, `reply sent`, `typed, the user to send`, `invite sent` (the replacement person),
+  `nudge sent`, `reply sent`, `typed, <word> to send`, `invite sent` (the replacement person),
   `replacement sent` / `none left` (the stale person), `none`.
   - A replacement person also gets a standard `## Sent` bullet
     (`- <Name> | <profile URL> | connection request with note | <date> | text sent:` + quote).

@@ -430,7 +430,7 @@ A `PAY-FLOOR` posting still gets fit and legitimacy. Its `score.md` header lines
    **Targeting:** if `profile.md` has no `## Targeting` section, say so in this message and offer to
    add it with these keys: `Pay floor: skip when the top of the posted range is below <amount> CAD`,
    `USD to CAD rate`, `Score threshold`, `Years of experience`, `Target roles`, `Deal-breakers` (ask
-   The user for the values). If the user declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
+   the user for the values). If the user declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
    says so.
    **Threshold:** `--min-score N` if given, else `Score threshold` from `## Targeting`. Without
    `## Targeting`, `--min-score` is ignored and this message says so.

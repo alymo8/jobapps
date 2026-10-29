@@ -60,7 +60,7 @@ exists locally and is not ignored on `main`.
 - Delete `Resume_prompt_v4.md` and `CoverLetter_prompt_v1.md` from the repo (git history keeps them).
 - `.gitignore`: add a rule ignoring the `sources` folder (new); replace the rule for the v1.5 mega
   resume with one matching every `mega-resume-v*.tex`, so the old local copies stay ignored until
-  The user deletes them.
+  the user deletes them.
 - `tests/test_pull_sources.py` (new): stdlib `unittest`; CI already runs `tests/`.
 - `CLAUDE.md`: sources of truth, setup prerequisite (the Docs connector), the pull, a gotcha.
 - `knowledge/decisions/0002-claude-docs-are-the-source-of-truth.md` (new): the ADR, plus its row
