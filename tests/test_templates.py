@@ -153,5 +153,18 @@ class ShortlistTemplateTest(unittest.TestCase):
         self.assertEqual(index, {"schema_version": 1, "latest": None, "weeks": []})
 
 
+ONBOARD = ROOT / ".claude" / "skills" / "onboard" / "SKILL.md"
+
+
+class OnboardSkillTest(unittest.TestCase):
+    def test_onboard_names_existing_templates(self):
+        self.assertTrue(ONBOARD.is_file())
+        text = ONBOARD.read_text(encoding="utf-8")
+        paths = {m.rstrip(".,;:)") for m in re.findall(r"(?<![\w/>.-])templates/[\w./-]+", text)}
+        self.assertTrue(paths)
+        for rel in paths:
+            self.assertTrue((ROOT / rel).exists(), rel)
+
+
 if __name__ == "__main__":
     unittest.main()
