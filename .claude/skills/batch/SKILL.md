@@ -65,7 +65,7 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
    any prepare subagent.
    **Targeting:** if `sources/profile.md` has no `## Targeting` section, say so in this message and offer to
    add it through `.claude/skills/write-source.md` with these keys: `Pay floor: skip when the top of the posted range is below <amount> <currency>`,
-   `USD to <currency> rate`, `Score threshold`, `Years of experience`, `Target roles`, `Deal-breakers` (ask
+   `USD to <currency> rate`, `Score threshold`, `Years of experience`, `Target roles`, `Deal-breakers` (no `targeting`: `<currency>` is `USD` and the `USD to <currency> rate` key is left out; ask
    the user for the values). If the user declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
    says so.
    **Threshold:** `--min-score N` if given, else `Score threshold` from `## Targeting`. Without
