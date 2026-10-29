@@ -48,7 +48,7 @@
 
 Answers to the gate's plan questions, fixed here: the missing-profile check is the first thing in `main`'s non-`--check` branch, before the `.tex` is written or `compile_tex` runs. The error report keeps `md`, `words`, `greeting_ok`, `signoff_ok`, sets `"ok": false`, adds `"error": MISSING_PROFILE`, is printed as usual, and `main` returns 1.
 
-- [ ] **Step 1: Write the failing tests** in `tests/test_build_cover_letter.py`, skipped like `tests/test_build_resume.py` when `fitz` is missing (`@unittest.skipUnless(HAS_FITZ, ...)`, importing the module inside each test). Use a temp dir, a letter `cover_letter.md` of 320 words starting `Dear hiring team,` and ending `Best,\nAly`, placed at `<tmp>/Acme-1/cover_letter.md`:
+- [ ] **Step 1: Write the failing tests** in `tests/test_build_cover_letter.py`, skipped like `tests/test_build_resume.py` when `fitz` is missing (`@unittest.skipUnless(HAS_FITZ, ...)`, importing the module inside each test). Use a temp dir, a letter `cover_letter.md` of 320 words starting `Dear hiring team,` and ending `Best,\nSam`, placed at `<tmp>/Acme-1/cover_letter.md`:
   - `test_profile_path`: `build_cover_letter.PROFILE.as_posix().endswith("sources/profile.md")`.
   - `test_contact_reads_contact_section`: with `PROFILE` patched (`unittest.mock.patch.object`) to a temp file holding `## Contact` with `- Full name: A B`, `- Phone: 1`, `- Email: a@b.c`, `- Location: Montreal, QC, Canada`, `- LinkedIn: https://www.linkedin.com/in/x`, `- GitHub: https://github.com/y`, then `## Eligibility`: `contact() == {"name": "A B", "phone": "1", "email": "a@b.c", "city": "Montreal", "linkedin": "https://www.linkedin.com/in/x", "github": "https://github.com/y", "linkedin_bare": "www.linkedin.com/in/x", "github_bare": "github.com/y"}`.
   - `test_missing_profile_is_json_error`: `PROFILE` patched to a missing path; `main([letter])` (stdout captured) returns 1; the JSON has `"ok": false`, `"error"` equal to `MISSING_PROFILE`, and `"words"`; no `.tex` exists in `<tmp>/Acme-1/`.
@@ -77,11 +77,11 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 - Consumes: the pull procedure and `tools/pull_sources.py` as they are.
 - Produces: `.claude/skills/write-source.md`, referenced by Task 3 as "through `.claude/skills/write-source.md`".
 
-- [ ] **Step 1: `sources.json`:** append exactly the spec's three entries (profile with `"node_id": "a79a0aa2-a176", "writable": true`). Run: `python -c "import json;print(len(json.load(open('sources.json'))['sources']))"`. Expected: `6`.
+- [ ] **Step 1: `sources.json`:** append exactly the spec's three entries (profile with `"node_id": "<node_id>", "writable": true`). Run: `python -c "import json;print(len(json.load(open('sources.json'))['sources']))"`. Expected: `6`.
 
 - [ ] **Step 2: `pull-sources.md`:**
   - Opening skill list: add `/followup`.
-  - Intro: "The mega resume, both prompts, and Aly's profile, stories and answers live in six Claude Docs that Aly edits in claude.ai". Add: "Claude Code writes only to the Profile doc, and only through `.claude/skills/write-source.md`."
+  - Intro: "The mega resume, both prompts, and the user's profile, stories and answers live in six Claude Docs that the user edits in claude.ai". Add: "Claude Code writes only to the Profile doc, and only through `.claude/skills/write-source.md`."
   - "When it runs": add `/followup` to the list.
   - Failure: "stop before tailoring anything" becomes "stop before doing anything else".
   - New paragraph, the mapping sentence on ONE line, worded exactly: `Pulled files may name other sources by their old names (`profile.md`, `stories.md`, `answers.md`, a versioned `mega-resume-v<N>.tex`, `CoverLetter_prompt_v1.md`, `Resume_prompt_v4.md`). Each means the matching file in `sources/`.`
@@ -89,11 +89,11 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 - [ ] **Step 3: Write `.claude/skills/write-source.md`.** First line: a shared procedure file, not a skill. Then the spec's five steps, with these settled details (answers to the gate's plan questions):
   - Scope: only entries with `"writable": true` in `sources.json` (today the profile). One run per change: a reply with several reusable answers is several runs, in sequence, one "Saved to profile" line each.
   - Step 1: pull that one entry per `pull-sources.md`; copy the result to `<scratchpad>/profile.before.md`.
-  - Step 2, anchor: the last line of the target section (a new answer), the heading line (an empty section), or the file's last line (a new section). It must occur exactly once in the pulled file (count it). If not, extend the anchor upward one line at a time (multi-line find text, ending with the anchor line) until the text occurs once; if the section start is reached first, stop and tell Aly. Never use the `nth` option.
+  - Step 2, anchor: the last line of the target section (a new answer), the heading line (an empty section), or the file's last line (a new section). It must occur exactly once in the pulled file (count it). If not, extend the anchor upward one line at a time (multi-line find text, ending with the anchor line) until the text occurs once; if the section start is reached first, stop and tell the user. Never use the `nth` option.
   - Step 3, the call (verified 2026-10-18): Docs `update` with `ref {"object":"node","id":<node_id>}`, `engine "prose"`, `container {"kind":"project","id":<doc id>}`, `payload {"ops":[{"op":"replace","target":{"kind":"find","text":"<old text>"},"with":{"from":{"kind":"inline","content":"<new text>"},"as":"text"}}]}`. Both texts are whole lines, each ending in a newline (written `\n` inside the JSON string, which is a real line break in the doc). For an insert, `<new text>` is the old text plus the new lines; for a line replace, the old line and its replacement.
   - Step 4, check: pull again, then `git diff --no-index -U0 <scratchpad>/profile.before.md sources/profile.md`. It exits 1 when the files differ (expected). Ignoring the `---`/`+++` header lines and the `@@` hunk lines, the `+`/`-` lines must be exactly the intended added and removed lines, nothing else.
   - Step 5: the spec's failure rules, word for word in meaning.
-  - New answers use `- <question>: <answer> (Aly, YYYY-MM-DD)` with today's date.
+  - New answers use `- <question>: <answer> (the user, YYYY-MM-DD)` with today's date.
 
 - [ ] **Step 4: Run** `git grep -n "write-source.md" -- .claude/skills/pull-sources.md`. Expected: one hit. Run `git grep -n "by their old names" -- .claude/skills/pull-sources.md`. Expected: one hit, and that line also contains `answers.md`.
 
@@ -117,7 +117,7 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 
 - [ ] **Step 1: Paths.** In every file above: `profile.md` → `sources/profile.md`, `stories.md` → `sources/stories.md`, `answers.md` → `sources/answers.md`, including `description:` lines. In `workday.md` line 185, drop ", local-only".
 
-- [ ] **Step 2: Saves.** Each sentence that saves to the profile ends with "through `.claude/skills/write-source.md`": `/apply` line 49 ("Save each answer that is reusable into `sources/profile.md` under the right heading"); `/batch` lines 177, 213, 221, the Workday history save (line 57, "save it on Aly's approval") and the Targeting add (line 59-60); `/followup` line 149. Also `apply/workday.md` line 187 ("saved only after Aly approves"), the Workday history save in a normal `/apply` run. Each batch-subagent section keeps its rule that subagents never write it.
+- [ ] **Step 2: Saves.** Each sentence that saves to the profile ends with "through `.claude/skills/write-source.md`": `/apply` line 49 ("Save each answer that is reusable into `sources/profile.md` under the right heading"); `/batch` lines 177, 213, 221, the Workday history save (line 57, "save it on the user's approval") and the Targeting add (line 59-60); `/followup` line 149. Also `apply/workday.md` line 187 ("saved only after the user approves"), the Workday history save in a normal `/apply` run. Each batch-subagent section keeps its rule that subagents never write it.
 
 - [ ] **Step 3: `/followup` step 0.** Insert before `## 1. Collect`: `## 0. Pull the sources` with one line: `Follow `.claude/skills/pull-sources.md`.`
 
@@ -147,7 +147,7 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 
 - [ ] **Step 2: ADR 0003** from `0000-template.md`, Status `accepted`, Date 2026-10-18, with the spec's "ADR 0003" paragraph as Context/Decision/Consequences. ADR 0002: Status `superseded` and a line under it: `Superseded by [ADR 0003](0003-claude-code-writes-to-the-profile-doc.md).` README: 0002's status `superseded`; new row `| [0003](0003-claude-code-writes-to-the-profile-doc.md) | Claude Code writes to the Profile doc | accepted | 2026-10-18 |`.
 
-- [ ] **Step 3: Earlier spec and plan.** Status `implemented` in both 2026-10-17 files. Run: `python C:/Users/alymo/.claude/skills/claude-kit/scripts/spec-index.py docs/superpowers`. Expected: `docs/superpowers/README.md` shows both 2026-10-17 rows `implemented`.
+- [ ] **Step 3: Earlier spec and plan.** Status `implemented` in both 2026-10-17 files. Run: `python %USERPROFILE%/.claude/skills/claude-kit/scripts/spec-index.py docs/superpowers`. Expected: `docs/superpowers/README.md` shows both 2026-10-17 rows `implemented`.
 
 - [ ] **Step 4: Run** the spec's criterion 3: `git grep -n -E "(^|[^/_a-z])(profile|stories|answers)\.md" -- .claude tools CLAUDE.md | grep -v "by their old names"`. Expected: no output. Then the full suite and `py_compile`. Expected: PASS.
 
@@ -163,17 +163,17 @@ Answers to the gate's plan questions, fixed here: the missing-profile check is t
 - Consumes: the procedures and tools from Tasks 1-3.
 - Produces: the verification evidence for the PR body.
 
-Run from the worktree root, in the main session (it needs the Docs and Artifact tools). `<scratch>` is the session's scratchpad directory. The main checkout is `C:/Users/alymo/Desktop/Github/jobapps`.
+Run from the worktree root, in the main session (it needs the Docs and Artifact tools). `<scratch>` is the session's scratchpad directory. The main checkout is `<repo-root>`.
 
 - [ ] **Step 1: Pull** all six entries per `.claude/skills/pull-sources.md`. Expected: six report lines, none an error.
 
-- [ ] **Step 2: Compare** the three new files with the main checkout's root files, using one Python script run with the Bash tool (no shell redirects): for each of `profile.md`, `stories.md`, `answers.md`, read `C:/Users/alymo/Desktop/Github/jobapps/<name>` as bytes, replace `b"\r\n"` with `b"\n"`, add a final `b"\n"` only if missing, compare with `sources/<name>`; print `identical` or `DIFFERENT`; exit 1 on any difference.
+- [ ] **Step 2: Compare** the three new files with the main checkout's root files, using one Python script run with the Bash tool (no shell redirects): for each of `profile.md`, `stories.md`, `answers.md`, read `<repo-root>/<name>` as bytes, replace `b"\r\n"` with `b"\n"`, add a final `b"\n"` only if missing, compare with `sources/<name>`; print `identical` or `DIFFERENT`; exit 1 on any difference.
   Run: `python "<scratch>/compare_profile_refs.py"`
   Expected: three `identical`, exit 0.
 
-- [ ] **Step 3: Live write** per `.claude/skills/write-source.md`: add `- Write-back test: remove me (Aly, 2026-10-18)` after the last line of `## Common questions` (today: `- Years of Gen AI development experience: 3 (Aly, 2026-10-14)`). Expected: step 4's `git diff --no-index -U0` shows exactly one `+` line, that line.
+- [ ] **Step 3: Live write** per `.claude/skills/write-source.md`: add `- Write-back test: remove me (the user, 2026-10-18)` after the last line of `## Common questions` (today: `- Years of Gen AI development experience: 3 (the user, 2026-10-14)`). Expected: step 4's `git diff --no-index -U0` shows exactly one `+` line, that line.
 
-- [ ] **Step 4: Remove it**: Docs `update` with the same `ref`, `engine` and `container` as `write-source.md` step 3, and `payload {"ops":[{"op":"delete","target":{"kind":"find","text":"- Write-back test: remove me (Aly, 2026-10-18)\n"}}]}`, pull the profile, and rerun Step 2's script. Expected: three `identical`.
+- [ ] **Step 4: Remove it**: Docs `update` with the same `ref`, `engine` and `container` as `write-source.md` step 3, and `payload {"ops":[{"op":"delete","target":{"kind":"find","text":"- Write-back test: remove me (the user, 2026-10-18)\n"}}]}`, pull the profile, and rerun Step 2's script. Expected: three `identical`.
 
 - [ ] **Step 5: Header.** Copy one existing `postings/<dir>/cover_letter.md` from the main checkout to `<scratch>/HeaderTest-1/cover_letter.md`.
   Run: `python tools/build_cover_letter.py "<scratch>/HeaderTest-1/cover_letter.md"`
@@ -183,4 +183,4 @@ Run from the worktree root, in the main session (it needs the Docs and Artifact 
 
 ## After merge (part of `/ship` clean-up)
 
-Once local `main` is fast-forwarded to the merge: move `C:/Users/alymo/Desktop/Github/jobapps/profile.md`, `stories.md` and `answers.md` to the Recycle Bin (PowerShell, once per file: `Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile('<path>', 'OnlyErrorDialogs', 'SendToRecycleBin')`). Expected: none of the three exists; the `.gitignore` lines for them stay.
+Once local `main` is fast-forwarded to the merge: move `<repo-root>/profile.md`, `stories.md` and `answers.md` to the Recycle Bin (PowerShell, once per file: `Add-Type -AssemblyName Microsoft.VisualBasic; [Microsoft.VisualBasic.FileIO.FileSystem]::DeleteFile('<path>', 'OnlyErrorDialogs', 'SendToRecycleBin')`). Expected: none of the three exists; the `.gitignore` lines for them stay.

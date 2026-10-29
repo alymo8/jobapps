@@ -17,9 +17,9 @@
 - `build_cover_letter.py` reads `sources/profile.md` and fails with a JSON error when it is missing (Design, Decisions)
 - CI installs PyMuPDF so the build-script tests run (Scope In)
 - ADR 0003 supersedes ADR 0002 (Scope In, Design ADR 0003)
-- The live write test adds and then deletes a line in Aly's real Profile doc (Success criterion 5)
+- The live write test adds and then deletes a line in the user's real Profile doc (Success criterion 5)
 - The main checkout's original root files go to the Recycle Bin after the merge; their `.gitignore` lines stay (Scope In, Decisions)
-- Old file names inside Aly's doc text stay as they are; a mapping sentence in `pull-sources.md` covers them (Scope Out, Design)
+- Old file names inside the user's doc text stay as they are; a mapping sentence in `pull-sources.md` covers them (Scope Out, Design)
 
 ## Findings fixed
 

@@ -7,7 +7,7 @@
 
 Workday postings (`*.myworkdayjobs.com`, `*.myworkdaysite.com`) are the largest group of blocked
 applications: `/apply` and every `/batch` subagent stop at the Workday sign-in wall and file the
-posting as `BLOCKED` in `dlq.md`. Aly already has Workday candidate accounts at many companies,
+posting as `BLOCKED` in `dlq.md`. The user already has Workday candidate accounts at many companies,
 with the passwords saved in Chrome. This change lets `/apply` sign in through Chrome's saved
 password and fill the full Workday wizard up to the approval point, the same way it handles
 Greenhouse today.
@@ -17,16 +17,14 @@ Greenhouse today.
 - `.claude/skills/apply/SKILL.md` has no Workday knowledge. Its batch-subagent section says: "If the
   site needs an account login or sign-up ... stop and report it as a blocker (don't create accounts)."
 - `.claude/skills/batch/SKILL.md` subagent prompt lists "needs an account login" as a blocker, and
-  the DLQ section gives "Aly creates a Workday account at <tenant>" as an example `Needs`.
-- `dlq.md` holds 13 open Workday account blockers (Morgan Stanley `ms.wd5` ×2, RBC `rbc.wd3` ×2,
-  Manulife `manulife.wd3` ×2, Thomson Reuters `thomsonreuters.wd5` ×2, PSP `investpsp.wd3`,
-  Intact `intactfc.wd3`, Simpro `simpro.wd3`, Workday `workday.wd5`, and Mastercard with no tenant
-  found). The Salesforce row is resolved (Aly applied by hand).
+  the DLQ section gives "the user creates a Workday account at <tenant>" as an example `Needs`.
+- `dlq.md` holds 13 open Workday account blockers (one `<tenant>.wdN` per blocked row, several tenants twice, and one row with no tenant
+  found). One row is resolved (the user applied by hand).
 - `profile.md` (local-only, gitignored) has sections `Contact`, `Eligibility`,
   `Compensation & availability`, `Common questions`, `Voluntary self-identification (EEO / diversity)`,
   `Free-text answers`, `Career goals and cover letters`. It has no structured work history.
 
-### Spike findings (2026-10-05, Manulife JR26071949)
+### Spike findings (2026-10-05, a posting <req-id>)
 
 1. Opening the Sign In dialog, Chrome autofilled the email and the saved password. Clicking Sign In
    logged in; the header then shows the email and "Candidate Home". Claude never saw the password.
@@ -58,7 +56,7 @@ Greenhouse today.
 - `knowledge/decisions/0001-workday-sign-in-via-chrome-saved-passwords.md` (new), the ADR, and its row in
   `knowledge/decisions/README.md`.
 - Local, not committed: a new `## Workday work history` section in `profile.md`, built once from
-  `mega-resume-v1.5.tex` and approved by Aly.
+  `mega-resume-v1.5.tex` and approved by the user.
 
 **Out:**
 - Other account-walled ATSs (iCIMS, Taleo, SuccessFactors).
@@ -76,7 +74,7 @@ Greenhouse today.
 Phase 2. A posting found on another site (company careers page, Built In) whose Apply button leads to
 a Workday host switches to the playbook at that point. The tenant name, used by the playbook, DLQ
 rows and the review sheet:
-- `<tenant>.wdN.myworkdayjobs.com/...` → `<tenant>.wdN` (e.g. `manulife.wd3`).
+- `<tenant>.wdN.myworkdayjobs.com/...` → `<tenant>.wdN` (e.g. `acme.wd3`).
 - `wdN.myworkdaysite.com/[<locale>/]recruiting/<tenant>/<site>/...` → `<tenant>.wdN` (the path
   segment after `/recruiting/`).
 
@@ -98,16 +96,16 @@ Each part is a numbered section in `workday.md`.
 2. **Clicking rule.** On Workday pages, click buttons, links and options through element refs from
    `find`/`read_page`, not screen coordinates. Never press Enter (existing rule). Cookie banner:
    click **Decline** (privacy-preserving default).
-3. **Sign in.** If the header already shows Aly's email, skip. Otherwise click **Sign In** and take
+3. **Sign in.** If the header already shows the user's email, skip. Otherwise click **Sign In** and take
    a screenshot.
    - Email and password fields both filled (Chrome autofill) → click the dialog's **Sign In** button,
      wait, confirm the header shows the email.
    - Fields empty, or Sign In returns an error (wrong credentials, account not found), or Workday
      asks for a verification code → this tenant has **no usable saved login**. Claude never types
      into the password field, and never fills the Create Account form.
-     - Normal run: tell Aly the tenant, leave the tab on Sign In (or on **Create Account** when the
-       error says no account exists) and ask Aly to sign in or create the account in that tab and
-       let Chrome save the password; continue when Aly says done.
+     - Normal run: tell the user the tenant, leave the tab on Sign In (or on **Create Account** when the
+       error says no account exists) and ask the user to sign in or create the account in that tab and
+       let Chrome save the password; continue when the user says done.
      - Batch subagent: stop and report blocker `NO-WORKDAY-LOGIN <tenant> <workday url>: <what was
        seen>` (orchestrator records it as `BLOCKED` with that Detail).
 4. **Start.** Click **Apply** then **Apply Manually**. Never Autofill with Resume or Use My Last
@@ -115,7 +113,7 @@ Each part is a numbered section in `workday.md`.
    wizard opens on a later step), continue it.
 5. **Read each step before filling.** On every step: `get_page_text` + `read_page` (interactive),
    list every field into `application.md` as today (`label | answer | source`), fill, re-read and
-   confirm values, then click **Save and Continue**. Save and Continue saves a draft on Aly's
+   confirm values, then click **Save and Continue**. Save and Continue saves a draft on the user's
    account; it is not a submission and needs no approval. If Workday returns field errors, fix
    them and save again; a step that still fails after one retry → `FAILED` with the error text.
 6. **My Information.** From `profile.md` `## Contact` and `## Common questions`.
@@ -152,7 +150,7 @@ Each part is a numbered section in `workday.md`.
 10. **Approval point.** Replaces `/apply` step 6 for Workday: the same summary, plus the tenant, the
     step the run stopped on, the consent checkbox label quoted (or "no consent checkbox"), and the
     `After approval` rows. `applications.md` → `ready` (normal runs only; in batch the
-    orchestrator writes it). Ask "Submit? (ok / edits)". Aly's "ok" approves ticking that consent
+    orchestrator writes it). Ask "Submit? (ok / edits)". The user's "ok" approves ticking that consent
     checkbox, filling the `After approval` rows and submitting.
 11. **Submit (Phase 2).** Apply edits. On the stop step, re-fill any field that is empty or differs
     from `application.md` (the unsaved step's values may be gone after a reload or in a new tab).
@@ -165,8 +163,8 @@ Each part is a numbered section in `workday.md`.
 
 ### `## Workday work history` in `profile.md`
 
-Local-only, built once from `mega-resume-v1.5.tex` (every value traceable to it), shown to Aly in
-full and saved only after Aly approves. When `/apply` hits a Workday posting and the section is
+Local-only, built once from `mega-resume-v1.5.tex` (every value traceable to it), shown to the user in
+full and saved only after the user approves. When `/apply` hits a Workday posting and the section is
 missing, it builds the draft, shows it, and waits for approval (in a batch, the orchestrator does this before any prepare subagent starts; see `/batch` changes. A
 subagent that still finds it missing reports blocker `NO-WORKDAY-HISTORY`, recorded as `BLOCKED`).
 Format:
@@ -192,7 +190,7 @@ Websites (LinkedIn, GitHub) are not repeated here; section 7 reads them from `##
 
 - Step 3: one paragraph pointing to `workday.md` for Workday hosts.
 - "Postings that can't be applied to": a Workday posting with no usable saved login is a `BLOCKED`
-  row with Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...` and `Needs` "Aly signs in / creates the account
+  row with Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...` and `Needs` "the user signs in / creates the account
   at <tenant> and lets Chrome save the password"; playbook failures are `FAILED`.
 - "Running as a batch subagent": the "account login or sign-up" blocker sentence says that Workday
   postings follow `workday.md`, signing in through Chrome autofill, and stop at the consent checkbox;
@@ -201,21 +199,21 @@ Websites (LinkedIn, GitHub) are not repeated here; section 7 reads them from `##
 - "Batch execute mode": for Workday, sign in per playbook section 3, resume the saved draft
   (section 4), check every step against `application.md`, then playbook section 11 (which does not write
   `applications.md` in batch). An unusable
-  saved login here → reply `NEEDS ALY: sign in at <tenant>` with the tab URL.
+  saved login here → reply `NEEDS USER: sign in at <tenant>` with the tab URL.
 
 ### `/batch` SKILL.md changes
 
 - Before stage 2 (prepare): if any picked posting is on a Workday host (apply mode, or outreach,
   which runs /apply) and `profile.md` has no `## Workday work history`, build the draft from
-  `mega-resume-v1.5.tex`, show it to Aly in full, and save it on approval before launching any
+  `mega-resume-v1.5.tex`, show it to the user in full, and save it on approval before launching any
   prepare subagent. This approval is asked together with the section 0 "Confirm before launching" message.
 - Subagent prompt blocker examples, and the step-2 "Blockers (...)" sentence: "needs an account
   login" becomes "needs an account login (non-Workday), NO-WORKDAY-LOGIN <tenant>".
-- DLQ `Needs` example: "Aly signs in / creates the account at <tenant> (Chrome saves the password)".
+- DLQ `Needs` example: "the user signs in / creates the account at <tenant> (Chrome saves the password)".
 - Review sheet: a "Workday logins needed" list built from every `open` row in `dlq.md` whose Detail
   starts with `NO-WORKDAY-LOGIN` (not only this run's), grouped by tenant, rows from this run marked
   `(this run)`. Each tenant shows one sign-in URL: the `<workday url>` from the Detail of its first such row
-  (a Workday page whose header has Sign In), plus the posting dirs it would unblock, so Aly can create or sign in to all of them in one sitting and then
+  (a Workday page whose header has Sign In), plus the posting dirs it would unblock, so the user can create or sign in to all of them in one sitting and then
   re-run `/batch <apply|outreach> dlq.md --reason BLOCKED`.
 
 ### ADR 0001
@@ -223,23 +221,23 @@ Websites (LinkedIn, GitHub) are not repeated here; section 7 reads them from `##
 `knowledge/decisions/0001-workday-sign-in-via-chrome-saved-passwords.md`, from `0000-template.md`:
 Claude signs in to Workday only through Chrome's saved-password autofill and clicking Sign In; it
 never types passwords, never creates accounts; Save and Continue drafts are allowed without
-approval; the consent checkbox and Submit need Aly's OK. Alternatives rejected: Aly signs in by
+approval; the consent checkbox and Submit need the user's OK. Alternatives rejected: the user signs in by
 hand every time (slow in batches), Claude types a stored password (credentials in context;
 disallowed), Claude creates accounts (disallowed).
 
 ## Decisions
 
-Confirmed by Aly on 2026-10-05:
+Confirmed by the user on 2026-10-05:
 
 1. Sign-in uses Chrome's saved passwords (spike-verified). When a tenant has no account or no saved
-   password, Claude opens Sign In / Create Account and Aly completes it; Claude never creates
-   accounts or types passwords (Aly first chose "Claude creates, Aly approves"; reversed because
+   password, Claude opens Sign In / Create Account and the user completes it; Claude never creates
+   accounts or types passwords (the user first chose "Claude creates, the user approves"; reversed because
    Claude's browser rules forbid it).
 2. Save and Continue between steps needs no approval; the single approval point is before the
-   consent checkbox, and Aly's "ok" covers ticking it and submitting.
+   consent checkbox, and the user's "ok" covers ticking it and submitting.
 3. Always Apply Manually; never Autofill with Resume or Use My Last Application.
 4. Existing entries in a tenant's Workday profile are overwritten to match `## Workday work history`.
-5. My Experience is filled from a canonical, Aly-approved `## Workday work history` section in
+5. My Experience is filled from a canonical, the user-approved `## Workday work history` section in
    `profile.md`.
 
 ## Success criteria
@@ -248,12 +246,12 @@ Confirmed by Aly on 2026-10-05:
    sections; `workday.md` has sections 1–11 as above; `batch/SKILL.md` no longer lists a Workday
    login as an automatic blocker; ADR 0001 exists and is indexed;
    `python -m py_compile tools/*.py` passes.
-2. **End-to-end `/apply`** on https://manulife.wd3.myworkdayjobs.com/MFCJH_Jobs/job/Montreal-Quebec/Agentic-Engineer--Innovation_JR26071949:
+2. **End-to-end `/apply`** on https://<tenant>.wd3.myworkdayjobs.com/<site>/job/<location>/<title>_<id>:
    reaches the approval point with every step before the consent checkbox saved; no `ASK` except
    questions not answerable from the source files; every Work Experience and Education entry on the
    page equals `## Workday work history`; the resume upload shows the tailored PDF's filename.
-   Submitting is Aly's call and not part of the criterion.
-3. **Batch:** `/batch apply` over at least 2 Workday postings from `dlq.md` (e.g. RBC
-   R-0000182590 and Thomson Reuters). Each ends `ready`, or `NO-WORKDAY-LOGIN <tenant>` with the
+   Submitting is the user's call and not part of the criterion.
+3. **Batch:** `/batch apply` over at least 2 Workday postings from `dlq.md` (e.g. a company
+   <req-id> and a company). Each ends `ready`, or `NO-WORKDAY-LOGIN <tenant>` with the
    sign-in URL in the review's "Workday logins needed" list. No subagent types a password or
    fills Create Account.

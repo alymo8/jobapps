@@ -13,7 +13,7 @@ sys.path.insert(0, str(TOOLS))
 import shortlist  # noqa: E402
 
 FIXTURE_KEYS = Path(__file__).resolve().parent / "fixtures" / "decision_keys.py"
-FIXTURE_SHA256 = "f1b302cc2ac8ee16a034568d622ea532de52b5d4130b83123df34528de24f303"
+FIXTURE_SHA256 = "d359f04c6f7f2dc873ab3f07528f7627f7d0bf7749b3a1f52b189ef1ffd7415d"
 KEYS = shortlist.load_keys(FIXTURE_KEYS)
 
 
@@ -32,7 +32,7 @@ def body(url, company, title, decision="applied", decided_at="2026-10-10T09:00:0
     return {
         "schema_version": 1, "url": url, "url_norm": KEYS.norm_url(url),
         "company": company, "title": title, "match_key": KEYS.match_key(company, title),
-        "decision": decision, "source": "aly", "decided_at": decided_at,
+        "decision": decision, "source": "user", "decided_at": decided_at,
         "week_seen": "2026-10-17", "note": note,
     }
 
@@ -140,11 +140,11 @@ class KeysAndInputsTest(Base):
     def test_is_decided_by_url_and_by_match_key(self):
         decs = [
             {"doc_id": "x", "version": 1, "body": body("https://www.a.com/1/", "Other", "Other")},
-            {"doc_id": "y", "version": 1, "body": body("https://elsewhere.com/9", "Stripe Inc.", "Backend Engineer")},
+            {"doc_id": "y", "version": 1, "body": body("https://elsewhere.com/9", "Acme Inc.", "Backend Engineer")},
         ]
         idx = shortlist.decided_index(decs)
         self.assertTrue(shortlist.is_decided(KEYS, row(1, "A", "T", "https://a.com/1"), idx))
-        self.assertTrue(shortlist.is_decided(KEYS, row(2, "Stripe", "Backend Engineer", "https://stripe.com/2"), idx))
+        self.assertTrue(shortlist.is_decided(KEYS, row(2, "Acme", "Backend Engineer", "https://acme.com/2"), idx))
         self.assertFalse(shortlist.is_decided(KEYS, row(3, "Okta", "Engineer", "https://okta.com/3"), idx))
 
 
@@ -152,10 +152,10 @@ class ListTest(Base):
     def rows(self):
         return [
             row(1, "Mistral AI", "FDE", "https://m.com/1", new="Yes", priority="Yes", location="Montréal, QC"),
-            row(2, "Stripe", "Backend Engineer", "https://stripe.com/2", tab="below_cut"),
+            row(2, "Acme", "Backend Engineer", "https://acme.com/2", tab="below_cut"),
             row(3, "Okta", "Engineer", "https://okta.com/3", deadline="2026-10-11"),
             row(4, "Cohere", "ML Engineer", "https://c.com/4", deadline="2026-10-31", canada="Confirmed (province-restricted)"),
-            row(50, "RBC", "AI Engineer", "https://rbc.com/50", deadline="2026-10-22"),
+            row(50, "Globex", "AI Engineer", "https://globex.com/50", deadline="2026-10-22"),
             row(80, "TD", "Data Scientist", "https://td.com/80", deadline="2026-10-20"),
             row(90, "Shopify", "Dev", "https://shop.com/90", deadline="2026-10-25"),
         ]
@@ -173,7 +173,7 @@ class ListTest(Base):
         self.assertEqual(self.ranks(out), [80, 50, 90, 1, 2, 3, 4])
 
     def test_decided_rows_hidden_and_counts(self):
-        _, out = self.list(decisions=[body("https://stripe.com/2", "x", "y")])
+        _, out = self.list(decisions=[body("https://acme.com/2", "x", "y")])
         self.assertNotIn(2, self.ranks(out))
         self.assertEqual((out["total_rows"], out["decided_hidden"], out["shown"], out["week"]), (7, 1, 6, "2026-10-17"))
 
@@ -182,7 +182,7 @@ class ListTest(Base):
         self.assertEqual(self.ranks(self.list("--priority")[1]), [1])
         self.assertEqual(self.ranks(self.list("--location", "montreal")[1]), [1])
         self.assertEqual(len(self.list("--location", "montreal", "--location", "toronto")[1]["rows"]), 7)
-        self.assertEqual(self.ranks(self.list("--company", "stripe")[1]), [2])
+        self.assertEqual(self.ranks(self.list("--company", "acme")[1]), [2])
         self.assertEqual(self.ranks(self.list("--title", "engineer", "--tab", "main")[1]), [50, 3, 4])
         self.assertEqual(self.ranks(self.list("--tab", "below_cut")[1]), [2])
         self.assertEqual(self.ranks(self.list("--top", "2")[1]), [80, 50])
@@ -206,24 +206,24 @@ class FindDocDecisionsTest(Base):
     def test_find(self):
         newer = self.week([
             row(1, "Example", "Dev", "https://example.com/job/1"),
-            row(3, "RBC", "Senior AI Engineer (Toronto)", "https://rbc.com/3"),
-            row(4, "Stripe", "Backend", "https://stripe.com/4"),
-            row(5, "Stripe", "Frontend", "https://stripe.com/5"),
+            row(3, "Globex", "Senior AI Engineer (Toronto)", "https://globex.com/3"),
+            row(4, "Acme", "Backend", "https://acme.com/4"),
+            row(5, "Acme", "Frontend", "https://acme.com/5"),
             row(6, "Brokta Inc", "Engineer", "https://brokta.com/6"),
         ])
         older = self.week([row(9, "Okta", "Engineer", "https://okta.com/9")], week="2026-10-10")
         f = ("find", "--keys", FIXTURE_KEYS, "--rows", newer, older)
         self.assertEqual(self.run_cli(*f, "--url", "https://www.Example.com/job/1/")[1][0]["rank"], 1)
-        self.assertEqual(self.run_cli(*f, "--rank", "3")[1][0]["company"], "RBC")
-        self.assertEqual(len(self.run_cli(*f, "--company", "RBC", "--title", "Senior AI Engineer")[1]), 1)
-        self.assertEqual(self.run_cli(*f, "--company", "rbc", "--title", "ai engineer")[1][0]["rank"], 3)
-        self.assertEqual([m["rank"] for m in self.run_cli(*f, "--company", "stripe")[1]], [4, 5])
+        self.assertEqual(self.run_cli(*f, "--rank", "3")[1][0]["company"], "Globex")
+        self.assertEqual(len(self.run_cli(*f, "--company", "Globex", "--title", "Senior AI Engineer")[1]), 1)
+        self.assertEqual(self.run_cli(*f, "--company", "globex", "--title", "ai engineer")[1][0]["rank"], 3)
+        self.assertEqual([m["rank"] for m in self.run_cli(*f, "--company", "acme")[1]], [4, 5])
         self.assertEqual(self.run_cli(*f, "--company", "brokta")[1][0]["rank"], 6)
         okta = self.run_cli(*f, "--company", "okta")[1]  # "okta" is not a word of "brokta"
         self.assertEqual((okta[0]["rank"], okta[0]["week"]), (9, "2026-10-10"))
         self.assertNotIn("decided", okta[0])
-        d = self.decisions_dir([body("https://stripe.com/4", "Stripe", "Backend")])
-        got = self.run_cli(*f, "--company", "stripe", "--decisions", d)[1]
+        d = self.decisions_dir([body("https://acme.com/4", "Acme", "Backend")])
+        got = self.run_cli(*f, "--company", "acme", "--decisions", d)[1]
         self.assertEqual([m["decided"] for m in got], [True, False])
 
     def doc(self, *extra):
@@ -262,18 +262,18 @@ class FindDocDecisionsTest(Base):
 
     def test_decisions(self):
         d = self.decisions_dir([
-            body("https://stripe.com/2", "Stripe", "Backend Engineer", decided_at="2026-10-01T10:00:00-04:00"),
+            body("https://acme.com/2", "Acme", "Backend Engineer", decided_at="2026-10-01T10:00:00-04:00"),
             body("https://okta.com/3", "Okta", "Engineer", decision="not_interested", decided_at="2026-10-15T10:00:00-04:00"),
-            body("https://rbc.com/4", "RBC", "AI Engineer", decided_at="2026-10-12T10:00:00-04:00"),
+            body("https://globex.com/4", "Globex", "AI Engineer", decided_at="2026-10-12T10:00:00-04:00"),
         ])
         base = ("decisions", "--keys", FIXTURE_KEYS, "--decisions", d)
         companies = lambda out: [x["body"]["company"] for x in out]  # noqa: E731
-        self.assertEqual(companies(self.run_cli(*base)[1]), ["Okta", "RBC", "Stripe"])
-        self.assertEqual(companies(self.run_cli(*base, "--decision", "applied")[1]), ["RBC", "Stripe"])
-        self.assertEqual(companies(self.run_cli(*base, "--match", "stripe")[1]), ["Stripe"])
-        self.assertEqual(companies(self.run_cli(*base, "--url", "https://www.rbc.com/4/")[1]), ["RBC"])
+        self.assertEqual(companies(self.run_cli(*base)[1]), ["Okta", "Globex", "Acme"])
+        self.assertEqual(companies(self.run_cli(*base, "--decision", "applied")[1]), ["Globex", "Acme"])
+        self.assertEqual(companies(self.run_cli(*base, "--match", "acme")[1]), ["Acme"])
+        self.assertEqual(companies(self.run_cli(*base, "--url", "https://www.globex.com/4/")[1]), ["Globex"])
         self.assertEqual(companies(self.run_cli(*base, "--company", "Okta Inc", "--title", "Engineer")[1]), ["Okta"])
-        self.assertEqual(companies(self.run_cli(*base, "--company", "rbc")[1]), ["RBC"])
+        self.assertEqual(companies(self.run_cli(*base, "--company", "globex")[1]), ["Globex"])
         first = self.run_cli(*base)[1][0]
         self.assertEqual(first["doc_id"], KEYS.doc_id("https://okta.com/3"))
         self.assertIsNotNone(first["version"])

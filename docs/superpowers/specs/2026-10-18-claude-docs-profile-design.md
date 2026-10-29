@@ -6,27 +6,27 @@
 ## Purpose
 
 [The first change](2026-10-17-claude-docs-sources-design.md) moved the mega resume and both
-prompts into Claude Docs. Aly's other three sources, `profile.md`, `stories.md` and `answers.md`,
-still live only on Aly's computer, so cover letters written in claude.ai can't use Aly's stories,
+prompts into Claude Docs. The user's other three sources, `profile.md`, `stories.md` and `answers.md`,
+still live only on the user's computer, so cover letters written in claude.ai can't use the user's stories,
 past answers, career goals or framing rules. Move them into Claude Docs the same way.
 
 `profile.md` is different from the others: Claude Code writes to it. `/apply`, `/batch` and
-`/followup` save every reusable answer Aly gives, and `/batch` saves `## Workday work history` and
-`## Targeting` there. Aly chose (2026-10-18) to move it anyway and let Claude Code write to the
+`/followup` save every reusable answer the user gives, and `/batch` saves `## Workday work history` and
+`## Targeting` there. The user chose (2026-10-18) to move it anyway and let Claude Code write to the
 Profile doc, the one exception to "Claude Code never writes back"
 ([ADR 0002](../../../knowledge/decisions/0002-claude-docs-are-the-source-of-truth.md)).
 
 ## Background (current state)
 
-The three docs exist, are private to Aly, and each holds its file inside one ` ```markdown ` code
+The three docs exist, are private to the user, and each holds its file inside one ` ```markdown ` code
 block. Verified 2026-10-18: each exported block equals its local file byte for byte once CRLF is
 normalised to LF (profile 134, stories 458 and answers 73 lines).
 
 | Local file (new path) | Doc URL | Tab id | Tab body (node) id |
 | --- | --- | --- | --- |
-| `sources/profile.md` | `https://claude.ai/code/artifact/1d38f311-7b31-4491-b681-c6c3343f0ba1` | `cf062a47-5408` | `a79a0aa2-a176` |
-| `sources/stories.md` | `https://claude.ai/code/artifact/43eb68db-f74d-4683-a9a8-35ec98911c62` | `04699d55-62ec` | `d0e05c1e-bdd9` |
-| `sources/answers.md` | `https://claude.ai/code/artifact/8c401cd0-ab04-4ed5-a60a-2659b4be3348` | `b093bfac-b232` | `44a9a071-d456` |
+| `sources/profile.md` | `<doc_url>` | `<tab_id>` | `<node_id>` |
+| `sources/stories.md` | `<doc_url>` | `<tab_id>` | `<node_id>` |
+| `sources/answers.md` | `<doc_url>` | `<tab_id>` | `<node_id>` |
 
 Also verified 2026-10-18, on a throwaway doc: a Docs `update` on the tab body (`engine "prose"`)
 with `{"op":"replace","target":{"kind":"find","text":"<an exact line>\n"},"with":{"from":{"kind":"inline","content":"<that line>\n<new line>\n"},"as":"text"}}`
@@ -67,27 +67,27 @@ the letter header). `.gitignore` ignores the three root files.
   `spec-index.py`).
 - After the squash-merge, once local `main` is fast-forwarded (so its skills read the pulled copies):
   move the original root `profile.md`, `stories.md` and `answers.md` of the main checkout to the
-  Recycle Bin (Aly, 2026-10-18). Not a repo change; their `.gitignore` lines stay, so a restored
+  Recycle Bin (the user, 2026-10-18). Not a repo change; their `.gitignore` lines stay, so a restored
   copy is never committed.
 
 **Out:**
 
 - Writes to any doc other than the Profile doc. Stories and Answers stay read-only: nothing
   writes to them today.
-- Editing the old file names inside Aly's profile, stories and answers text (for example
-  `CoverLetter_prompt_v1.md`, `mega-resume-v1.5.tex`): that is Aly's content; the mapping below
+- Editing the old file names inside the user's profile, stories and answers text (for example
+  `CoverLetter_prompt_v1.md`, `mega-resume-v1.5.tex`): that is the user's content; the mapping below
   covers it.
 - `latex_resume.tex`: stays local.
-- The claude.ai skills: Aly sets them up from a prompt given in chat.
+- The claude.ai skills: the user sets them up from a prompt given in chat.
 
 ## Design
 
 ### `sources.json` additions
 
 ```json
-{"path": "sources/profile.md", "doc_url": "https://claude.ai/code/artifact/1d38f311-7b31-4491-b681-c6c3343f0ba1", "tab_id": "cf062a47-5408", "node_id": "a79a0aa2-a176", "writable": true},
-{"path": "sources/stories.md", "doc_url": "https://claude.ai/code/artifact/43eb68db-f74d-4683-a9a8-35ec98911c62", "tab_id": "04699d55-62ec"},
-{"path": "sources/answers.md", "doc_url": "https://claude.ai/code/artifact/8c401cd0-ab04-4ed5-a60a-2659b4be3348", "tab_id": "b093bfac-b232"}
+{"path": "sources/profile.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>", "node_id": "<node_id>", "writable": true},
+{"path": "sources/stories.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>"},
+{"path": "sources/answers.md", "doc_url": "<doc_url>", "tab_id": "<tab_id>"}
 ```
 
 appended to the existing `sources` list. The pull procedure is unchanged and pulls all six.
@@ -103,7 +103,7 @@ own mapping line stays.
 ### The write procedure (`.claude/skills/write-source.md`)
 
 Used whenever a skill saves something to the profile: a reusable answer, an `ASK` replaced by
-Aly's answer, `## Workday work history`, `## Targeting`. Only for entries with `"writable": true`.
+The user's answer, `## Workday work history`, `## Targeting`. Only for entries with `"writable": true`.
 
 1. Pull that source alone (the `pull-sources.md` steps for its entry), so the edit starts from the
    doc as it is now. Keep a copy of the pulled file in the scratchpad.
@@ -111,7 +111,7 @@ Aly's answer, `## Workday work history`, `## Targeting`. Only for entries with `
    - **insert** new lines after an anchor line (for a new answer: the last line of its section;
      for a new section: the file's last line): replace `<anchor>\n` with `<anchor>\n<new lines>\n`;
    - **replace** an existing line (for example the `ASK` line) with its new text.
-   New answers keep the profile's form: `- <question>: <answer> (Aly, YYYY-MM-DD)`, under the
+   New answers keep the profile's form: `- <question>: <answer> (the user, YYYY-MM-DD)`, under the
    heading the skill names.
 3. Docs `update`: `ref {"object":"node","id":<node_id>}`, `engine "prose"`,
    `container {"kind":"project","id":<doc id>}`, `payload {"ops":[<the replace op>]}` with a
@@ -119,14 +119,14 @@ Aly's answer, `## Workday work history`, `## Targeting`. Only for entries with `
 4. Pull again and compare with the step 1 copy: the difference must be exactly the intended lines.
    Report one line, for example `Saved to profile: "Relocation assistance needed: No".`
 5. Failures:
-   - the `update` is refused with `find_none` (the doc changed since step 1, for example Aly was
-     editing it): go back to step 1 once; on a second refusal, stop and tell Aly;
-   - the step 4 difference is not exactly the intended lines: stop and tell Aly what changed,
+   - the `update` is refused with `find_none` (the doc changed since step 1, for example the user was
+     editing it): go back to step 1 once; on a second refusal, stop and tell the user;
+   - the step 4 difference is not exactly the intended lines: stop and tell the user what changed,
      quoting the difference; don't try to repair it;
-   - any other refusal or a tool that can't be reached: stop and tell Aly; never write the answer
+   - any other refusal or a tool that can't be reached: stop and tell the user; never write the answer
      to a local file instead.
 
-The procedure never deletes a line Aly wrote, except the one line a replace targets.
+The procedure never deletes a line the user wrote, except the one line a replace targets.
 
 ### Skill and tool changes
 
@@ -154,7 +154,7 @@ ADR 0003, "Claude Code writes to the Profile doc", supersedes ADR 0002. It keeps
 code block, a failed pull stops the run) for all six sources, and replaces its "Claude Code never
 writes to them" with: Claude Code writes only to the Profile doc, only through `write-source.md`,
 and verifies every write by pulling again. Consequences: saved answers reach claude.ai at once; a
-write can collide with Aly editing the same doc, which the procedure detects and stops on; the
+write can collide with the user editing the same doc, which the procedure detects and stops on; the
 old root files are gone.
 
 ### Tests (`tests/test_build_cover_letter.py`)
@@ -167,13 +167,13 @@ old root files are gone.
 
 ## Decisions
 
-- Move all three, and let Claude Code write to the Profile doc (Aly, 2026-10-18); not keeping the
+- Move all three, and let Claude Code write to the Profile doc (the user, 2026-10-18); not keeping the
   profile local or splitting it.
 - Writes go through one procedure that pulls first, makes one anchored edit, and verifies by
-  pulling again: no blind overwrite of a doc Aly may be editing.
+  pulling again: no blind overwrite of a doc the user may be editing.
 - On a write conflict, retry once from a fresh pull, then stop; never fall back to a local file.
 - Stories and Answers stay read-only from Claude Code.
-- The original root files go to the Recycle Bin after the live checks (Aly, 2026-10-18).
+- The original root files go to the Recycle Bin after the live checks (the user, 2026-10-18).
 - `build_cover_letter.py` fails with a clear JSON error when the profile wasn't pulled.
 
 ## Success criteria
@@ -188,7 +188,7 @@ old root files are gone.
 4. **Live pull:** following `pull-sources.md` creates all six files in `sources/`; the three new
    ones equal the main checkout's root `profile.md`, `stories.md`, `answers.md` with CRLF→LF.
 5. **Live write:** following `write-source.md`, add the line
-   `- Write-back test: remove me (Aly, 2026-10-18)` at the end of `## Common questions` in the
+   `- Write-back test: remove me (the user, 2026-10-18)` at the end of `## Common questions` in the
    Profile doc; the second pull differs from the first by exactly that line. Then remove it with a
    Docs `delete` of that exact line, pull, and the file again equals criterion 4's reference.
 6. **Header:** copy an existing `postings/<dir>/cover_letter.md` from the main checkout to

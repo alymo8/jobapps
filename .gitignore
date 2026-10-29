@@ -1,4 +1,8 @@
 # Personal data and application records stay local only (the repo holds the setup).
+# Personal settings (README "Setup")
+/config.local.json
+/.personal-terms
+/sources.json
 /postings/
 /batches/
 /archive/

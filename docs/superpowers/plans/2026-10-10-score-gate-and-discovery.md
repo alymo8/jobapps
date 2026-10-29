@@ -15,9 +15,9 @@
 
 ## Context for a cold executor
 
-- Repo: `C:\Users\alymo\Desktop\Github\jobapps` (remote `origin` = `https://github.com/alymo8/jobapps.git`). Aly's job-application workspace; refer to Aly with they/them. Work happens in the worktree `.claude/worktrees/score-gate-and-discovery` on branch `feat/score-gate-and-discovery`.
-- Committed: skills (`.claude/skills/<name>/SKILL.md`), `tools/`, prompts, `docs/`, `knowledge/`. **Local-only, gitignored, never commit:** `profile.md`, `mega-resume-v1.5.tex`, `stories.md`, `answers.md`, `postings/`, `batches/`, `archive/`, `applications.md`, `dlq.md`. These exist only in the main checkout `C:\Users\alymo\Desktop\Github\jobapps`, not in the worktree.
-- career-ops checkout: `C:\Users\alymo\Desktop\Job Search\career-ops` (Node). `node scan.mjs --quiet` scans tracked companies and appends rows to `data/scan-history.tsv` (tab-separated, positional; first 7 columns `url, first_seen, portal, title, company, status, location`; up to 14 columns; header `url\t...` only at file creation; cells starting with `'*[=+\-@]` stored with one extra leading `'`). Exits non-zero on fatal errors.
+- Repo: `<repo-root>` (remote `origin` = the GitHub remote). The user's job-application workspace; refer to the user with they/them. Work happens in the worktree `.claude/worktrees/score-gate-and-discovery` on branch `feat/score-gate-and-discovery`.
+- Committed: skills (`.claude/skills/<name>/SKILL.md`), `tools/`, prompts, `docs/`, `knowledge/`. **Local-only, gitignored, never commit:** `profile.md`, `mega-resume-v1.5.tex`, `stories.md`, `answers.md`, `postings/`, `batches/`, `archive/`, `applications.md`, `dlq.md`. These exist only in the main checkout `<repo-root>`, not in the worktree.
+- career-ops checkout: `<career-ops-dir>` (Node). `node scan.mjs --quiet` scans tracked companies and appends rows to `data/scan-history.tsv` (tab-separated, positional; first 7 columns `url, first_seen, portal, title, company, status, location`; up to 14 columns; header `url\t...` only at file creation; cells starting with `'*[=+\-@]` stored with one extra leading `'`). Exits non-zero on fatal errors.
 - Test command (all tasks): `python -m unittest discover -s tests -v` from the worktree root. Static check: `python -m py_compile tools/*.py`.
 
 ## Decisions this plan adds (spec left them to the plan)
@@ -36,13 +36,13 @@
 - **P11. CSV row order:** by `first_seen`, oldest first (file order breaks ties).
 - **P12. Empty status** counts as `added`, as career-ops does (`rawStatus || 'added'`).
 - **P13. Seniority with a range** ("3-5 years"): the lower end is the required years.
-- **P14. posting.md URLs for dedupe** are those `POSTING_URL` matches (`- URL:`, `apply_url:`, `posting_url:`, `**Apply URL:**`); `- URL 1:` lines and a trailing `/apply` are not caught (accepted: such a copy reaches `/batch` and Aly drops it at the step-0 confirmation).
+- **P14. posting.md URLs for dedupe** are those `POSTING_URL` matches (`- URL:`, `apply_url:`, `posting_url:`, `**Apply URL:**`); `- URL 1:` lines and a trailing `/apply` are not caught (accepted: such a copy reaches `/batch` and the user drops it at the step-0 confirmation).
 - **P15. `retried` `LOW-SCORE` rows** (a run abandoned between step 0 and 1b) are left as they are; the next normal run picks the URL up (not held) and the gate re-applies its existing `score.md`.
 - **P9. Criterion 3 with nothing new.** If the real run prints `no new postings`, rerun with `--no-scan --since 60` (the scan already ran) so the history yields rows.
 
 ## Global Constraints
 
-- Never commit `profile.md`, `postings/`, `batches/`, `applications.md`, `dlq.md`, `discovered/`; the skill text names `## Targeting` keys, never Aly's values.
+- Never commit `profile.md`, `postings/`, `batches/`, `applications.md`, `dlq.md`, `discovered/`; the skill text names `## Targeting` keys, never the user's values.
 - Pay floor: top of posted range below 100000 CAD → `PAY-FLOOR`; threshold 3.5; USD to CAD 1.37; years of experience 3 (values live only in local `profile.md`).
 - Overall = round(0.7 × fit + 0.3 × pay, 1); fit and pay are integers; pay never below 3; Suspicious caps the overall at 3.0.
 - Scoring subagents: `model: sonnet`, 5 postings each, at most 4 running, no web access, never ask the user.
@@ -305,7 +305,7 @@ relative to `jobapps/`. Adapted from career-ops (`modes/oferta.md` Blocks B, C, 
 - `postings/<dir>/posting.md`. Headers come in three styles: `- Key: value` lines, `**Key:** value`
   lines, or YAML frontmatter (`---`, `company:`, `location:`, `apply_url:`, `posting_url:`). Read all
   three.
-- `mega-resume-v1.5.tex`: the only source of evidence about Aly.
+- `mega-resume-v1.5.tex`: the only source of evidence about the user.
 - `profile.md`, section `## Targeting`: `Pay floor`, `USD to CAD rate`, `Score threshold`,
   `Years of experience`, `Target roles`, `Deal-breakers`. Use the values written there; never assume them.
 - `applications.md` and `dlq.md`: only for the repeats signal.
@@ -430,7 +430,7 @@ A `PAY-FLOOR` posting still gets fit and legitimacy. Its `score.md` header lines
    **Targeting:** if `profile.md` has no `## Targeting` section, say so in this message and offer to
    add it with these keys: `Pay floor: skip when the top of the posted range is below <amount> CAD`,
    `USD to CAD rate`, `Score threshold`, `Years of experience`, `Target roles`, `Deal-breakers` (ask
-   Aly for the values). If Aly declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
+   the user for the values). If the user declines, the run skips stage 1a.5 and the gate (Score `n/a`), and this message
    says so.
    **Threshold:** `--min-score N` if given, else `Score threshold` from `## Targeting`. Without
    `## Targeting`, `--min-score` is ignored and this message says so.
@@ -447,7 +447,7 @@ already there) that has no `postings/<dir>/changelog.md`. Those with a `score.md
 Split the rest into chunks of 5 and launch background `general-purpose` subagents with
 `model: sonnet`:
 
-> You are a batch scoring subagent in `C:\Users\alymo\Desktop\Github\jobapps`. Read
+> You are a batch scoring subagent in `<repo-root>`. Read
 > `.claude/skills/batch/scoring.md` and follow it for each posting dir below. Inputs:
 > `postings/<dir>/posting.md`, `mega-resume-v1.5.tex`, `profile.md` section `## Targeting`, and
 > `applications.md` and `dlq.md` (read only, for the repeats signal). No web access. Write
@@ -467,7 +467,7 @@ Below threshold, or `PAY-FLOOR`:
   `PAY-FLOOR <amount> CAD: <reason>`), Needs `nothing, or /batch <mode> dlq.md --reason LOW-SCORE
   to override`, Status `open`.
 - Manifest Result `DLQ: LOW-SCORE 2.8` or `DLQ: LOW-SCORE PAY-FLOOR 95900`. The posting drops out
-  of later stages; don't wait for Aly.
+  of later stages; don't wait for the user.
 
 With `--min-score 0`, nothing is skipped: `PAY-FLOOR` postings get Result `PAY-FLOOR` and go on.
 
@@ -883,12 +883,12 @@ argument-hint: [--since N] [--exclude <file.xlsx|file.csv|file.txt> ...] [--no-s
 
 # /discover — new postings from the career-ops scanner
 
-All paths are relative to `jobapps/`. This supplements Aly's external target lists; it doesn't
+All paths are relative to `jobapps/`. This supplements the user's external target lists; it doesn't
 replace them.
 
 1. Run `python tools/discover.py $ARGUMENTS`. The career-ops folder comes from `--career-ops` or
-   the `CAREER_OPS_DIR` environment variable; if neither is set, ask Aly for the path (career-ops
-   lives at `C:\Users\alymo\Desktop\Job Search\career-ops` on Aly's machine) and pass it. The scan
+   the `CAREER_OPS_DIR` environment variable; if neither is set, ask the user for the path (career-ops
+   lives at `<career-ops-dir>` on the user's machine) and pass it. The scan
    takes a few minutes. Companies, title and location filters live in career-ops' `portals.yml`.
 2. If it prints `no new postings`, say so and stop. If it exits non-zero, show its message
    (node missing, career-ops folder missing, scan failed) and stop.
@@ -926,50 +926,50 @@ git commit -m "/discover skill; document discover.py, tests and the score gate"
 ### Task 5: Local setup and acceptance runs (main checkout data, no commits)
 
 **Files:**
-- Modify (local, gitignored, main checkout): `C:\Users\alymo\Desktop\Github\jobapps\profile.md`, `C:\Users\alymo\Desktop\Github\jobapps\dlq.md`
+- Modify (local, gitignored, main checkout): `<repo-root>\profile.md`, `<repo-root>\dlq.md`
 
 **Depends on:** Task 2, Task 3
 
 **Interfaces:**
 - Consumes: `.claude/skills/batch/scoring.md` (Task 2) and `tools/discover.py` (Task 3), both read from the worktree; data from the main checkout.
 
-- [ ] **Step 1: `## Targeting`** — append to the main checkout's `profile.md` (Aly approved these values on 2026-10-10):
+- [ ] **Step 1: `## Targeting`** — append to the main checkout's `profile.md` (the user approved these values on 2026-10-10):
 
 ```
 ## Targeting
-- Pay floor: skip when the top of the posted range is below 100000 CAD (Aly, 2026-10-10)
-- USD to CAD rate: 1.37 (Aly, 2026-10-10)
-- Score threshold: 3.5 (Aly, 2026-10-10)
+- Pay floor: skip when the top of the posted range is below 100000 CAD (the user, 2026-10-10)
+- USD to CAD rate: 1.37 (the user, 2026-10-10)
+- Score threshold: 3.5 (the user, 2026-10-10)
 - Years of experience: 3
-- Target roles: applied AI / ML / LLM engineering, forward deployed engineering, AI-focused software engineering (Aly, 2026-10-10)
+- Target roles: applied AI / ML / LLM engineering, forward deployed engineering, AI-focused software engineering (the user, 2026-10-10)
 - Deal-breakers: none
 ```
 
-- [ ] **Step 2: `dlq.md` header** — in the main checkout's `dlq.md` Reason bullet, after `` `SKIPPED` (Aly chose to skip it at confirmation or review) `` add `` , `LOW-SCORE` (the `/batch` score gate: below the threshold or under the pay floor; retried only with `--reason LOW-SCORE`) ``; in the `read_postings.py` paragraph change `CLOSED`/`INELIGIBLE`/`dropped` to `CLOSED`/`INELIGIBLE`/`LOW-SCORE`/`dropped`.
+- [ ] **Step 2: `dlq.md` header** — in the main checkout's `dlq.md` Reason bullet, after `` `SKIPPED` (the user chose to skip it at confirmation or review) `` add `` , `LOW-SCORE` (the `/batch` score gate: below the threshold or under the pay floor; retried only with `--reason LOW-SCORE`) ``; in the `read_postings.py` paragraph change `CLOSED`/`INELIGIBLE`/`dropped` to `CLOSED`/`INELIGIBLE`/`LOW-SCORE`/`dropped`.
 
-- [ ] **Step 3: Scoring dry run (success criterion 2)** — outside `/batch` (these three dirs have `changelog.md`, so `/batch` would not score them), launch one `general-purpose` subagent with `model: sonnet`, the stage 1a.5 prompt from Task 2 Step 2 item 5, with these two substitutions: "Read `C:\Users\alymo\Desktop\Github\jobapps\.claude\worktrees\score-gate-and-discovery\.claude\skills\batch\scoring.md`" and posting dirs `1. Xsolla-ebb74747`, `2. Spellbook-d92285f3`, `3. GoogleDeepMind-115400405273191110` (data in the main checkout). Expected: Xsolla `PAY-FLOOR`; Spellbook overall ≥ 3.5; DeepMind fit ≤ 2 and overall < 3.5; each `score.md` quotes `mega-resume-v1.5.tex` for every must-have it marks met (open the three files and check). If an expectation fails, read the `score.md`: a rubric ambiguity is fixed in `scoring.md` (commit in the worktree) and the run repeated once; a defensible judgment that differs is recorded in the PR body.
+- [ ] **Step 3: Scoring dry run (success criterion 2)** — outside `/batch` (these three dirs have `changelog.md`, so `/batch` would not score them), launch one `general-purpose` subagent with `model: sonnet`, the stage 1a.5 prompt from Task 2 Step 2 item 5, with these two substitutions: "Read `<repo-root>\.claude\worktrees\score-gate-and-discovery\.claude\skills\batch\scoring.md`" and posting dirs `1. <Company>-<id>`, `2. <Company>-<id>`, `3. <Company>-<id>` (data in the main checkout). Expected: a company `PAY-FLOOR`; a company overall ≥ 3.5; an off-target posting: fit ≤ 2 and overall < 3.5; each `score.md` quotes `mega-resume-v1.5.tex` for every must-have it marks met (open the three files and check). If an expectation fails, read the `score.md`: a rubric ambiguity is fixed in `scoring.md` (commit in the worktree) and the run repeated once; a defensible judgment that differs is recorded in the PR body.
 
 - [ ] **Step 4: career-ops prerequisite check**
 
-Run, in `C:\Users\alymo\Desktop\Job Search\career-ops`: `node doctor.mjs --json`, then `node scan.mjs --dry-run --quiet`, then `grep -n -A16 "^location_filter:" portals.yml`
+Run, in `<career-ops-dir>`: `node doctor.mjs --json`, then `node scan.mjs --dry-run --quiet`, then `grep -n -A16 "^location_filter:" portals.yml`
 Expected: doctor prints `"onboardingNeeded":false`; the dry run exits 0 and prints `(dry run — no files will be written)` near the start (the trailing `run without --dry-run` line appears only when new offers are found); the grep shows `always_allow` Canada, Montreal, Toronto, Vancouver, Ottawa, Quebec, "Remote - Canada", `allow: []`, `block` United States, USA, India, UK, Germany. Anything else: stop and fix career-ops before Step 5.
 
 - [ ] **Step 5: Discovery run (success criterion 3)** — from the worktree:
 
 ```bash
-python tools/discover.py --root "C:/Users/alymo/Desktop/Github/jobapps" --career-ops "C:/Users/alymo/Desktop/Job Search/career-ops"
+python tools/discover.py --root "<repo-root>" --career-ops "<career-ops-dir>"
 ```
 
 If it prints `no new postings`, rerun with `--no-scan --since 60` (P9). Then:
 
 ```bash
-python tools/read_postings.py "C:/Users/alymo/Desktop/Github/jobapps/discovered/<file>.csv" --all
+python tools/read_postings.py "<repo-root>/discovered/<file>.csv" --all
 ```
 
 must print a JSON list without error. Check no URL overlaps (normalized) with the main checkout's trackers:
 
 ```bash
-python -c "import sys; sys.path.insert(0,'tools'); import discover as d, read_postings as r; from pathlib import Path; root=Path(r'C:/Users/alymo/Desktop/Github/jobapps'); f=sorted((root/'discovered').glob('*.csv'))[-1]; got={r.normalize_url(x['url']) for x in r.from_csv(f)}; raw=set(d.URL_RE.findall((root/'applications.md').read_text(encoding='utf-8'))); raw|={x['url'] for x in r.dlq_rows(root/'dlq.md')}; raw|={u for p in (root/'postings').glob('*/posting.md') for u in r.POSTING_URL.findall(p.read_text(encoding='utf-8'))}; known={r.normalize_url(u) for u in raw}; print('rows', len(got), 'overlap', len(got & known))\"
+python -c "import sys; sys.path.insert(0,'tools'); import discover as d, read_postings as r; from pathlib import Path; root=Path(r'<repo-root>'); f=sorted((root/'discovered').glob('*.csv'))[-1]; got={r.normalize_url(x['url']) for x in r.from_csv(f)}; raw=set(d.URL_RE.findall((root/'applications.md').read_text(encoding='utf-8'))); raw|={x['url'] for x in r.dlq_rows(root/'dlq.md')}; raw|={u for p in (root/'postings').glob('*/posting.md') for u in r.POSTING_URL.findall(p.read_text(encoding='utf-8'))}; known={r.normalize_url(u) for u in raw}; print('rows', len(got), 'overlap', len(got & known))\"
 ```
 
 Expected: `rows N` with N > 0 and `overlap 0`. `known` is built only from `applications.md`, `dlq.md` and `posting.md` files, the three sources criterion 3 names.
@@ -978,7 +978,7 @@ The main checkout's `.gitignore` gains `/discovered/` only at merge, so `discove
 
 - [ ] **Step 6: Record** — no commit (local data). Note the three scores and the CSV row count for the PR body.
 
-- [ ] **Step 7: Tests in CI (success criterion 1)** — after the branch is pushed and the PR is open (the `/ship` pipeline does both; if not running under `/ship`, ask Aly before pushing `feat/score-gate-and-discovery` and opening the PR):
+- [ ] **Step 7: Tests in CI (success criterion 1)** — after the branch is pushed and the PR is open (the `/ship` pipeline does both; if not running under `/ship`, ask the user before pushing `feat/score-gate-and-discovery` and opening the PR):
 
 Run: `gh pr checks --watch`
 Expected: the `check-tools` job passes; `gh run view <run id> --log` shows the `python -m unittest discover -s tests -v` step with `Ran 20 tests` and `OK`.
@@ -986,6 +986,6 @@ Expected: the `check-tools` job passes; `gh run view <run id> --log` shows the `
 ## Success criteria (from the spec)
 
 1. **Unit tests:** `python -m unittest discover -s tests` passes locally (Tasks 1, 3) and in CI (Task 5 Step 7).
-2. **Scoring dry run:** Xsolla `PAY-FLOOR`, Spellbook ≥ 3.5, DeepMind < 3.5, quoted evidence (Task 5 Step 3).
+2. **Scoring dry run:** a company `PAY-FLOOR`, a company ≥ 3.5, an off-target posting < 3.5, quoted evidence (Task 5 Step 3).
 3. **Discovery run:** CSV read by `read_postings.py --all`, no URL already tracked (Task 5 Step 5).
 4. **Static:** `python -m py_compile tools/*.py` passes (every task).

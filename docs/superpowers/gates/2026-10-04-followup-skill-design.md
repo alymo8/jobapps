@@ -4,7 +4,7 @@
 - **Spec SHA-256:** 31327f8ebfd2161830c9b9be2f09b1f8a181cbbe683509ce08bcdc92d88a8a0d
 - **Verdict:** pass
 - **Date:** 2026-10-04
-- **Rounds:** 3 discovery + 1 verification (rerun after Aly chose the `closed` status; the first run failed on that decision after 3 discovery rounds)
+- **Rounds:** 3 discovery + 1 verification (rerun after the user chose the `closed` status; the first run failed on that decision after 3 discovery rounds)
 
 ## Key decisions
 
@@ -12,7 +12,7 @@
 - Four situations plus waiting/done in fixed order: done > replied > accepted > silent > stale-pending > waiting
 - Nudge after ≥3 business days of silence, at most one per person ever; nudged + 3 more business days → done (no-response)
 - Invite pending ≥10 calendar days: leave it, propose the next unused shortlisted person (≤200-char note), at most one replacement per posting per run; once replaced (or none left) the stale person is done unless they accept or reply
-- Claude sends approved nudges, replies and replacement invites; resume-bearing messages are typed and left unsent for Aly
+- Claude sends approved nudges, replies and replacement invites; resume-bearing messages are typed and left unsent for the user
 - Only explicit ok / edit: in questions.txt approves; a blank answer is skip
 - Replies answered only from the tailored resume and profile.md; anything else becomes a question
 - Default scope is every postings/*/outreach.md; hand sends are reconciled from LinkedIn into ## Sent (normal runs only)
@@ -25,9 +25,9 @@
 ## Findings fixed
 
 - run 1 round 1 [blocking] x4, [minor] x4: no-arg scope, dry-run reconcile writes, Sent log format, applications.md row mapping; criterion/legend/wording minors
-- run 1 round 2 [blocking] x5, [minor] x1: replacement note length, stale lifecycle, who is swept, TR-combined mapping, hash-based dry-run check; dry run doesn't open questions.txt
+- run 1 round 2 [blocking] x5, [minor] x1: replacement note length, stale lifecycle, who is swept, combined-file mapping, hash-based dry-run check; dry run doesn't open questions.txt
 - run 1 round 3 [blocking] x2, [minor] x2: date-dependent criterion, applied rows transition; Invoke-Item and "step 1" wording
-- Aly decision: new `closed` status for postings where everyone is done and someone declined
+- The user decision: new `closed` status for postings where everyone is done and someone declined
 - round 1 [blocking] Manifest lacked a day-count column: added Days column
 - round 1 [blocking] Who writes the classifier check: verifier, by hand, in verification notes
 - round 1 [blocking] Late reply couldn't move no-response/closed rows: those statuses now transition
@@ -36,7 +36,7 @@
 - round 2 [blocking] Postings without (a)/(b): new-draft rule
 - round 2 [blocking] Stale done rule overrode replies: requires no inbound message
 - round 2 [minor] x3: postings/ prefix, silent case outbound type, Premium line out of scope
-- round 3 [blocking] HingeHealth/Spellbook layout misdescribed: real layouts mapped to (a)/(b)
+- round 3 [blocking] a company / another company layout misdescribed: real layouts mapped to (a)/(b)
 - round 3 [blocking] "All sends dated 2026-10-04" untrue: reconciled hand sends noted in criterion 2
 - round 3 [minor] Legend runtime check labelled a safety net
 
@@ -47,7 +47,7 @@
 - Replacement invitee logging: ## Sent and/or ## Follow-up invite sent; source of first-send date (Design › steps 3, 7)
 - "Unused" shortlisted person: order and exclusions (skipped, left, previously declined) (Design › Classify)
 - Withdrawn/expired invitations (neither pending nor connected): which state? (Design › Classify)
-- What marks (b) as sent; how a "typed, Aly to send" (b) that was never sent is treated next run (Design › Classify)
+- What marks (b) as sent; how a "typed, <word> to send" (b) that was never sent is treated next run (Design › Classify)
 - Days cell for states without a count (Design › Review sheet)
 - Plain-dir arguments covered by a *-combined file, and company matches with no outreach.md (Design › Invocation)
 - Where "no contacts" postings are listed (Design › Invocation)

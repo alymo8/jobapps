@@ -22,7 +22,7 @@
 - A failed pull stops the skill before tailoring; never fall back to an earlier pulled copy.
 - No clean-up of the copies a pull saves in a doc (spec Decisions).
 - Claude Code never writes to the docs except the one-off verification edit in Task 4.
-- Every claim about Aly stays truth-checked against the sources (repo convention).
+- Every claim about the user stays truth-checked against the sources (repo convention).
 - Before every commit: `python -m py_compile tools/*.py` and `python -m unittest discover -s tests -v` pass.
 
 ## Review Focus
@@ -58,7 +58,7 @@ Answers to the gate's plan questions, fixed here:
 
 - [ ] **Step 1: Write the failing tests** in `tests/test_pull_sources.py`, importing the module through `sys.path` into `tools/` as `tests/test_discover.py` does, each using a `tempfile.TemporaryDirectory`:
   - `test_latex_block_extracted`: input `"# T\n\nnote\n\n```latex\n\\a{1}\n```\n"` → target bytes `b"\\a{1}\n"`, status `created`, `lines == 1`.
-  - `test_longer_fence_keeps_inner_fences`: block opened by ` ````markdown `, containing `"```\nBest,\nAly\n```"`, closed by ` ```` ` → target holds those four lines exactly.
+  - `test_longer_fence_keeps_inner_fences`: block opened by ` ````markdown `, containing `"```\nBest,\nSam\n```"`, closed by ` ```` ` → target holds those four lines exactly.
   - `test_whitespace_and_escapes_kept`: content lines `" "`, `"      "`, `"\\% \\_ \\& \\# $|$ ·"` → written byte for byte.
   - `test_crlf_input_written_as_lf`: the latex input with `\r\n` → target has no `\r`.
   - `test_zero_blocks_is_error` and `test_two_blocks_is_error`: `pull` returns `"error"` and `code_blocks` 0 / 2; target not created.
@@ -133,9 +133,9 @@ Answers to the gate's plan questions, fixed here:
 
 - [ ] **Step 3: Docstrings:** `Resume_prompt_v4.md` → `sources/resume_prompt.md` in `tools/build_resume.py`; `CoverLetter_prompt_v1.md` → `sources/cover_letter_prompt.md` in `tools/build_cover_letter.py`. No code changes.
 
-- [ ] **Step 4: `CLAUDE.md`:** Setup gains `- The Claude Docs connector, signed in to Aly's account: skills pull the mega resume and prompts from it (`sources.json`).`; the sources-of-truth bullet becomes: three Claude Docs (listed in `sources.json`) for the mega resume and both prompts, pulled into gitignored `sources/` by `tools/pull_sources.py` per `.claude/skills/pull-sources.md`, plus local `profile.md`, `stories.md`, `answers.md`; add `python tools/pull_sources.py <downloaded.md> <target>` to the Build/run block; Gotchas gains `- Edit the mega resume and prompts in the Claude Docs (claude.ai), never in `sources/`: the next pull overwrites local edits.` Keep the file about a screen.
+- [ ] **Step 4: `CLAUDE.md`:** Setup gains `- The Claude Docs connector, signed in to the user's account: skills pull the mega resume and prompts from it (`sources.json`).`; the sources-of-truth bullet becomes: three Claude Docs (listed in `sources.json`) for the mega resume and both prompts, pulled into gitignored `sources/` by `tools/pull_sources.py` per `.claude/skills/pull-sources.md`, plus local `profile.md`, `stories.md`, `answers.md`; add `python tools/pull_sources.py <downloaded.md> <target>` to the Build/run block; Gotchas gains `- Edit the mega resume and prompts in the Claude Docs (claude.ai), never in `sources/`: the next pull overwrites local edits.` Keep the file about a screen.
 
-- [ ] **Step 5: ADR 0002** from `0000-template.md`, Status `accepted`, Date 2026-10-17. Context: two copies drifted (v1.5 read by skills while v1.6 was current). Decision: the three docs are the only source; Claude Code pulls into `sources/`, never writes back; content inside one code block. Consequences: needs the Docs connector; a pull fails closed; each pull leaves a saved copy in the doc because blob delete is not exposed to agents and asset deletes need Aly's confirmation (limit 5,000 assets / 1 GB per doc, about 26 KB per pull); `profile.md`, `stories.md`, `answers.md` still local. Add its row to `knowledge/decisions/README.md`.
+- [ ] **Step 5: ADR 0002** from `0000-template.md`, Status `accepted`, Date 2026-10-17. Context: two copies drifted (v1.5 read by skills while v1.6 was current). Decision: the three docs are the only source; Claude Code pulls into `sources/`, never writes back; content inside one code block. Consequences: needs the Docs connector; a pull fails closed; each pull leaves a saved copy in the doc because blob delete is not exposed to agents and asset deletes need the user's confirmation (limit 5,000 assets / 1 GB per doc, about 26 KB per pull); `profile.md`, `stories.md`, `answers.md` still local. Add its row to `knowledge/decisions/README.md`.
 
 - [ ] **Step 6: Run** the spec's criterion 3: `git grep -n -e "mega-resume-v1" -e "Resume_prompt_v4" -e "CoverLetter_prompt_v1" -- .claude CLAUDE.md README.md tools tests`. Expected: no output. Then the full suite and `py_compile`. Expected: PASS.
 
@@ -157,7 +157,7 @@ Run from the worktree root, in the main session (it needs the Docs and Artifact 
 
 - [ ] **Step 2: First pull** following `.claude/skills/pull-sources.md`. Expected: three `created` lines.
 
-- [ ] **Step 3: Compare** each file in `sources/` with its reference, with one Python script so no shell redirect touches the bytes (PowerShell's `>` writes UTF-16). Write `<scratch>/compare_refs.py` and run it with the Bash tool from the worktree root: `python "<scratch>/compare_refs.py"`. The script builds each reference as bytes: `subprocess.run(["git", "show", "origin/main:Resume_prompt_v4.md"], capture_output=True, check=True).stdout` (and the same for `CoverLetter_prompt_v1.md`); for the mega resume, `Path("C:/Users/alymo/Desktop/Github/jobapps/mega-resume-v1.6.tex").read_bytes()`. For each, replace `b"\r\n"` with `b"\n"` and append `b"\n"` only if it does not already end in one, then compare with `Path("sources/<name>").read_bytes()` and print `<name>: identical` or `<name>: DIFFERENT`; exit 1 on any difference.
+- [ ] **Step 3: Compare** each file in `sources/` with its reference, with one Python script so no shell redirect touches the bytes (PowerShell's `>` writes UTF-16). Write `<scratch>/compare_refs.py` and run it with the Bash tool from the worktree root: `python "<scratch>/compare_refs.py"`. The script builds each reference as bytes: `subprocess.run(["git", "show", "origin/main:Resume_prompt_v4.md"], capture_output=True, check=True).stdout` (and the same for `CoverLetter_prompt_v1.md`); for the mega resume, `Path("<repo-root>/mega-resume-v1.6.tex").read_bytes()`. For each, replace `b"\r\n"` with `b"\n"` and append `b"\n"` only if it does not already end in one, then compare with `Path("sources/<name>").read_bytes()` and print `<name>: identical` or `<name>: DIFFERENT`; exit 1 on any difference.
   Run: `python "<scratch>/compare_refs.py"`
   Expected: three `identical` lines, exit 0.
 

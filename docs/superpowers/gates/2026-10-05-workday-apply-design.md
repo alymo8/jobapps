@@ -8,11 +8,11 @@
 
 ## Key decisions
 
-- Claude signs in to Workday only through Chrome's saved-password autofill plus clicking Sign In; it never types passwords and never fills Create Account. With no usable login, Aly signs in or creates the account in the tab (normal run); a batch records it as BLOCKED with Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...` (Decision 1, Playbook 3, ADR 0001).
+- Claude signs in to Workday only through Chrome's saved-password autofill plus clicking Sign In; it never types passwords and never fills Create Account. With no usable login, the user signs in or creates the account in the tab (normal run); a batch records it as BLOCKED with Detail `NO-WORKDAY-LOGIN <tenant> <workday url>: ...` (Decision 1, Playbook 3, ADR 0001).
 - Save and Continue drafts need no approval; the single approval point is before the consent checkbox, and "ok" covers ticking it, filling the `After approval` steps and submitting. With no consent checkbox, the run stops on the last pre-Review step, unsaved (Decision 2, Playbook 9-11).
 - Always Apply Manually; never Autofill with Resume or Use My Last Application; an existing draft is resumed (Decision 3).
 - Existing Work Experience and Education entries in a tenant's Workday profile are edited or deleted to match `## Workday work history` (Decision 4).
-- My Experience comes from a local, Aly-approved `## Workday work history` section in `profile.md`, built from `mega-resume-v1.5.tex`; in batch, the orchestrator builds it before stage 2, asked with the launch confirmation (Decision 5).
+- My Experience comes from a local, the user-approved `## Workday work history` section in `profile.md`, built from `mega-resume-v1.5.tex`; in batch, the orchestrator builds it before stage 2, asked with the launch confirmation (Decision 5).
 - Workday blockers reuse the BLOCKED/FAILED reasons with Detail prefixes `NO-WORKDAY-LOGIN <tenant> <workday url>` / `NO-WORKDAY-HISTORY`; existing rows get the prefix on their next retry; retries use `/batch <apply|outreach> dlq.md --reason BLOCKED`.
 - The review sheet's "Workday logins needed" list spans every open NO-WORKDAY-LOGIN row in dlq.md, grouped by tenant, with the Workday URL from the Detail.
 - Tenant name: `<tenant>.wdN` for both myworkdayjobs.com and myworkdaysite.com (path after /recruiting/).
@@ -31,7 +31,7 @@
 - round 2 [blocking] Scope vs Design on apply/SKILL.md sections: Scope In clarified (step 6 and Phase 2 covered by workday.md).
 - round 2 [blocking] Tenant sign-in URL undefined: defined.
 - round 2 [blocking] Scope of "Workday logins needed": every open row in dlq.md, this run's marked.
-- round 2 [minor] Launch confirmation named correctly; background counts corrected (13 open, Salesforce resolved, Mastercard added).
+- round 2 [minor] Launch confirmation named correctly; background counts corrected (13 open, a company resolved, a company added).
 - round 3 [blocking] Sign-in URL wrong for postings found off Workday: Detail carries the Workday URL; list uses it.
 - round 3 [minor] Existing DLQ rows get the prefix on retry; retry mode matches the row; Scope In lists the batch history step.
 

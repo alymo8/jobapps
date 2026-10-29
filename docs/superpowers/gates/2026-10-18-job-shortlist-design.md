@@ -13,7 +13,7 @@
 - Keys come only from the downloaded `decision_keys.py`, imported by path and run with `python -I`, cached at `~/.job-shortlist/decision_keys.py`; a byte-for-byte fixture copy is used by tests only.
 - A posting counts as decided when `url_norm` OR `match_key` matches, the weekly run's rule.
 - The "Mark as applied?" hook runs at four points: `/apply` after submit, `/resume` and `/cover-letter` when run directly, `/batch` once at finish; the claude.ai skills `tailor-resume` and `write-cover-letter` get paste-in lines only.
-- Not-interested writes need Aly's OK above 3 postings; 3 or fewer are written directly.
+- Not-interested writes need the user's OK above 3 postings; 3 or fewer are written directly.
 - Pending fallback: `~/.job-shortlist/pending-decisions.jsonl`, with keys recomputed at flush when no cache existed; cleared only after every write succeeded.
 - The skill does not write `applications.md`.
 - ADR 0004 records the artifact as the shortlist data store; the CLAUDE.md sentence is narrowed to "of the six source Docs"; ADR 0003 is not changed.
@@ -31,7 +31,7 @@
 - In the fetch step, does the pending flush run after the keys (step 2) and decisions (step 4) are fetched, followed by a re-list of `decisions` before any show or record flow? (Design, Fetch step; Pending fallback)
 - Is `--keys` optional for `pending-add` only (empty `url_norm`, `match_key`, `doc_id` when absent), and required by every other command? (Design, `tools/shortlist.py`; Pending fallback)
 - With `find --company` and no `--title`, is the match only a `norm_company` substring match? (Design, `tools/shortlist.py`, `find`)
-- In fallback, do pending lines use the URL Aly gave (or the `posting.md` URL), the company and title, and `week_seen: ""`, accepting a possible `match_key` mismatch; and does Show just say the shortlist is unavailable? (Pending fallback; Skill flows)
+- In fallback, do pending lines use the URL the user gave (or the `posting.md` URL), the company and title, and `week_seen: ""`, accepting a possible `match_key` mismatch; and does Show just say the shortlist is unavailable? (Pending fallback; Skill flows)
 - For Undo, does `decisions` get a `--url` filter (matching `doc_id` or `url_norm`), so a page-written decision is found by URL or by match_key? (Skill flows, Undo)
 - Does the `/batch` finish hook run "Record applied" steps 1-2 for each posting (find, `get`, `doc --existing`) before building the batch, so existing documents carry `if_version`? (Hooks)
 - How is the fixture kept byte-identical on Windows: a `.gitattributes` rule (`tests/fixtures/* -text`) or a sha256 check in a test? (Scope In)

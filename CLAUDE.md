@@ -9,8 +9,8 @@ in the workspace `CLAUDE.md` one level up.
 - Python 3 for `tools/` (stdlib plus PDF rendering libs used by the build scripts).
 - `pdflatex` on PATH, or MiKTeX installed via scoop (`build_resume.py` falls back to it).
 - Chrome with the Claude-in-Chrome extension for `/apply`, `/outreach`, `/followup`.
-- The Claude Docs connector, signed in to Aly's account: skills pull the mega resume and prompts
-  from it (`sources.json`).
+- The Claude Docs connector, signed in to the user's account: skills pull the sources listed in
+  `config.local.json` (README "Setup").
 
 ## Build, run, check
 
@@ -27,14 +27,14 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 ## Architecture in brief
 
-- Sources of truth: six Claude Docs (listed in `sources.json`) for the mega resume, both prompts,
+- Sources of truth: six Claude Docs (listed in `config.local.json` `sources`) for the mega resume, both prompts,
   the profile, stories and answers, pulled into gitignored `sources/` per
   `.claude/skills/pull-sources.md`. Of the six source Docs, Claude Code writes only to the Profile doc, through
   `.claude/skills/write-source.md` ([ADR 0003](knowledge/decisions/0003-claude-code-writes-to-the-profile-doc.md)).
 - Skills in `.claude/skills/`: `/discover` (career-ops scanner → CSV) → `/resume` → `/apply`; `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
   `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
   `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
-- Weekly shortlist: a claude.ai artifact (URL in `.claude/skills/job-shortlist/SKILL.md`). Claude Code
+- Weekly shortlist: a claude.ai artifact (URL in `config.local.json` `shortlist`). Claude Code
   reads its `data/*` and writes only its `decisions` collection, keys from its `decision_keys.py`
   via `tools/shortlist.py` ([ADR 0004](knowledge/decisions/0004-job-shortlist-artifact-decisions.md)).
   The apply flow asks "Mark <company> – <title> as applied?".
@@ -46,14 +46,15 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 ## Conventions
 
-- Never submit an application without Aly's explicit OK. On LinkedIn, messages to Aly's existing
-  connections and replies need Aly's OK (names shown first); requests and messages to new people
+- Never submit an application without the user's explicit OK. On LinkedIn, messages to the user's existing
+  connections and replies need the user's OK (names shown first); requests and messages to new people
   go out without it ([ADR 0005](knowledge/decisions/0005-linkedin-approval-only-for-existing-connections.md)).
 - LinkedIn runs use one tab at a time, recycled every 8 page opens (`.claude/skills/linkedin-tab.md`,
   [ADR 0007](knowledge/decisions/0007-light-linkedin-runs.md)); `/batch` does LinkedIn work one posting at a time.
-- Everything written about Aly must be truth-checked against the source files above.
+- Everything written about the user must be truth-checked against the source files above.
 - The repo holds only the setup (skills, tools, docs). Personal sources, `sources/`,
-  `postings/`, `batches/`, `discovered/`, `archive/` and the trackers are local-only and gitignored;
+  `postings/`, `batches/`, `discovered/`, `archive/`, `config.local.json`, `.personal-terms` and the
+  trackers are local-only and gitignored;
   never commit them.
 
 ## Gotchas
@@ -68,8 +69,15 @@ python -m py_compile tools/*.py                                  # CI runs this 
   `secret-scan`, so CI results appear once the PR is open.
 - `applications.md` statuses and the legend line are written by four skills (outreach, apply,
   batch, followup); change a status rule or the legend in all four, byte-identical.
-- `tests/fixtures/decision_keys.py` is a pinned copy of the shortlist artifact's keys file (`-text` in
-  `.gitattributes`); refreshing it also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
+- `tests/fixtures/decision_keys.py`: the key functions match the shortlist artifact's keys file; the
+  docstring is neutral, so the file is not byte-identical to it (`-text` in `.gitattributes`);
+  refreshing the functions also means updating `FIXTURE_SHA256` in `tests/test_shortlist.py`.
+- `tests/test_no_personal_data.py` scans every tracked file; on the maintainer's machine it also
+  checks the gitignored `.personal-terms`. For ad-hoc checks use `git grep -n -i -w -F -f
+  .personal-terms`; plain `grep -F -f .personal-terms` core-dumps in Git Bash.
+- A new git worktree has none of the gitignored local files (`config.local.json`, `.personal-terms`,
+  `sources/`): copy the first two in from the main checkout and pull the sources there; copy any
+  new ones back before removing the worktree.
 - LinkedIn's profile Connect button sometimes opens no dialog (or freezes the tab); open
   `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>` instead, which shows the
   invite dialog directly. When a profile's Message button opens nothing, use Messaging → New message.

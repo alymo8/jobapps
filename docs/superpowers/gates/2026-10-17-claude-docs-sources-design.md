@@ -12,11 +12,11 @@
 - Docs chosen over Google Drive or a GitHub repo synced to a claude.ai Project (Decisions)
 - Content lives inside one fenced code block per doc, so bytes stay exact; exactly one block is required (Background, Design)
 - Pull goes through a saved blob plus an Artifact download, not `export`, so no content passes through the chat (Background, Decisions)
-- No clean-up: the copy each pull saves in a doc stays, because blob delete is not exposed to agents and each asset delete needs Aly's confirmation; ADR 0002 records it (Decisions; amended 2026-10-17)
+- No clean-up: the copy each pull saves in a doc stays, because blob delete is not exposed to agents and each asset delete needs the user's confirmation; ADR 0002 records it (Decisions; amended 2026-10-17)
 - Pulled files go to a gitignored `sources/` under fixed, unversioned names; `Resume_prompt_v4.md` and `CoverLetter_prompt_v1.md` are deleted from the repo (Scope, Decisions)
 - The pull runs at the start of `/resume`, `/cover-letter`, `/apply`, `/outreach` and `/batch`; only the outermost skill pulls; `/batch` pulls once before fanning out (Design)
 - A failed pull stops the run with no stale fallback (Design)
-- `.gitignore` widens the v1.5 rule to every `mega-resume-v*.tex` and ignores `sources/`; Aly deletes the old local copies (Scope, Rollout)
+- `.gitignore` widens the v1.5 rule to every `mega-resume-v*.tex` and ignores `sources/`; the user deletes the old local copies (Scope, Rollout)
 - `/followup`, `/discover`, and moving `profile.md`, `stories.md`, `answers.md`, `latex_resume.tex` into docs stay out of scope (Scope Out)
 - New ADR 0002 records the Docs-as-source decision (Scope In)
 

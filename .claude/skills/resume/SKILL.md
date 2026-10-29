@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Tailor Aly's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
+description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
 argument-hint: <posting URL or pasted posting>
 ---
 
@@ -29,7 +29,7 @@ All paths are relative to the `jobapps/` folder (the project root).
    Save the posting there as `posting.md`: a `# <Company>: <Title>` heading, then one `- Key: value`
    line each for URL (exactly `- URL: <posting url>`; `tools/read_postings.py` matches on it),
    Company, Title, Location, Fetched (date), then the full text.
-3. **Write the resume** `postings/<dir>/Aly_Mohamed_Hussein_Resume_<Company>.tex` per the prompt's
+3. **Write the resume** `postings/<dir>/<Full_Name>_Resume_<Company>.tex` (`<Full_Name>` = the profile's `## Contact` `Full name` without its trailing parenthetical note, spaces → `_`) per the prompt's
    Hard rules, Content selection, Skills section and Fitting the page. If `postings/<dir>/score.md` exists (from `/batch` scoring), read its Must-haves table first: lead with the evidenced must-haves and steer around the real gaps it lists (never claim them).
 4. **Compile and verify:** `python tools/build_resume.py <that .tex>`. It prints JSON:
    `errors`, `overfull`, `pages` (must be 1), `fill` (target 0.95–0.98; this overrides the prompt's "roughly 95%" and "below roughly 90%" underfill threshold: below 0.95 is underfilled), `skills_lines` (≤ 5), `png`.
@@ -44,7 +44,7 @@ All paths are relative to the `jobapps/` folder (the project root).
    if missing) with status `resume`.
 8. **Report** in a few lines: the changelog, the PDF path, and open the PDF for the user
    (`Invoke-Item <pdf>`).
-9. **Shortlist.** Only when Aly ran `/resume` directly (not from `/apply`, `/outreach` or a batch):
+9. **Shortlist.** Only when the user ran `/resume` directly (not from `/apply`, `/outreach` or a batch):
    ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
    `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
    `tailored resume`.
@@ -60,13 +60,13 @@ and skip steps 1–2. Otherwise fetch postings with WebFetch or the ATS's public
 If the posting is closed (404, "no longer available", expired), create nothing and report
 `CLOSED: <evidence>`; if you can't read it (empty page, blocked fetch, login wall) after trying
 WebFetch and the ATS API, report `UNREADABLE: <what you tried>`; if it excludes candidates based
-in Canada/Quebec, report `INELIGIBLE: <quote>`. The orchestrator puts these in `dlq.md`. Make the call, record it in the changelog under `Questions for Aly`, and end with
+in any of `<eligible_regions>` (config `targeting`; skip this check when `targeting` is absent), report `INELIGIBLE: <quote>`. The orchestrator puts these in `dlq.md`. Make the call, record it in the changelog under `Questions for the user`, and end with
 a short report: posting dir, `ok`, fill, and any questions.
 
 ## Postings that can't be processed
 
-In a normal (non-batch) run, if the posting is closed, unreadable, excludes Canada/Quebec, or the
-build still fails after iterating, tell Aly and add or update its row in `dlq.md` (format at the
+In a normal (non-batch) run, if the posting is closed, unreadable, excludes a region in `<eligible_regions>`, or the
+build still fails after iterating, tell the user and add or update its row in `dlq.md` (format at the
 top of that file; reason `CLOSED` / `UNREADABLE` / `INELIGIBLE` / `FAILED`, status `open`).
 
 ## Questions

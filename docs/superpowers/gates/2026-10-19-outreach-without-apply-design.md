@@ -8,14 +8,14 @@
 
 ## Key decisions
 
-- `/outreach` is LinkedIn-only by default; it applies only with `--apply` or when Aly asks in plain words; when unsure it does not apply.
+- `/outreach` is LinkedIn-only by default; it applies only with `--apply` or when the user asks in plain words; when unsure it does not apply.
 - The tailored resume is still built when outreach runs without applying.
 - New `outreach-only-ready` / `outreach-only-sent` statuses; every post-submit writer (`/apply`, `workday.md`, `/batch` orchestrator) maps them to `outreach-ready` / `outreach-sent`; prepare leaves them unchanged.
 - `--apply` on an already-messaged row (`outreach-only-*`, `in-conversation`, `no-response`, `closed`) applies only and messages no one, in both `/outreach` and `/batch outreach`; on `outreach-ready` / `outreach-sent` it skips `/apply`.
 - A continued run on an already-messaged row keeps the status and notes `outreach again <date>` (with `, approval pending` while an approval waits).
 - The applied/not-applied fact is lost once a row reaches `in-conversation` / `no-response` / `closed`; the guard is the auto-memory never-reapply rule plus `/apply`'s submit OK.
 - `read_postings.py --for outreach` picks applied-but-not-messaged postings and skips every messaged status; the default skip set is unchanged.
-- `/batch outreach` without `--apply` records `APPROVED <date>: outreach` (Aly's reply without a skip), which admits postings with only new people to execute; no "Mark as applied?" prompt.
+- `/batch outreach` without `--apply` records `APPROVED <date>: outreach` (the user's reply without a skip), which admits postings with only new people to execute; no "Mark as applied?" prompt.
 - The profile.md LinkedIn rules move into the skills: "interested", never "applied"; nothing attached; never InMail; free message when offered (also `/followup` step 3b); existing-connection messages sent directly after approval.
 - ADR 0005's approval classes and the caps are unchanged; ADR 0006 records this change.
 

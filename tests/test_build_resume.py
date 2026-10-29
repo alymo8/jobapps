@@ -20,10 +20,10 @@ class PreviewPngTest(unittest.TestCase):
         shutil.rmtree(folder, ignore_errors=True)
         self.addCleanup(shutil.rmtree, folder, True)
 
-        pdf = Path("postings") / name / "Aly_Resume_Acme.pdf"
+        pdf = Path("postings") / name / "Jordan_Lee_Resume_Acme.pdf"
         png = build_resume.preview_png(pdf)
 
-        self.assertEqual(png, folder / "Aly_Resume_Acme.png")
+        self.assertEqual(png, folder / "Jordan_Lee_Resume_Acme.png")
         self.assertTrue(folder.is_dir())
 
 
