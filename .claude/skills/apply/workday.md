@@ -50,14 +50,14 @@ Enter-triggered search, and the browse icon lists just the first 100 alphabetica
 - Optional: don't try them: record `skipped (search-only field)` in `application.md` and mention
   it at the approval point (the resume carries skills and certifications).
 - **Required** (e.g. Skills on Thomson Reuters, which blocks Save and Continue): pressing Enter
-  **inside that field's search box only** is allowed, to run the search (Aly, 2026-10-06; in a
+  **inside that field's search box only** is allowed, to run the search (the user, 2026-10-06; in a
   Workday search box Enter searches, it does not submit). Search each skill from `sources/profile.md`
   `### Skills`, click the matching suggestion, confirm it shows as selected; skip skills with no
   true match and note them. Enter stays forbidden everywhere else.
 
 ## 3. Sign in
 
-If the header already shows Aly's email, skip. Otherwise click **Sign In** and take a screenshot.
+If the header already shows the user's email, skip. Otherwise click **Sign In** and take a screenshot.
 Judge "filled" from the screenshot (email text and masked password dots visible), not from field
 values read from the page: Chrome hides an autofilled password from the page until a click. If
 unsure, treat it as filled and let a Sign In error decide. Never pick a credential from Chrome's
@@ -72,9 +72,9 @@ suggestion dropdown (it may belong to another tenant); accept only what Chrome f
 - Either field empty, Sign In returns an error (wrong credentials, account not found), or Workday
   asks for a verification code → no usable saved login. **Never type into the password field.
   Never fill or submit Create Account.**
-  - Normal run: tell Aly the tenant; leave the tab on Sign In (or on **Create Account** when the
-    error says no account exists) and ask Aly to sign in or create the account in that tab and let
-    Chrome save the password. Continue when Aly says done.
+  - Normal run: tell the user the tenant; leave the tab on Sign In (or on **Create Account** when the
+    error says no account exists) and ask the user to sign in or create the account in that tab and let
+    Chrome save the password. Continue when the user says done.
   - Batch subagent: stop; report blocker `NO-WORKDAY-LOGIN <tenant> <workday url>: <what was seen>`
     (the orchestrator records it as `BLOCKED` with that Detail).
 
@@ -84,9 +84,9 @@ Click **Apply**, then **Apply Manually**. Never Autofill with Resume or Use My L
 Workday offers to continue an existing draft for this posting, or the wizard opens on a later step,
 continue it.
 
-Aly approved (2026-10-06) clicking **Apply Manually** and **Save and Continue** in every Workday
+The user approved (2026-10-06) clicking **Apply Manually** and **Save and Continue** in every Workday
 run, batch subagents included: they only save a draft. The consent checkbox and **Submit** still
-need Aly's explicit OK. If a permission check blocks one of these clicks, don't retry or work
+need the user's explicit OK. If a permission check blocks one of these clicks, don't retry or work
 around it: stop and report it.
 
 ## 5. Each step
@@ -94,14 +94,14 @@ around it: stop and report it.
 On every step: `get_page_text` and `read_page` (`filter: interactive`); list every field in
 `application.md` (`label | answer | source`, with a `### <step name>` heading per step); fill;
 re-read and confirm each value; click **Save and Continue**. Save and Continue saves a draft on
-Aly's account: it is not a submission and needs no approval. Field errors → fix and save again; a
+The user's account: it is not a submission and needs no approval. Field errors → fix and save again; a
 step that still fails after one retry → `FAILED` with the error text.
 
 Required field answered `ASK` (the step can't be saved with it empty):
-- Normal run: ask Aly all of this step's `ASK`s in one message, fill the answers, continue.
+- Normal run: ask the user all of this step's `ASK`s in one message, fill the answers, continue.
 - Batch subagent: record the `ASK` rows, leave the step unsaved, and stop there; this is the stop
   step for section 10. Batch execute later resumes from the saved draft and fills the rest from
-  `application.md`; a field on a later step not answerable from it → `NEEDS ALY`.
+  `application.md`; a field on a later step not answerable from it → `NEEDS USER`.
 - Only a validation error that is not an `ASK` and fails after one retry is `FAILED`.
 
 ## 6. My Information
@@ -113,7 +113,7 @@ From `sources/profile.md` `## Contact` and `## Common questions`.
 - Address: split `Street address` on commas: part 1 → Address Line 1, part 2 → City; the
   province abbreviation → its full name in the Province dropdown (`QC` → `Quebec`); the rest →
   Postal Code.
-- Phone: device type `Mobile`, country code `Canada (+1)`, number from `Phone`, unless `sources/profile.md`
+- Phone: device type `Mobile`, country code `<phone_country>` (config `targeting`; when absent, mark the field `ASK`), number from `Phone`, unless `sources/profile.md`
   says otherwise.
 
 ## 7. My Experience
@@ -159,7 +159,7 @@ Replaces `/apply` step 6 for Workday: the same summary (role, company, resume fi
 plus the tenant, the step the run stopped on, the consent checkbox label quoted (or "no consent
 checkbox"), and the `After approval` rows. Normal run: set `applications.md` to `ready` (in batch
 the orchestrator does it), unless the row is `outreach-only-ready`, `outreach-only-sent`, `in-conversation`, `no-response` or `closed`: then
-keep that status and add `form filled <date>, awaiting OK` to its Notes instead. Ask "Submit? (ok / edits)". Aly's "ok" approves ticking that consent
+keep that status and add `form filled <date>, awaiting OK` to its Notes instead. Ask "Submit? (ok / edits)". The user's "ok" approves ticking that consent
 checkbox, filling the `After approval` rows, and submitting.
 
 Batch subagent: don't ask; end with the batch report, adding the tenant, the stop step, the consent
@@ -167,7 +167,7 @@ label (or "no consent checkbox") and the `After approval` rows.
 
 ## 11. Submit
 
-1. Apply Aly's edits.
+1. Apply the user's edits.
 2. On the stop step, re-fill any field that is empty or differs from `application.md` (the unsaved
    step may be blank after a reload or in a new tab).
 3. Tick the consent checkbox, if there is one; **Save and Continue**.
@@ -184,8 +184,8 @@ label (or "no consent checkbox") and the `After approval` rows.
 ## Work history section
 
 `sources/profile.md` `## Workday work history`. Built once from `sources/mega-resume.tex` (every
-value traceable to it; when it gives only a year for a job date, ask Aly for the month, never
-infer it), shown to Aly in full, saved only after Aly approves through `.claude/skills/write-source.md`. Missing in a normal
+value traceable to it; when it gives only a year for a job date, ask the user for the month, never
+infer it), shown to the user in full, saved only after the user approves through `.claude/skills/write-source.md`. Missing in a normal
 run → build, show, wait for approval. Missing in a batch subagent → report blocker
 `NO-WORKDAY-HISTORY` (recorded as `BLOCKED`). Format:
 
