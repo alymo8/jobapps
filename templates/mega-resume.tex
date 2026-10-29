@@ -1,0 +1,217 @@
+%-------------------------
+% Mega Resume in Latex
+% Based off of: https://github.com/sb2nov/resume
+% Combined master version (all content included)
+%------------------------
+ 
+\documentclass[letterpaper,11pt]{article}
+ 
+\usepackage{latexsym}
+\usepackage[empty]{fullpage}
+\usepackage{titlesec}
+\usepackage{marvosym}
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{verbatim}
+\usepackage{enumitem}
+\usepackage[hidelinks]{hyperref}
+\usepackage{fancyhdr}
+\usepackage[english]{babel}
+\usepackage{tabularx}
+\usepackage{fontawesome5}
+\usepackage{multicol}
+\setlength{\multicolsep}{-3.0pt}
+\setlength{\columnsep}{-1pt}
+\input{glyphtounicode}
+ 
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot{}
+\renewcommand{\headrulewidth}{0pt}
+\renewcommand{\footrulewidth}{0pt}
+ 
+\addtolength{\oddsidemargin}{-0.6in}
+\addtolength{\evensidemargin}{-0.5in}
+\addtolength{\textwidth}{1.19in}
+\addtolength{\topmargin}{-.7in}
+\addtolength{\textheight}{1.4in}
+ 
+\urlstyle{same}
+\raggedbottom
+\raggedright
+\setlength{\tabcolsep}{0in}
+ 
+\titleformat{\section}{
+  \vspace{-4pt}\scshape\raggedright\large\bfseries
+}{}{0em}{}[\color{black}\titlerule \vspace{-5pt}]
+ 
+\pdfgentounicode=1
+ 
+%-------------------------
+% Custom commands
+ 
+\newcommand{\resumeItem}[1]{
+  \item\small{{#1 \vspace{-2pt}}}
+}
+ 
+% Standard heading. Args: job {Company} {Date range} {Role | Tech} {Location};
+% school {School} {Location} {Degree} {Date range}
+\newcommand{\resumeSubheading}[4]{
+  \vspace{-2pt}\item
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textbf{#1} & \textbf{\small #2} \\
+      \textit{\small#3} & \textit{\small #4} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Continued role at the SAME company (no repeated company name)
+% Args: {Role | Tech} {Date range} {Location}
+\newcommand{\resumeSubheadingContinued}[3]{
+  \vspace{4pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      & \textbf{\small #2} \\
+      \textit{\small#1} & \textit{\small #3} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+% Additional degree at the SAME institution (no repeated school name)
+% Args: {Degree name} {Date range}
+\newcommand{\resumeSubheadingDegree}[2]{
+  \vspace{2pt}
+    \begin{tabular*}{1.0\textwidth}[t]{l@{\extracolsep{\fill}}r}
+      \textit{\small#1} & \textit{\small #2} \\
+    \end{tabular*}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeProjectHeading}[2]{
+    \item
+    \begin{tabularx}{1.001\textwidth}[t]{@{}>{\raggedright\arraybackslash}X@{\hspace{8pt}}r@{}}
+      \small#1 & \textbf{\small #2}\\
+    \end{tabularx}\vspace{-7pt}
+}
+ 
+\newcommand{\resumeSubItem}[1]{\resumeItem{#1}\vspace{-4pt}}
+ 
+\renewcommand\labelitemi{$\vcenter{\hbox{\tiny$\bullet$}}$}
+\renewcommand\labelitemii{$\vcenter{\hbox{\tiny$\bullet$}}$}
+ 
+\newcommand{\resumeSubHeadingListStart}{\begin{itemize}[leftmargin=0.0in, label={}]}
+\newcommand{\resumeSubHeadingListEnd}{\end{itemize}}
+\newcommand{\resumeItemListStart}{\begin{itemize}}
+\newcommand{\resumeItemListEnd}{\end{itemize}\vspace{-5pt}}
+ 
+%-------------------------------------------
+%%%%%%  RESUME STARTS HERE  %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+ 
+\begin{document}
+ 
+% How to fill this template: every example below is a LaTeX comment, so this
+% file compiles to section headings only. For each real entry, copy the example,
+% remove the leading "%" signs and replace every <placeholder>. Uncomment a
+% list's Start/End wrapper lines together with its first entry (an empty list
+% does not compile). Keep the section names: tools/build_resume.py finds the
+% skills section by its heading. Put everything here (this is the full history);
+% each tailored resume selects from it.
+ 
+%----------HEADING----------
+% \begin{center}
+%     {\Huge \scshape <Full Name>} \ \vspace{1pt}
+%     \small \raisebox{-0.1\height}\faPhone\ <phone> ~
+%     {\raisebox{-0.2\height}\faHome\ {<city>}}  ~
+%     \href{mailto:<email>}{\raisebox{-0.2\height}\faEnvelope\  \underline{<email>}} ~
+%     \href{https://<linkedin profile URL>}{\raisebox{-0.2\height}\faLinkedin\ \underline{<linkedin profile URL without https://>}}  ~
+%     \href{https://<github profile URL>}{\raisebox{-0.2\height}\faGithub\ \underline{<github profile URL without https://>}}
+%     \vspace{-8pt}
+% \end{center}
+ 
+%-----------SUMMARY-----------
+% \vspace{+5pt}
+% {<One or two lines: role, years of experience, strongest areas, highest degree.>}
+% \vspace{-8pt}
+ 
+%-----------SKILLS-----------
+\section{Skills}
+% \begin{itemize}[leftmargin=0.15in, label={}] \small{\item{
+%     \textbf{Programming Languages}{: <languages>} \\
+%     \textbf{Frameworks \& Technologies}{: <frameworks, platforms, tools>} \\
+%     \textbf{<Another category>}{: <items>} \\
+%     \textbf{Certifications}{: <certifications>} \\
+%     \textbf{Languages}{: <spoken languages and levels>} }}
+% \end{itemize}
+\vspace{-18pt}
+ 
+%-----------EXPERIENCE-----------
+\section{Experience}
+%   \resumeSubHeadingListStart
+%
+%     % --- <Company>: one company header, multiple role blocks ---
+%     \resumeSubheading
+%       {<Company>}{<Start month year> -- <End month year or Present>}
+%       {<Job title> - <main technologies>}{<City, Country>}
+%       \resumeItemListStart
+%         \resumeItem{<What you built or did, how, and the measurable outcome.>}
+%       \resumeItemListEnd
+%       \vspace{-8pt}
+%
+%     % Second role at the same company -- company name NOT repeated
+%     \resumeSubheadingContinued
+%       {<Earlier job title> - <main technologies>}{<Start> -- <End>}{<City, Country>}
+%       \resumeItemListStart
+%         \resumeItem{<What you built or did, how, and the measurable outcome.>}
+%       \resumeItemListEnd
+%
+%   \resumeSubHeadingListEnd
+\vspace{-14pt}
+ 
+%-----------EDUCATION-----------
+\section{Education}
+%   \resumeSubHeadingListStart
+%
+%     % --- <School>: one institution header, one block per degree ---
+%     \resumeSubheading
+%       {<School>}{<City, Country>}
+%       {<Degree and field>}{<Start> -- <End>}
+%       \resumeItemListStart
+%         \resumeItem{<GPA, thesis, awards or relevant coursework>}
+%       \resumeItemListEnd
+%
+%     % Second degree at the same school -- school name NOT repeated
+%     \resumeSubheadingDegree{<Degree and field>} {<Start> -- <End>}
+%       \resumeItemListStart
+%         \resumeItem{<GPA, awards>}
+%       \resumeItemListEnd
+%
+%   \resumeSubHeadingListEnd
+\vspace{-12pt}
+ 
+%-----------RESEARCH-----------
+\section{Research}
+    \vspace{-5pt}
+%     \resumeSubHeadingListStart
+%
+%       \resumeProjectHeading
+%         {\textbf{<Research title>} $|$ \emph{<methods, tools>}}{<dates or empty>}
+%         \resumeItemListStart
+%           \resumeItem{<What you investigated and how.>}
+%           \resumeItem{<What you found, with numbers.>}
+%         \resumeItemListEnd
+%
+%     \resumeSubHeadingListEnd
+\vspace{-12pt}
+ 
+%-----------PROJECTS-----------
+\section{Projects}
+    \vspace{-5pt}
+%     \resumeSubHeadingListStart
+%
+% %----- <Project name> -----
+%       \resumeProjectHeading
+%         {\textbf{<Project name>: <one-line description>} $|$ \emph{<your role, client or context> · <main technologies>}}{<Start> -- <End or Present>}
+%         \resumeItemListStart
+%           \resumeItem{<The problem, what you built, and the outcome (users, scale, time saved).>}
+%         \resumeItemListEnd
+%         \vspace{-13pt}
+%
+%     \resumeSubHeadingListEnd
+\vspace{-12pt}
+ 
+\end{document}

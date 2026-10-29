@@ -1,1 +1,2 @@
 tests/fixtures/** -text
+templates/shortlist/data/decision_keys.py -text
