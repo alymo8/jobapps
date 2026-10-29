@@ -39,7 +39,7 @@ def _email_ok(line):
 
 def load_terms(path):
     terms = []
-    for line in Path(path).read_text(encoding="utf-8").splitlines():
+    for line in Path(path).read_text(encoding="utf-8-sig").splitlines():
         t = line.strip()
         if t and not t.startswith("#"):
             terms.append(t)
@@ -146,6 +146,12 @@ class ScannerTest(unittest.TestCase):
             p.write_bytes(b"Zed\r\n\r\n# note\n  Qux  \n")
             self.assertEqual(load_terms(p), ["Zed", "Qux"])
 
+    def test_load_terms_strips_bom(self):
+        with tempfile.TemporaryDirectory() as d:
+            p = Path(d) / "terms"
+            p.write_bytes(b"\xef\xbb\xbfZed\n")
+            self.assertEqual(load_terms(p), ["Zed"])
+
     def test_binary_detection(self):
         self.assertTrue(is_binary(b"a\0b"))
         self.assertFalse(is_binary(b"abc"))
@@ -168,10 +174,11 @@ class RepoScanTest(unittest.TestCase):
         terms_file = ROOT / ".personal-terms"
         if not terms_file.exists():
             self.skipTest(".personal-terms not present (CI view)")
-        patterns = [
-            (f"term {i}", term_pattern(t))
-            for i, t in enumerate(load_terms(terms_file))
-        ]
+        terms = load_terms(terms_file)
+        self.assertTrue(
+            terms, ".personal-terms exists but holds no terms (empty or comments only)"
+        )
+        patterns = [(f"term {i}", term_pattern(t)) for i, t in enumerate(terms)]
         hits = _scan_repo(patterns)
         self.assertEqual(hits, [], "\n".join(hits))
 
