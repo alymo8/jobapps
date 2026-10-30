@@ -25,14 +25,31 @@ import fitz  # PyMuPDF
 
 FILL_MIN, FILL_MAX = 0.95, 0.98
 SKILLS_MAX_LINES = 5
+COMPILE_TIMEOUT = 120  # seconds
+
+
+def find_pdflatex() -> str | None:
+    miktex = Path.home() / "scoop/apps/miktex/current/texmfs/install/miktex/bin/x64/pdflatex.exe"
+    return shutil.which("pdflatex") or (str(miktex) if miktex.is_file() else None)
 
 
 def compile_tex(tex: Path) -> tuple[list[str], list[str]]:
-    miktex = Path.home() / "scoop/apps/miktex/current/texmfs/install/miktex/bin/x64/pdflatex.exe"
-    pdflatex = shutil.which("pdflatex") or str(miktex)
+    """LaTeX errors and overfull warnings; a missing, stuck or log-less pdflatex is an error."""
+    pdflatex = find_pdflatex()
+    if not pdflatex:
+        return ["pdflatex not found: put it on PATH or install MiKTeX (README, Setup)"], []
     cmd = [pdflatex, "-interaction=nonstopmode", "-halt-on-error", tex.name]
-    subprocess.run(cmd, cwd=tex.parent, capture_output=True, text=True, errors="replace")
-    log = tex.with_suffix(".log").read_text(errors="replace")
+    try:
+        subprocess.run(cmd, cwd=tex.parent, capture_output=True, text=True, errors="replace",
+                       stdin=subprocess.DEVNULL, timeout=COMPILE_TIMEOUT)
+    except subprocess.TimeoutExpired:
+        return [f"pdflatex timed out after {COMPILE_TIMEOUT}s (a MiKTeX package prompt?)"], []
+    except OSError as e:
+        return [f"pdflatex failed to start: {e}"], []
+    log_path = tex.with_suffix(".log")
+    if not log_path.exists():
+        return [f"pdflatex wrote no log for {tex.name}"], []
+    log = log_path.read_text(errors="replace")
     errors = [m.group(0).strip() for m in re.finditer(r"^! .*$", log, re.M)]
     overfull = [m.group(0).strip() for m in re.finditer(r"^Overfull \\hbox.*$", log, re.M)]
     for ext in (".aux", ".out", ".log"):

@@ -128,6 +128,34 @@ class ReadPostingsTest(unittest.TestCase):
         got = self.run_main(*self.status_urls(), "--for", "outreach", "--all")
         self.assertEqual(len(got), 7)
 
+    def test_applied_url_variant_is_skipped(self):
+        self.write_apps()  # D1 is applied at https://s.example/1
+        got = self.run_main("https://www.s.example/1/?utm_source=linkedin")
+        self.assertEqual(got, [])
+        got = self.run_main("https://www.s.example/1/?utm_source=linkedin", "--all")
+        self.assertEqual(got[0]["status"], "applied")
+
+    def test_applied_company_and_title_is_skipped_under_another_url(self):
+        (self.root / "applications.md").write_text(
+            "| 2026-10-19 | Acme Inc | Data Engineer | Remote | postings/Acme-1 | applied | x |\n",
+            encoding="utf-8")
+        csv_path = self.root / "list.csv"
+        csv_path.write_text("Rank,Company,Title,URL\n1,acme inc, Data  Engineer ,https://other.example/9\n"
+                            "2,Acme Inc,ML Engineer,https://other.example/10\n", encoding="utf-8")
+        got = self.run_main(str(csv_path))
+        self.assertEqual([x["url"] for x in got], ["https://other.example/10"])
+
+    def test_dlq_url_variant_is_held(self):
+        self.assertEqual(self.run_main("https://a.example/1/?ref=x"), [])
+
+    def test_given_dlq_path_is_read(self):
+        other = self.root / "other"
+        other.mkdir()
+        (other / "dlq.md").write_text(HEAD + SEP + dlq_row(3, "https://a.example/3", "BLOCKED"),
+                                      encoding="utf-8")
+        urls = [x["url"] for x in self.run_main(str(other / "dlq.md"))]
+        self.assertEqual(urls, ["https://a.example/3"])
+
     def test_for_other_value_is_default(self):
         self.write_apps()
         got = self.run_main(*self.status_urls(), "--for", "apply")
