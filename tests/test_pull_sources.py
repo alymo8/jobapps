@@ -125,5 +125,107 @@ class PullSourcesTest(unittest.TestCase):
         self.assertIn("error", json.loads(bad.stdout))
 
 
+class LocalPullTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.dir = Path(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def raw(self, data: bytes, name: str = "src.md") -> Path:
+        p = self.dir / name
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(data)
+        return p
+
+    def pulled(self, data: bytes) -> tuple[dict, bytes]:
+        target = self.dir / "out.md"
+        report = pull_sources.pull(self.raw(data), target, local=True)
+        return report, target.read_bytes()
+
+    def assert_error(self, src: Path):
+        target = self.dir / "out.md"
+        report = pull_sources.pull(src, target, local=True)
+        self.assertIn("error", report)
+        self.assertFalse(target.exists())
+
+    def test_local_copied_verbatim(self):
+        data = "\\a{1}\n```\nx\n```\n".encode("utf-8")
+        report, out = self.pulled(data)
+        self.assertEqual(out, data)
+        self.assertEqual(report["status"], "created")
+        self.assertEqual(report["lines"], 4)
+
+    def test_local_crlf_written_as_lf(self):
+        self.assertEqual(self.pulled(b"a\r\nb\r\n")[1], b"a\nb\n")
+
+    def test_local_lone_cr_written_as_lf(self):
+        self.assertEqual(self.pulled(b"a\rb\n")[1], b"a\nb\n")
+
+    def test_local_bom_stripped(self):
+        self.assertEqual(self.pulled(b"\xef\xbb\xbf# P\n")[1], b"# P\n")
+
+    def test_local_final_newline_added(self):
+        report, out = self.pulled(b"a\nb")
+        self.assertEqual(out, b"a\nb\n")
+        self.assertEqual(report["lines"], 2)
+
+    def test_local_missing_file_is_error(self):
+        self.assert_error(self.dir / "nope.md")
+
+    def test_local_empty_file_is_error(self):
+        self.assert_error(self.raw(b""))
+
+    def test_local_whitespace_only_is_error(self):
+        self.assert_error(self.raw(b" \n\t\r\n"))
+
+    def test_local_invalid_utf8_is_error(self):
+        self.assert_error(self.raw(b"a\xff\n"))
+
+    def test_local_second_run_unchanged(self):
+        src, target = self.raw(b"a\n"), self.dir / "out.md"
+        pull_sources.pull(src, target, local=True)
+        before = target.stat().st_mtime_ns
+        report = pull_sources.pull(src, target, local=True)
+        self.assertEqual(report["status"], "unchanged")
+        self.assertEqual(target.stat().st_mtime_ns, before)
+
+    def test_local_changed_overwrites(self):
+        src, target = self.raw(b"a\n"), self.dir / "out.md"
+        pull_sources.pull(src, target, local=True)
+        src.write_bytes(b"b\n")
+        report = pull_sources.pull(src, target, local=True)
+        self.assertEqual(report["status"], "changed")
+        self.assertEqual(target.read_bytes(), b"b\n")
+
+    def test_local_error_keeps_existing_target(self):
+        src, target = self.raw(b"a\n"), self.dir / "out.md"
+        pull_sources.pull(src, target, local=True)
+        src.write_bytes(b"")
+        report = pull_sources.pull(src, target, local=True)
+        self.assertIn("error", report)
+        self.assertEqual(target.read_bytes(), b"a\n")
+
+    def test_local_cli(self):
+        script = str(TOOLS / "pull_sources.py")
+        src = self.raw(b"# P\n", "my sources/profile.md")
+        target = self.dir.as_posix() + "/jobapps sources/p.md"
+        good = subprocess.run(
+            [sys.executable, script, "--local", str(src), target], capture_output=True, text=True)
+        self.assertEqual(good.returncode, 0)
+        report = json.loads(good.stdout)
+        self.assertEqual(report["status"], "created")
+        self.assertEqual(report["path"], target)
+        missing = subprocess.run(
+            [sys.executable, script, "--local", str(self.dir / "nope.md"), target],
+            capture_output=True, text=True)
+        self.assertEqual(missing.returncode, 1)
+        self.assertIn("error", json.loads(missing.stdout))
+        one = subprocess.run(
+            [sys.executable, script, "--local", str(src)], capture_output=True, text=True)
+        self.assertEqual(one.returncode, 1)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,11 +1,14 @@
 """Write the one code block of a downloaded Claude Doc to its local source file.
 
 Usage: python tools/pull_sources.py <downloaded.md> <target path>
+       python tools/pull_sources.py --local <local file> <target path>
 
 The doc (exported as Markdown, see .claude/skills/pull-sources.md) must hold exactly one
 non-empty fenced code block: an unindented line of 3+ backticks plus an optional info string,
 closed by a line of the same backticks (trailing spaces allowed). Its content is written to the target
-as UTF-8 with LF line endings. Prints a JSON report and exits 0, or 1 on any error:
+as UTF-8 with LF line endings. With --local, the whole local source file is copied instead
+(no fence parsing): a leading UTF-8 BOM is dropped, CRLF and lone CR become LF, and a final
+newline is added when missing. Prints a JSON report and exits 0, or 1 on any error:
   path            the target argument as given
   status          created | changed | unchanged (unchanged: the file is not rewritten)
   sha256          hex digest of the target's bytes after the call
@@ -48,10 +51,28 @@ def extract_block(text: str) -> str:
     return "".join(line + "\n" for line in blocks[0])
 
 
-def pull(src: Path, target: Path) -> dict:
+def local_content(raw: bytes) -> str:
+    """A local source file's text: BOM dropped, LF line endings, ending in a newline."""
+    if raw.startswith(b"\xef\xbb\xbf"):
+        raw = raw[3:]
+    try:
+        text = raw.decode("utf-8")
+    except UnicodeDecodeError as e:
+        raise ValueError(f"not valid UTF-8: {e.reason}") from None
+    text = text.replace("\r\n", "\n").replace("\r", "\n")
+    if not text.strip():
+        raise ValueError("empty file")
+    return text if text.endswith("\n") else text + "\n"
+
+
+def pull(src: Path, target: Path, local: bool = False) -> dict:
     report: dict = {"path": str(target)}
     try:
-        content = extract_block(src.read_text(encoding="utf-8")).encode("utf-8")
+        if local:
+            text = local_content(src.read_bytes())
+        else:
+            text = extract_block(src.read_text(encoding="utf-8"))
+        content = text.encode("utf-8")
         if target.exists() and target.read_bytes() == content:
             status = "unchanged"
         else:
@@ -75,10 +96,13 @@ def pull(src: Path, target: Path) -> dict:
 
 
 def main(argv: list[str]) -> int:
+    local = bool(argv) and argv[0] == "--local"
+    if local:
+        argv = argv[1:]
     if len(argv) != 2:
         print(__doc__, file=sys.stderr)
         return 1
-    report = pull(Path(argv[0]), Path(argv[1]))
+    report = pull(Path(argv[0]), Path(argv[1]), local=local)
     report["path"] = argv[1]  # as given, not as Path renders it (backslashes on Windows)
     print(json.dumps(report))
     return 1 if "error" in report else 0
