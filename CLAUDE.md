@@ -88,6 +88,7 @@ python -m py_compile tools/*.py                                  # CI runs this 
   `shortlist.py` treats a missing directory as no decisions. Its saved files also carry no
   `version`, so `shortlist.py` returns `if_version: null`: undo or changing an existing decision fails (open bug).
 - Git Bash heredocs turn `\\` into `\`: write LaTeX with the Write/Edit tools, not `cat <<EOF`.
+- Testing local mode end to end (scheduled task, auditing a run): [knowledge/technical/local-mode-testing.md](knowledge/technical/local-mode-testing.md).
 - The Artifact tool publishes only files under the session's working directory or scratchpad: from a
   worktree outside the repo, copy `templates/shortlist/` to the scratchpad first.
 
