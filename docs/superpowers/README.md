@@ -6,6 +6,7 @@
 
 | Date | Spec | Status |
 |---|---|---|
+| 2026-10-29 | [Local source files as an onboarding option: design](specs/2026-10-29-local-sources-design.md) | approved |
 | 2026-10-28 | [Anonymize the repo and move personal settings to a local config: design](specs/2026-10-28-anonymize-and-local-config-design.md) | approved |
 | 2026-10-28 | [Templates and /onboard for new users: design](specs/2026-10-28-templates-and-onboard-design.md) | implemented |
 | 2026-10-19 | [Outreach without apply: design](specs/2026-10-19-outreach-without-apply-design.md) | implemented |
@@ -20,6 +21,7 @@
 
 | Date | Plan | Status |
 |---|---|---|
+| 2026-10-29 | [Local source files as an onboarding option Implementation Plan](plans/2026-10-29-local-sources.md) | approved |
 | 2026-10-28 | [Anonymize the repo and move personal settings to a local config Implementation Plan](plans/2026-10-28-anonymize-and-local-config.md) | approved |
 | 2026-10-28 | [Templates and /onboard for new users Implementation Plan](plans/2026-10-28-templates-and-onboard.md) | implemented |
 | 2026-10-19 | [Outreach without apply Implementation Plan](plans/2026-10-19-outreach-without-apply.md) | implemented |

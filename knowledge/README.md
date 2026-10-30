@@ -9,6 +9,7 @@ docs. Each fact has exactly one home; raw originals stay verbatim in
 
 | Domain | Doc | Summary |
 |---|---|---|
+| technical | [local-mode-testing.md](technical/local-mode-testing.md) | Gotchas of testing `/onboard` local mode and its scheduled task end to end |
 
 Add a domain folder (for example `technical/`, `product/`, `market/`) when the first
 real research for it arrives; keep this table current so any topic is one hop away.

@@ -1,5 +1,5 @@
 {
-  "_comment": "Copy to config.local.json and fill it in: see README \"Setup\". config.local.json is gitignored. Delete every optional key you do not want (shortlist, career_ops_dir, discover_locations, linkedin_premium, targeting): a key left with its <placeholder> values is used as written, e.g. the eligibility screen would run against the <country> literals.",
+  "_comment": "Copy to config.local.json and fill it in: see README \"Setup\". config.local.json is gitignored. Delete every optional key you do not want (shortlist, career_ops_dir, discover_locations, linkedin_premium, targeting): a key left with its <placeholder> values is used as written, e.g. the eligibility screen would run against the <country> literals. For local source files, each sources entry is {\"path\", \"local_path\": \"<absolute path of your file>\"} instead of doc_url / tab_id / node_id; the profile keeps \"writable\": true.",
   "sources": [
     {
       "path": "sources/mega-resume.tex",
