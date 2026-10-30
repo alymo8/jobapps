@@ -24,7 +24,9 @@ docs/superpowers/specs/2026-10-18-job-shortlist-design.md):
 """
 
 import argparse
+import ast
 import csv
+import hashlib
 import importlib.util
 import json
 import sys
@@ -32,7 +34,9 @@ from datetime import date, datetime, timedelta
 from pathlib import Path
 
 KEY_FUNCTIONS = ("norm_url", "norm_text", "norm_company", "match_key", "doc_id")
-DEFAULT_PENDING = Path.home() / ".job-shortlist" / "pending-decisions.jsonl"
+# code_digest() of the reviewed decision_keys.py (tests/fixtures/, templates/shortlist/data/).
+KEYS_CODE_SHA256 = "eef6f61ddf7931bded86f6b3f51a6cfd5ed83072f25e14718a6229f633373e42"  # gitleaks:allow (a code hash, not a secret)
+DEFAULT_PENDING =Path.home() / ".job-shortlist" / "pending-decisions.jsonl"
 ROW_FIELDS = ("rank", "tab", "company", "title", "location", "work_mode", "company_type",
               "priority", "canada", "new", "status", "deadline", "fit_notes", "url", "score")
 
@@ -41,11 +45,35 @@ class KeysError(Exception):
     pass
 
 
-def load_keys(path):
-    """Import the downloaded decision_keys.py by path and check it has the five key functions."""
+def code_digest(source):
+    """SHA-256 of the module's code with docstrings left out, so only a docstring may differ."""
+    tree = ast.parse(source)
+    for node in ast.walk(tree):
+        body = getattr(node, "body", None)
+        if (isinstance(body, list) and body and isinstance(body[0], ast.Expr)
+                and isinstance(body[0].value, ast.Constant) and isinstance(body[0].value.value, str)):
+            node.body = body[1:] or [ast.Pass()]
+    return hashlib.sha256(ast.unparse(tree).encode()).hexdigest()  # unparse: stable across 3.9+
+
+
+def load_keys(path, digest=...):
+    """Import the downloaded decision_keys.py by path and check it has the five key functions.
+
+    The file comes from the artifact, so its code must match KEYS_CODE_SHA256 before it runs
+    (digest=None skips the check, for tests)."""
     path = Path(path)
     if not path.is_file():
         raise KeysError(f"keys file not found: {path}")
+    expected = KEYS_CODE_SHA256 if digest is ... else digest
+    if expected is not None:
+        try:
+            actual = code_digest(path.read_text(encoding="utf-8"))
+        except (SyntaxError, ValueError, UnicodeDecodeError) as e:
+            raise KeysError(f"{path} failed to parse: {type(e).__name__}: {e}") from e
+        if actual != expected:
+            raise KeysError(f"{path} does not match the reviewed key functions (code sha256 "
+                            f"{actual}); not running it. If the keys changed on purpose, update "
+                            "KEYS_CODE_SHA256 in tools/shortlist.py")
     spec = importlib.util.spec_from_file_location("decision_keys", path)
     module = importlib.util.module_from_spec(spec)
     try:

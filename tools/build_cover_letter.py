@@ -15,7 +15,8 @@ Prints a JSON report:
   pdf             <Full_Name>_Cover_Letter_<Company>.pdf next to the .md
   png             rendered page preview, in the temp dir
   ok              all checks pass (looking at the PNG is still on you)
-  error           sources/profile.md (or --profile) is missing, in either mode
+  error           sources/profile.md (or --profile) is missing, or its ## Contact lacks Full name,
+                  Phone, Email or Location (LinkedIn and GitHub are optional), in either mode
 """
 
 import json
@@ -55,18 +56,19 @@ PREAMBLE = r"""\documentclass[letterpaper,11pt]{article}
     {\Huge \scshape <<name>>} \\ \vspace{1pt}
     \small \raisebox{-0.1\height}\faPhone\ <<phone>> ~
     {\raisebox{-0.2\height}\faHome\ {<<city>>}}  ~
-    \href{mailto:<<email>>}{\raisebox{-0.2\height}\faEnvelope\  \underline{<<email>>}} ~
-    \href{<<linkedin>>}{\raisebox{-0.2\height}\faLinkedin\ \underline{<<linkedin_bare>>}}  ~
-    \href{<<github>>}{\raisebox{-0.2\height}\faGithub\ \underline{<<github_bare>>}}
+    \href{mailto:<<email_url>>}{\raisebox{-0.2\height}\faEnvelope\  \underline{<<email>>}}<<links>>
 \end{center}
 \vspace{10pt}
 """
+LINK = r"""  ~
+    \href{<<url>>}{\raisebox{-0.2\height}\fa<<icon>>\ \underline{<<bare>>}}"""
 
 # Contact details come from the pulled Profile doc (gitignored sources/), not the repo.
 PROFILE = Path(__file__).resolve().parent.parent / "sources/profile.md"
 MISSING_PROFILE = "sources/profile.md missing: pull the sources first (.claude/skills/pull-sources.md)"
 CONTACT_KEYS = {"name": "Full name", "phone": "Phone", "email": "Email",
                 "city": "Location", "linkedin": "LinkedIn", "github": "GitHub"}  # fmt: skip
+OPTIONAL_KEYS = ("linkedin", "github")  # the header leaves out a link the profile lacks
 
 SPECIALS = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": r"\#",
             "_": r"\_", "{": r"\{", "}": r"\}", "~": r"\textasciitilde{}", "^": r"\^{}"}
@@ -74,6 +76,11 @@ SPECIALS = {"\\": r"\textbackslash{}", "&": r"\&", "%": r"\%", "$": r"\$", "#": 
 
 def escape(text: str) -> str:
     return "".join(SPECIALS.get(c, c) for c in text)
+
+
+def escape_url(url: str) -> str:
+    """A URL for \\href: hyperref takes it verbatim except for %, # and backslash."""
+    return url.replace("\\", "/").replace("%", r"\%").replace("#", r"\#")
 
 
 def check(lines: list[str], name: str) -> dict:
@@ -90,6 +97,8 @@ def check(lines: list[str], name: str) -> dict:
 def contact_fields(profile: Path) -> dict[str, str]:
     """Every "## Contact" bullet ("- Key: value") of the profile, trailing note dropped."""
     text = profile.read_text(encoding="utf-8")
+    if "## Contact" not in text:
+        raise ValueError(f"{profile}: no ## Contact section")
     section = text.split("## Contact", 1)[1].split("\n## ", 1)[0]
     fields = dict(re.findall(r"^- ([^:\n]+): *(\S.*?) *$", section, re.M))
     # Values may carry a trailing note for the user, e.g. "https://... (www form; ...)": drop it.
@@ -97,12 +106,16 @@ def contact_fields(profile: Path) -> dict[str, str]:
 
 
 def contact(profile: Path) -> dict:
-    """Header fields from the profile's "## Contact" bullets."""
+    """Header fields from the profile's "## Contact" bullets; ValueError names missing ones."""
     fields = contact_fields(profile)
-    c = {k: fields[v] for k, v in CONTACT_KEYS.items()}
+    missing = [v for k, v in CONTACT_KEYS.items() if k not in OPTIONAL_KEYS and v not in fields]
+    if missing:
+        raise ValueError(f"{profile}: ## Contact lacks {', '.join(missing)}")
+    c = {k: fields[v] for k, v in CONTACT_KEYS.items() if v in fields}
     c["city"] = c["city"].split(",")[0]
-    for k in ("linkedin", "github"):
-        c[f"{k}_bare"] = re.sub(r"^https?://(www\.)?", "", c[k])
+    for k in OPTIONAL_KEYS:
+        if k in c:
+            c[f"{k}_bare"] = re.sub(r"^https?://(www\.)?", "", c[k])
     return c
 
 
@@ -118,9 +131,15 @@ def letter_tex_path(md: Path, profile: Path) -> Path:
 
 
 def preamble(profile: Path) -> str:
-    out = PREAMBLE
-    for k, v in contact(profile).items():
-        out = out.replace(f"<<{k}>>", v)
+    c = contact(profile)
+    links = ""
+    for k, icon in (("linkedin", "Linkedin"), ("github", "Github")):
+        if k in c:
+            links += (LINK.replace("<<url>>", escape_url(c[k])).replace("<<icon>>", icon)
+                      .replace("<<bare>>", escape(c[f"{k}_bare"])))
+    out = PREAMBLE.replace("<<links>>", links).replace("<<email_url>>", escape_url(c["email"]))
+    for k in ("name", "phone", "city", "email"):
+        out = out.replace(f"<<{k}>>", escape(c[k]))
     return out
 
 
@@ -145,12 +164,17 @@ def main(argv: list[str]) -> int:
     md = Path(next(a for a in rest if a != "--check")).resolve()
     text = md.read_text(encoding="utf-8")
     lines = [line.strip() for line in text.strip().splitlines() if line.strip()]
-    has_profile = profile.exists()
+    has_profile, profile_error = profile.exists(), MISSING_PROFILE
+    if has_profile:
+        try:
+            contact(profile)  # every required ## Contact key, before anything is written
+        except ValueError as e:
+            has_profile, profile_error = False, str(e)
     report = {"md": str(md), **check(lines, signoff_name(profile) if has_profile else "")}
     report["ok"] = (has_profile and WORDS_MIN <= report["words"] <= WORDS_MAX
                     and report["greeting_ok"] and report["signoff_ok"])
     if not has_profile:
-        report.update(ok=False, signoff_ok=False, error=MISSING_PROFILE)
+        report.update(ok=False, signoff_ok=False, error=profile_error)
     elif "--check" not in argv:
         tex = letter_tex_path(md, profile)
         tex.write_text(to_tex(text, profile), encoding="utf-8")

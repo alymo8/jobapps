@@ -2,6 +2,7 @@ import contextlib
 import importlib.util
 import io
 import json
+import shutil
 import sys
 import tempfile
 import unittest
@@ -122,6 +123,41 @@ class BuildCoverLetterTest(unittest.TestCase):
     def test_default_profile_used_without_flag(self):
         with mock.patch.object(self.bcl, "PROFILE", FIXTURE):
             code, report = self.run_main([str(self.letter), "--check"])
+        self.assertEqual(code, 0)
+
+    def test_preamble_escapes_contact_values(self):
+        profile = self.temp_profile(self.fixture_text()
+                                    .replace("Jordan Avery Lee", "Jordan & Lee_Co")
+                                    .replace("github.com/jordan-example", "github.com/jo_dev#a%b"))
+        tex = self.bcl.preamble(profile)
+        self.assertIn(r"\scshape Jordan \& Lee\_Co}", tex)
+        self.assertIn(r"\href{https://github.com/jo_dev\#a\%b}", tex)
+        self.assertIn(r"\underline{github.com/jo\_dev\#a\%b}", tex)
+
+    def test_github_and_linkedin_are_optional(self):
+        profile = self.temp_profile(self.fixture_text()
+                                    .replace("- GitHub: https://github.com/jordan-example\n", "")
+                                    .replace("- LinkedIn: https://www.linkedin.com/in/jordan-example\n", ""))
+        self.assertNotIn("github", self.bcl.contact(profile))
+        tex = self.bcl.preamble(profile)
+        self.assertNotIn(r"\faGithub", tex)
+        self.assertNotIn(r"\faLinkedin", tex)
+        self.assertIn(r"\faEnvelope", tex)
+
+    def test_missing_required_contact_is_json_error(self):
+        profile = self.temp_profile(self.fixture_text().replace("- Email: jordan@example.com\n", ""))
+        code, report = self.run_main([str(self.letter), "--profile", str(profile)])
+        self.assertEqual(code, 1)
+        self.assertFalse(report["ok"])
+        self.assertIn("Email", report["error"])
+        self.assertEqual(list(self.letter.parent.glob("*.tex")), [])
+
+    @unittest.skipUnless(shutil.which("pdflatex"), "pdflatex not on PATH")
+    def test_underscore_handle_compiles(self):
+        profile = self.temp_profile(self.fixture_text().replace(
+            "github.com/jordan-example", "github.com/jo_dev"))
+        code, report = self.run_main([str(self.letter), "--profile", str(profile)])
+        self.assertEqual(report["errors"], [])
         self.assertEqual(code, 0)
 
     def test_letter_tex_path_from_full_name(self):

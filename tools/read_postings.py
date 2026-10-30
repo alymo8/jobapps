@@ -166,19 +166,29 @@ def read_source(path: Path, start_rank: int = 1) -> list[dict]:
     return out
 
 
-def statuses() -> dict[str, str]:
+def job_key(company: str, title: str) -> str:
+    """Second comparison key, for the same job under another URL: company|title, case and
+    spacing ignored. Empty when either part is missing."""
+    company, title = (" ".join((s or "").lower().split()) for s in (company, title))
+    return f"{company}|{title}" if company and title else ""
+
+
+def statuses() -> tuple[dict[str, str], dict[str, str]]:
+    """applications.md statuses by posting dir and by normalized URL, and by job_key."""
     log = ROOT / "applications.md"
     if not log.exists():
-        return {}
-    out = {}
+        return {}, {}
+    out, by_job = {}, {}
     for line in log.read_text(encoding="utf-8").splitlines():
         cells = [x.strip() for x in line.strip().strip("|").split("|")]
         if len(cells) >= 7 and cells[4].startswith("postings/"):
             out[cells[4]] = cells[5]
             url_m = re.search(r"https?://\S+", cells[6])
             if url_m:
-                out[url_m.group(0)] = cells[5]
-    return out
+                out[normalize_url(url_m.group(0))] = cells[5]
+            if job_key(cells[1], cells[2]):
+                by_job[job_key(cells[1], cells[2])] = cells[5]
+    return out, by_job
 
 
 def main(argv: list[str]) -> None:
@@ -203,7 +213,7 @@ def main(argv: list[str]) -> None:
         p = Path(a)
         if p.name.lower() == "dlq.md":
             from_dlq = True
-            for r in dlq_rows():
+            for r in dlq_rows(p):
                 wanted = r["reason"] == reason if reason else r["reason"] not in NEVER_RETRY
                 if r["status"] == "open" and wanted:
                     rank = int(r["rank"]) if r["rank"].isdigit() else len(postings) + 1
@@ -217,22 +227,26 @@ def main(argv: list[str]) -> None:
         postings = [x for x in postings if x["rank"] in rows]
     if new_only:
         postings = [x for x in postings if x.get("new")]
-    # Posting dirs record their URL in posting.md; map URL -> status through them.
-    st = statuses()
+    # Posting dirs record their URL in posting.md; map URL -> status through them. URLs are
+    # compared by normalize_url, and a posting with no URL match falls back to company + title,
+    # so the same job under a tracking or board-specific URL is never taken for a new one.
+    st, by_job = statuses()
     for d in (ROOT / "postings").glob("*/posting.md"):
         rel = f"postings/{d.parent.name}"
         if rel in st:
             for u in POSTING_URL.findall(d.read_text(encoding="utf-8")):
-                st[u] = st[rel]
-    dlq = {r["url"]: r for r in dlq_rows()}
+                st[normalize_url(u)] = st[rel]
+    dlq = {normalize_url(r["url"]): r for r in dlq_rows()}
     for x in postings:
-        x["status"] = st.get(x["url"], "")
-        x["dlq"] = dlq[x["url"]]["reason"] if x["url"] in dlq else ""
+        key = normalize_url(x["url"])
+        x["status"] = st.get(key) or by_job.get(job_key(x.get("company"), x.get("title")), "")
+        x["dlq"] = dlq[key]["reason"] if key in dlq else ""
     if not keep_all:
         skip = OUTREACH_DONE if purpose == "outreach" else DONE
         postings = [x for x in postings if x["status"] not in skip]
         if not from_dlq:
-            postings = [x for x in postings if not (x["url"] in dlq and dlq_skip(dlq[x["url"]]))]
+            postings = [x for x in postings
+                        if not (normalize_url(x["url"]) in dlq and dlq_skip(dlq[normalize_url(x["url"])]))]
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
     print(json.dumps(postings, indent=1, ensure_ascii=False))

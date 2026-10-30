@@ -7,6 +7,7 @@ import tempfile
 import unittest
 from datetime import datetime
 from pathlib import Path
+from unittest import mock
 
 TOOLS = Path(__file__).resolve().parent.parent / "tools"
 sys.path.insert(0, str(TOOLS))
@@ -81,13 +82,15 @@ class KeysAndInputsTest(Base):
         p = self.dir / "bad_keys.py"
         p.write_text("def norm_url(u): return u\n", encoding="utf-8")
         with self.assertRaises(shortlist.KeysError) as ctx:
-            shortlist.load_keys(p)
+            shortlist.load_keys(p, digest=None)
         self.assertIn("doc_id", str(ctx.exception))
 
     def test_load_keys_missing_function_cli(self):
         p = self.dir / "bad_keys.py"
         p.write_text("def norm_url(u): return u\n", encoding="utf-8")
-        code, out = self.run_cli("list", "--keys", p, "--rows", self.week([]), "--decisions", self.dir)
+        with mock.patch.object(shortlist, "KEYS_CODE_SHA256", shortlist.code_digest(p.read_text())):
+            code, out = self.run_cli("list", "--keys", p, "--rows", self.week([]),
+                                     "--decisions", self.dir)
         self.assertEqual(code, 1)
         self.assertFalse(out["ok"])
         self.assertIn("doc_id", out["error"])
@@ -98,7 +101,23 @@ class KeysAndInputsTest(Base):
             p = self.dir / f"broken{i}.py"
             p.write_text(src, encoding="utf-8")
             with self.assertRaises(shortlist.KeysError):
-                shortlist.load_keys(p)
+                shortlist.load_keys(p, digest=None)
+
+    def test_load_keys_docstring_may_differ(self):
+        p = self.dir / "keys.py"
+        src = FIXTURE_KEYS.read_text(encoding="utf-8")
+        p.write_text(src.replace("Reference key functions", "My key functions", 1), encoding="utf-8")
+        self.assertEqual(shortlist.load_keys(p).norm_url("https://www.X.com/a/"), "x.com/a")
+
+    def test_load_keys_refuses_changed_code_before_running_it(self):
+        p = self.dir / "keys.py"
+        marker = self.dir / "ran"
+        src = FIXTURE_KEYS.read_text(encoding="utf-8")
+        p.write_text(src + f"open({str(marker)!r}, 'w').close()\n", encoding="utf-8")
+        with self.assertRaises(shortlist.KeysError) as ctx:
+            shortlist.load_keys(p)
+        self.assertIn("does not match", str(ctx.exception))
+        self.assertFalse(marker.exists())
 
     def test_bad_decision_file_skipped(self):
         d = self.dir / "dump" / "decisions"
