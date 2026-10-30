@@ -1,0 +1,2 @@
+# False positives (fingerprint per line). KEYS_CODE_SHA256 in tools/shortlist.py is a code hash, not a secret.
+7d9c13dcfbcf8cc48e50b97350550ce37a8d8111:tools/shortlist.py:generic-api-key:38

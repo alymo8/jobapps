@@ -35,7 +35,7 @@ from pathlib import Path
 
 KEY_FUNCTIONS = ("norm_url", "norm_text", "norm_company", "match_key", "doc_id")
 # code_digest() of the reviewed decision_keys.py (tests/fixtures/, templates/shortlist/data/).
-KEYS_CODE_SHA256 = "eef6f61ddf7931bded86f6b3f51a6cfd5ed83072f25e14718a6229f633373e42"
+KEYS_CODE_SHA256 = "eef6f61ddf7931bded86f6b3f51a6cfd5ed83072f25e14718a6229f633373e42"  # gitleaks:allow (a code hash, not a secret)
 DEFAULT_PENDING =Path.home() / ".job-shortlist" / "pending-decisions.jsonl"
 ROW_FIELDS = ("rank", "tab", "company", "title", "location", "work_mode", "company_type",
               "priority", "canada", "new", "status", "deadline", "fit_notes", "url", "score")
