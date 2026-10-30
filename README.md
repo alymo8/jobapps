@@ -43,8 +43,6 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
    `/job-shortlist`: publish `templates/shortlist/` as the artifact and schedule a weekly routine
    from `templates/weekly-search-prompt.md` (filled in).
 
-Git history predates this cleanup and still holds the maintainer's earlier details.
-
 ## Map
 
 - [`CLAUDE.md`](CLAUDE.md) — how the workspace is laid out and how to work in it.
