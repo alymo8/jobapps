@@ -33,7 +33,7 @@ Outside `/onboard`, `write-source.md` and `/job-shortlist` rules are unchanged.
   scheduled task is updated in place with `update_scheduled_task` (new `prompt`, `cronExpression`
   and `enabled: true`), never a second task.
 - **Mode switch** (a redo of the storage question in step 3). It rewrites all six `sources`
-  entries whole (no entry ever holds both `doc_url` and `local_path`). Docs to local: offer
+  entries whole (the one exception to "never delete a key") (no entry ever holds both `doc_url` and `local_path`). Docs to local: offer
   RemoteTrigger `update` with body `{"enabled": false}` on the old routine; local to Docs: offer
   `update_scheduled_task` with `enabled: false` on the old local task; each is sent only on a yes.
   The old Docs or local files stay in place. Content is not carried over beyond what steps 2-4
@@ -138,6 +138,9 @@ Claude desktop app for local); if it fails, show its fix and stop. On local:
 2. Tell the user the local files have no version history: back the folder up, or keep it in their
    own git repo.
 
+On "keep" in local mode, or when `$ARGUMENTS` runs a later step alone, `<folder>` is the common
+parent folder of the six `local_path` entries in config.
+
 ## 4. Create the six Docs and config.local.json
 
 Sources, in `config.example.json` order (Doc title, template, code-block info string):
@@ -150,6 +153,8 @@ Sources, in `config.example.json` order (Doc title, template, code-block info st
 | Application profile | `templates/profile.md` | `markdown` | `sources/profile.md` |
 | Behavioral stories | `templates/stories.md` | `markdown` | `sources/stories.md` |
 | Free-text answer bank | `templates/answers.md` | `markdown` | `sources/answers.md` |
+
+In local mode, skip the Docs steps below: go to **Local mode** at the end of this step.
 
 For each:
 
@@ -199,7 +204,8 @@ with `ASK` on a `## Targeting` line.
 
 **Local mode** (no Docs calls). For each source in the table: build the working copy as in 1
 (`<S>/onboard/<file name>`, without the fence, ending in a newline, with LF line endings: on
-Windows the templates may check out with CRLF, so convert them). If `<folder>/<file name>`
+Windows the templates may check out with CRLF: write the file with the Write tool, never by
+copying the template's bytes). If `<folder>/<file name>`
 exists, say so and overwrite it only on a yes (Rules, "Redo"); then
 `cp "<S>/onboard/<file name>" "<folder>/<file name>"` (a byte copy, so the file is LF, with no
 fence). Then write `config.local.json` (Rules, "Config writes"): `sources` (six entries, `path`
@@ -249,6 +255,8 @@ or rewriting `portals.yml`; on keep, go to 6.4.
    (as `/discover` does); it must finish one scan without error. Report its CSV row count. Write `career_ops_dir` to config.
 
 ## 7. Shortlist artifact and weekly routine
+
+In local mode, do 7.1, then go to **Local mode** at the end of this step instead of 7.2-7.5.
 
 1. **Publish** (ask first if config has `shortlist`): Artifact publish, `file_path`
    `templates/shortlist/index.html`, `files` `{"data/CONTRACT.md": "templates/shortlist/data/CONTRACT.md",
@@ -323,8 +331,9 @@ or rewriting `portals.yml`; on keep, go to 6.4.
    a prompt until each tool has been approved once.
 4. **If `create_scheduled_task` fails**, show the error and the filled prompt and stop step 7 (no
    manual fallback).
-5. Tell the user the task runs only while the Claude desktop app is open, and a run missed while
-   it is closed happens at the next launch. Run it once now with `run_scheduled_task` (`taskId`
+5. Write `shortlist` `{"artifact_url", "title"}` to config now, as Docs mode does, so a re-run
+   finds the artifact even if the first run fails. Tell the user the task runs only while the
+   Claude desktop app is open, and a run missed while it is closed happens at the next launch. Run it once now with `run_scheduled_task` (`taskId`
    `weekly-job-report`) and note the returned session id. Any tool prompt the run raises (web
    search and fetch, Artifact, ArtifactData, Read of the local files, Bash for Python) the user
    answers with "always allow" for that task, since those approvals carry over to scheduled runs.
@@ -334,8 +343,7 @@ or rewriting `portals.yml`; on keep, go to 6.4.
    never a foreground sleep), up to 90 minutes. On `succeeded`, Artifact `read` with `path`
    `data/index.json` and check that `latest` matches `^\d{4}-\d{2}-\d{2}$`. On `failed`, a
    `latest` still null, or 90 minutes passed, stop step 7 and show the run's error or summary (or
-   that it is still running). Write `shortlist` `{"artifact_url", "title"}` to config, as Docs
-   mode does.
+   that it is still running).
 
 ## 8. First resume
 

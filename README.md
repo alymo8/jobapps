@@ -11,12 +11,13 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
 
 1. **Prerequisites.** Python 3; `pdflatex` on PATH, or MiKTeX; Chrome with the Claude in Chrome
    extension (for `/apply`, `/outreach`, `/followup`); the Claude Docs connector, signed in to your
-   account.
-2. **Create your six source Docs** in Claude Docs, each holding its content in one fenced code
+   account (Docs only).
+2. **Create your six sources** in Claude Docs, each holding its content in one fenced code
    block (the Mega resume in a `latex` block, the rest in `markdown` blocks), or six local files in
    a folder outside the repo (no code fence): Mega resume, Resume
    prompt, Cover letter prompt, Application profile, Behavioral stories, Free-text answer bank.
-   The local files they are pulled into are the six `path` values in `config.example.json`
+   Local files are named like their working copies (`mega-resume.tex`, `resume_prompt.md`, ...).
+   The working copies they are pulled into are the six `path` values in `config.example.json`
    (`sources/mega-resume.tex`, `sources/resume_prompt.md`, `sources/cover_letter_prompt.md`,
    `sources/profile.md`, `sources/stories.md`, `sources/answers.md`). The profile needs a
    `## Contact` section (`Full name`, `Preferred first name`, phone, email, links).

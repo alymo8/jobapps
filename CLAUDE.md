@@ -9,7 +9,7 @@ in the workspace `CLAUDE.md` one level up.
 - Python 3 for `tools/` (stdlib plus PDF rendering libs used by the build scripts).
 - `pdflatex` on PATH, or MiKTeX installed via scoop (`build_resume.py` falls back to it).
 - Chrome with the Claude-in-Chrome extension for `/apply`, `/outreach`, `/followup`.
-- The Claude Docs connector, signed in to the user's account: skills pull the sources listed in
+- The Claude Docs connector (Docs mode only), signed in to the user's account: skills pull the sources listed in
   `config.local.json` (README "Setup").
 
 ## Build, run, check

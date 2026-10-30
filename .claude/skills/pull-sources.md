@@ -9,7 +9,7 @@ edits in any editor, as `config.local.json` `sources` records: an entry with `do
 (also `tab_id`; the doc id is the UUID at the end of `doc_url`), an entry with `local_path` is a
 local file. They are the only source of truth. A Doc holds its content inside one fenced code
 block; a local file holds it directly. `sources/` is a working copy in both cases: edits go to the
-Doc or to the `local_path` file, never to `sources/`.
+Doc or to the `local_path` file.
 Never edit `sources/` by hand: the next pull overwrites it. Claude Code writes only to the profile
 source, and only through `.claude/skills/write-source.md`.
 
@@ -32,7 +32,7 @@ If `config.local.json` does not exist, stop before any pull and tell the user:
 Run from the repo root, so `sources/...` paths resolve there. For each entry in `config.local.json` `sources`,
 in order:
 
-For an entry with `local_path`, run only `python tools/pull_sources.py --local <local_path> <path>`
+For an entry with `local_path`, run only `python tools/pull_sources.py --local "<local_path>" "<path>"`
 (no Docs `create`, no Artifact `read`, no saved copy). For an entry with `doc_url`:
 
 1. Docs `create`: object `blob`, engine `blob`, container `{"kind": "project", "id": <doc id>}`,

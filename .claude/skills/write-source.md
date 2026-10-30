@@ -47,7 +47,7 @@ Run from the repo root.
    lines unchanged, then the replacement line.
 
    For a local entry (`local_path`): Read `<local_path>`, then run
-   `python -I -c "import sys; sys.exit(b'\r' in open(sys.argv[1], 'rb').read())" <local_path>`;
+   `python -I -c "import sys; sys.exit(b'\r' in open(sys.argv[1], 'rb').read())" "<local_path>"`;
    exit 1 means the file has CR line endings: stop and tell the user to save it with LF line
    endings (never convert it). Then Edit `<local_path>` with `old_string` = `<old text>` and
    `new_string` = `<new text>`, the same whole-line texts as the Docs payload, with real line

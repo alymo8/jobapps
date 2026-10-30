@@ -191,6 +191,22 @@ class LocalPullTest(unittest.TestCase):
         self.assertEqual(report["status"], "unchanged")
         self.assertEqual(target.stat().st_mtime_ns, before)
 
+    def test_local_changed_overwrites(self):
+        src, target = self.raw(b"a\n"), self.dir / "out.md"
+        pull_sources.pull(src, target, local=True)
+        src.write_bytes(b"b\n")
+        report = pull_sources.pull(src, target, local=True)
+        self.assertEqual(report["status"], "changed")
+        self.assertEqual(target.read_bytes(), b"b\n")
+
+    def test_local_error_keeps_existing_target(self):
+        src, target = self.raw(b"a\n"), self.dir / "out.md"
+        pull_sources.pull(src, target, local=True)
+        src.write_bytes(b"")
+        report = pull_sources.pull(src, target, local=True)
+        self.assertIn("error", report)
+        self.assertEqual(target.read_bytes(), b"a\n")
+
     def test_local_cli(self):
         script = str(TOOLS / "pull_sources.py")
         src = self.raw(b"# P\n", "my sources/profile.md")
