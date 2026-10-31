@@ -3,9 +3,88 @@
 A job-search workspace: tailored resumes and cover letters, application form answers,
 and LinkedIn outreach for each posting, driven by Claude Code skills.
 
+## What it does
+
+From finding postings to following up with people at the company. Every step reads your six
+sources (resume, prompts, profile, stories, answers), and nothing is submitted, and no message goes
+to an existing connection, without your OK.
+
+```mermaid
+flowchart TD
+    SRC[("Your six sources<br/>Claude Docs or local files")] -->|pull| LOCAL["sources/<br/>working copies"]
+
+    subgraph FIND["1 · Find postings"]
+        WEEKLY["Weekly routine<br/>searches the web"] --> SHORT["Shortlist artifact<br/>ranked postings"]
+        SHORT --> JS["/job-shortlist<br/>browse, mark applied or skip"]
+        DISC["/discover<br/>career-ops ATS scan"] --> CSV["discovered/date.csv"]
+        LIST["Your own lists<br/>Excel, CSV, URLs"]
+    end
+
+    subgraph TAILOR["2 · Tailor"]
+        RES["/resume<br/>one-page LaTeX resume,<br/>compiled and checked"]
+        CL["/cover-letter<br/>when the form asks for one"]
+    end
+
+    subgraph APPLY["3 · Apply"]
+        FILL["/apply<br/>fills the form in Chrome"] --> OK{"Your OK?"}
+        OK -->|yes| SUBMIT["Submitted"]
+    end
+
+    subgraph REACH["4 · Reach out on LinkedIn"]
+        OUT["/outreach<br/>your connections first,<br/>then recruiters and hiring managers"]
+        FU["/followup<br/>accepted, silent, replied,<br/>plus new people"]
+        OUT --> FU
+    end
+
+    LOCAL -.->|read by every step| TAILOR
+    FIND --> TAILOR
+    RES --> CL --> FILL
+    SUBMIT --> OUT
+    FU --> TRACK[("applications.md<br/>status per posting")]
+```
+
+`/outreach` also works without applying (it reuses the tailored resume), and `/apply` asks
+whether to mark the posting as applied on the shortlist.
+
+**Many postings at once:** `/batch resume|apply|outreach <list>` runs the same steps over a whole
+list with subagents. It pre-screens eligibility, scores each posting against your targeting (low
+scores go to `dlq.md`), builds the resumes, prepares the forms and messages, then shows one review
+sheet so you approve everything in a single round before it submits and sends.
+
+```mermaid
+flowchart LR
+    L["List of postings"] --> P["Pre-screen<br/>eligibility, duplicates"] --> S["Score<br/>vs your targeting"]
+    S -->|low score| D[("dlq.md")]
+    S --> R["Resumes"] --> PR["Prepare forms<br/>and messages"] --> RV{"One review sheet<br/>your approvals"} --> X["Submit and send"]
+    X --> M[("batches/…/manifest.md<br/>applications.md")]
+```
+
 ## Setup
 
 Run `/onboard` in Claude Code: it checks prerequisites, asks for your material and targets, creates your six Docs (or six local files), config, career-ops scan, shortlist and weekly routine (or a local scheduled task).
+
+### How onboarding works
+
+`/onboard` is re-runnable: on a second run it asks "keep / redo" before changing anything that
+exists.
+
+```mermaid
+flowchart TD
+    A["1 · Prerequisites<br/>Python, pdflatex, git, Node,<br/>Claude in Chrome"] --> B["2 · Collect material<br/>resume, cover letters,<br/>LinkedIn, past answers"]
+    B --> C["3 · Interview<br/>only what the material doesn't settle:<br/>contact, eligibility, pay, target roles,<br/>locations, deal-breakers, stories"]
+    C --> Q{"Where do your<br/>sources live?"}
+    Q -->|"Claude Docs (default)"| D1["4 · Create six Claude Docs"]
+    Q -->|"Local files"| D2["4 · Write six files to a<br/>folder outside the repo"]
+    D1 & D2 --> CFG["config.local.json<br/>+ pull into sources/ and verify"]
+    CFG --> E["5 · Show the sources<br/>and the gaps left to fill"]
+    E --> F["6 · career-ops<br/>clone, portals.yml from your<br/>roles, companies, locations"]
+    F --> G["7 · Publish the shortlist artifact"]
+    G --> G1{"Mode"}
+    G1 -->|Docs| H1["Weekly cloud routine"]
+    G1 -->|Local| H2["Weekly local scheduled task<br/>in the Claude desktop app"]
+    H1 & H2 --> I["8 · First tailored resume<br/>to check the whole chain"]
+    I --> DONE(["Ready: /discover, /resume,<br/>/apply, /outreach, /batch"])
+```
 
 ### Manual setup (fallback)
 
