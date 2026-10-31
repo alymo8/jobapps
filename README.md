@@ -32,8 +32,8 @@ flowchart LR
         S50["Who accepted<br/>or replied?"] --> S51["Message,<br/>nudge, reply"] --> S52["Log the<br/>status"]
     end
     S1 --> S2 --> S3 --> S4 --> S5
-    S5 ~~~ PAD["#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;"]
-    style PAD fill:none,stroke:none
+    S5 ~~~ PAD["room for the zoom buttons"]
+    style PAD fill:none,stroke:none,color:transparent
 ```
 
 **Many postings at once:** `/batch` runs the same steps over a whole list, with one review round
@@ -63,8 +63,8 @@ flowchart LR
         S50["Submit<br/>approved forms"] --> S51["Send<br/>messages"] --> S52["Update<br/>trackers"]
     end
     S1 --> S2 --> S3 --> S4 --> S5
-    S5 ~~~ PAD["#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;"]
-    style PAD fill:none,stroke:none
+    S5 ~~~ PAD["room for the zoom buttons"]
+    style PAD fill:none,stroke:none,color:transparent
 ```
 
 ## Setup
@@ -100,8 +100,8 @@ flowchart LR
         S50["Pick a real<br/>posting"] --> S51["Build the<br/>resume"] --> S52["Check it fits<br/>one page"]
     end
     S1 --> S2 --> S3 --> S4 --> S5
-    S5 ~~~ PAD["#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;#nbsp;"]
-    style PAD fill:none,stroke:none
+    S5 ~~~ PAD["room for the zoom buttons"]
+    style PAD fill:none,stroke:none,color:transparent
 ```
 
 ### Manual setup (fallback)
