@@ -9,6 +9,7 @@ From finding postings to following up with people at the company. Nothing is sub
 message goes to an existing connection, without your OK.
 
 ```mermaid
+%%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
     subgraph S1["1 · Find postings"]
         direction TB
@@ -37,6 +38,7 @@ flowchart LR
 for all your approvals.
 
 ```mermaid
+%%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
     subgraph S1["1 · Your list"]
         direction TB
@@ -71,6 +73,7 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
 exists.
 
 ```mermaid
+%%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
     subgraph S1["1 · Prerequisites"]
         direction TB
