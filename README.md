@@ -10,7 +10,27 @@ message goes to an existing connection, without your OK.
 
 ```mermaid
 flowchart LR
-    A["Find postings"] --> B["Tailor resume<br/>and cover letter"] --> C["Apply<br/>on your OK"] --> D["Reach out<br/>on LinkedIn"] --> E["Follow up"]
+    subgraph S1["1 · Find postings"]
+        direction TB
+        S10["Weekly web search<br/>+ career-ops scan"] --> S11["Ranked shortlist"] --> S12["You pick postings"]
+    end
+    subgraph S2["2 · Tailor"]
+        direction TB
+        S20["Read the posting"] --> S21["Pick matching<br/>bullets from your<br/>mega resume"] --> S22["One-page resume<br/>+ cover letter"]
+    end
+    subgraph S3["3 · Apply"]
+        direction TB
+        S30["Open the form<br/>in Chrome"] --> S31["Fill answers from<br/>your profile"] --> S32["Submit on your OK"]
+    end
+    subgraph S4["4 · Reach out"]
+        direction TB
+        S40["Your connections<br/>at the company"] --> S41["Recruiters and<br/>hiring managers"] --> S42["Send a note<br/>or message"]
+    end
+    subgraph S5["5 · Follow up"]
+        direction TB
+        S50["Who accepted<br/>or replied?"] --> S51["Message, nudge,<br/>draft replies"] --> S52["Log the status"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
 ```
 
 **Many postings at once:** `/batch` runs the same steps over a whole list, with one review round
@@ -18,7 +38,27 @@ for all your approvals.
 
 ```mermaid
 flowchart LR
-    A["List of postings"] --> B["Screen and score"] --> C["Prepare everything"] --> D["You review once"] --> E["Submit and send"]
+    subgraph S1["1 · Your list"]
+        direction TB
+        S10["Excel, CSV<br/>or URLs"] --> S11["Skip postings<br/>already handled"]
+    end
+    subgraph S2["2 · Screen, score"]
+        direction TB
+        S20["Check eligibility"] --> S21["Score against<br/>your targets"] --> S22["Set low scores<br/>aside"]
+    end
+    subgraph S3["3 · Prepare"]
+        direction TB
+        S30["Tailored resumes"] --> S31["Fill forms<br/>in Chrome"] --> S32["Draft LinkedIn<br/>messages"]
+    end
+    subgraph S4["4 · You review"]
+        direction TB
+        S40["One review sheet"] --> S41["Approve or skip<br/>each item"]
+    end
+    subgraph S5["5 · Run"]
+        direction TB
+        S50["Submit approved<br/>forms"] --> S51["Send messages"] --> S52["Update trackers"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
 ```
 
 ## Setup
@@ -32,7 +72,27 @@ exists.
 
 ```mermaid
 flowchart LR
-    A["Check prerequisites"] --> B["Share your material<br/>and answer questions"] --> C["Create your sources<br/>Docs or local files"] --> D["Set up the<br/>weekly job search"] --> E["First tailored resume"]
+    subgraph S1["1 · Prerequisites"]
+        direction TB
+        S10["Python, LaTeX, git"] --> S11["Chrome extension"] --> S12["Claude Docs or<br/>desktop app"]
+    end
+    subgraph S2["2 · About you"]
+        direction TB
+        S20["Your resume,<br/>LinkedIn, answers"] --> S21["Interview fills<br/>the gaps"] --> S22["Docs or<br/>local files?"]
+    end
+    subgraph S3["3 · Your sources"]
+        direction TB
+        S30["Write your<br/>six sources"] --> S31["Save your config"] --> S32["Copy them into<br/>the repo"]
+    end
+    subgraph S4["4 · Job search"]
+        direction TB
+        S40["career-ops scanner"] --> S41["Shortlist page"] --> S42["Weekly run"]
+    end
+    subgraph S5["5 · First resume"]
+        direction TB
+        S50["Pick a real posting"] --> S51["Build the resume"] --> S52["Check it fits<br/>one page"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
 ```
 
 ### Manual setup (fallback)
