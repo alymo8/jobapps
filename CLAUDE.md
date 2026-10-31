@@ -42,7 +42,7 @@ python -m py_compile tools/*.py                                  # CI runs this 
   The apply flow asks "Mark <company> – <title> as applied?".
 - `/batch` stage 1a.5 scores each posting (`.claude/skills/batch/scoring.md`, `sonnet`) against `## Targeting` in `sources/profile.md` and dead-letters low scores as `LOW-SCORE` before resumes.
 - After each resume build, a fresh `opus` subagent grades it as a recruiter (`.claude/skills/resume/recruiter-review.md`):
-  score /10, one improvement pass below 9, then final, low score or not (`/batch` stage 1c).
+  score /10, one improvement pass below 9, then final, low score or not (`/batch` stage 1c; [ADR 0012](knowledge/decisions/0012-recruiter-review-one-pass.md)).
 - Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`, `review.md`,
   `application.md`, `cover_letter.md`, `outreach.md`, `changelog.md`.
 - Trackers: `applications.md` (one row per posting, updated in place), `dlq.md`

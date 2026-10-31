@@ -17,3 +17,4 @@ the next number for a new one, never deleted, superseded instead. Template:
 | [0009](0009-shared-repo-and-local-config.md) | Shared repo and local config | accepted | 2026-10-28 |
 | [0010](0010-onboarding-creates-user-docs-and-shortlist.md) | Onboarding creates the user's Docs and shortlist | accepted | 2026-10-28 |
 | [0011](0011-local-source-files-option.md) | Local source files as an onboarding option | accepted | 2026-10-29 |
+| [0012](0012-recruiter-review-one-pass.md) | Recruiter review: one read, one improvement pass, then final | accepted | 2026-10-31 |
