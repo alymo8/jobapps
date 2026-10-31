@@ -41,7 +41,9 @@ python -m py_compile tools/*.py                                  # CI runs this 
   via `tools/shortlist.py` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md)).
   The apply flow asks "Mark <company> – <title> as applied?".
 - `/batch` stage 1a.5 scores each posting (`.claude/skills/batch/scoring.md`, `sonnet`) against `## Targeting` in `sources/profile.md` and dead-letters low scores as `LOW-SCORE` before resumes.
-- Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`,
+- After each resume build, a fresh `opus` subagent grades it as a recruiter (`.claude/skills/resume/recruiter-review.md`):
+  score /10, one improvement pass below 9, then final, low score or not (`/batch` stage 1c).
+- Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`, `review.md`,
   `application.md`, `cover_letter.md`, `outreach.md`, `changelog.md`.
 - Trackers: `applications.md` (one row per posting, updated in place), `dlq.md`
   (postings that couldn't be processed), `batches/<timestamp>-<mode>/manifest.md`.

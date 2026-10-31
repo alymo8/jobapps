@@ -20,6 +20,7 @@ default. Pick by how much judgment the step needs:
 | 1a | Pre-screen: live? eligible for `<eligible_regions>`? save `posting.md` | `haiku` | mechanical fetch and check |
 | 1a.5 | Fit, pay and legitimacy score (`scoring.md`) | `sonnet` | judgment, but no writing |
 | 1b | Resume tailoring | `opus` | truthfulness, content selection, page fit |
+| 1c | Recruiter review + one improvement pass (`resume/recruiter-review.md`) | `opus` | rewrites LaTeX, keeps page fit |
 | 2 | Form fill + drafted free-text answers | `sonnet` | multi-step Chrome work, React selects |
 | 2b | LinkedIn search + message drafts | `sonnet` | judging people, message tone |
 | 5 | Submit an approved application | `haiku` | answers fixed; re-fill, verify, click |
@@ -55,7 +56,7 @@ column (e.g. `ok 0.96 (opus)`, `submitted (haiku→sonnet)`).
 5. **Confirm before launching** in one message: mode (`Mode: outreach only (no application)` or
    `Mode: outreach + apply` in `outreach` mode), number of postings, ranks, the flagged ones
    (unverified eligibility; recommend skipping or keeping), and the rough cost: subagents
-   per stage and model (e.g. "4 haiku pre-screens, 4 sonnet scorers, ~20 opus resumes, ~20 sonnet form fills"). Wait for the user's go. A reply that trims the list (e.g. "skip 14, 97") is
+   per stage and model (e.g. "4 haiku pre-screens, 4 sonnet scorers, ~20 opus resumes, ~20 opus recruiter reviews, ~20 sonnet form fills"). Wait for the user's go. A reply that trims the list (e.g. "skip 14, 97") is
    the go for the rest.
    **Workday history:** in `apply` mode or `outreach --apply` (not in outreach-only mode), if any picked posting is Workday (URL host
    `myworkdayjobs.com` / `myworkdaysite.com`, or its `dlq.md` Detail or `postings/<dir>/posting.md`
@@ -157,6 +158,21 @@ Notes `resume ok <date>`. A failed build gets one more
 `opus` attempt (see Model routing). **Every posting that ends this stage without an ok resume goes
 to the dead-letter queue** and drops out of the later stages.
 
+## 1c. Recruiter review (every mode) — `opus`, up to 4 subagents at a time
+
+For each posting whose resume stage 1b built ok **in this run** (not resumes reused from earlier
+runs), launch a background `general-purpose` subagent with `model: opus`, keeping at most 4 running:
+
+> You are a recruiter-review subagent in the repo root `<repo-root>`. Read
+> `.claude/skills/resume/recruiter-review.md` and follow it exactly for posting dir `postings/<dir>`,
+> resume: the `*_Resume_*.tex` in that dir. The sources in `sources/` are already pulled;
+> don't pull them again. Do not ask the user anything.
+
+Append `| review <first>→<final>/10` to the manifest Result (e.g. `ok 0.96 (opus) | review 7→9/10`).
+A garbled report or a missing `review.md` gets one more `opus` attempt; after that, note
+`review failed` in the Result and go on with the resume as built (the review never dead-letters a
+posting). Later stages start only after a posting's review has reported, since it may change the PDF.
+
 **Mode `resume` stops here** → go to step 3 (review), with only the resume parts.
 
 ## 2. Prepare stage (apply / outreach) — Chrome, at most 2 subagents at a time
@@ -218,7 +234,9 @@ Write `batches/<id>/review.md` from the posting files (read only what the sheet 
 1. **Questions, deduplicated across postings.** The same question asked by several forms (salary,
    work authorization, relocation, EEO, "how did you hear") appears once, listing the postings that
    ask it. Reusable answers go to `sources/profile.md` through `.claude/skills/write-source.md` once the user answers.
-2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the score line from `score.md` (`<overall> | fit | pay | legit`, for a pay-floor miss `PAY-FLOOR | fit <f> | pay PAY-FLOOR | legit <tier>`; prefixed `override` when the posting came through a `--reason LOW-SCORE` retry or a `--min-score 0` URL override) and its real gaps, any contractor-wording note, the
+2. **Per posting** (numbered as in the manifest): company, title, resume PDF path, fill, the recruiter
+   review line from `review.md` (`<first>/10 → final <final>/10`, its top still-open feedback line, or
+   `not reviewed` for a reused resume), the score line from `score.md` (`<overall> | fit | pay | legit`, for a pay-floor miss `PAY-FLOOR | fit <f> | pay PAY-FLOOR | legit <tier>`; prefixed `override` when the posting came through a `--reason LOW-SCORE` retry or a `--min-score 0` URL override) and its real gaps, any contractor-wording note, the
    changelog's gaps and "please sanity-check" lines (one line each), `draft` free-text answers
    verbatim, posting-specific ASKs, blockers. For outreach: the shortlist (name, title, location, class, why)
    and each drafted message verbatim, existing connections first. For Workday postings: the tenant, the step the fill stopped on,
