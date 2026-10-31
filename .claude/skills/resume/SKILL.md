@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled and visually verified. Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
+description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled, visually verified and graded by a recruiter-review subagent (one improvement pass below 9/10). Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
 argument-hint: <posting URL or pasted posting>
 ---
 
@@ -40,18 +40,30 @@ All paths are relative to the `jobapps/` folder (the project root).
    must appear in `sources/mega-resume.tex`. Fix or flag anything that doesn't.
 6. **Write `postings/<dir>/changelog.md`** with the prompt's "What to report" items, plus the final
    `fill` and `skills_lines` numbers.
-7. **Log it:** append a row to `applications.md` (create it with the header from that file's format
+7. **Recruiter review.** Launch one fresh `general-purpose` subagent with `model: opus` (it must not
+   be you: the read has to be independent of the writing), `<repo-root>` being the output of
+   `git rev-parse --show-toplevel` and `<tex>` the resume path:
+   > You are a recruiter-review subagent in the repo root `<repo-root>`. Read
+   > `.claude/skills/resume/recruiter-review.md` and follow it exactly for posting dir `postings/<dir>`,
+   > resume `<tex>`. The sources in `sources/` are already pulled. Do not ask the user anything.
+
+   It scores the resume out of 10, makes one improvement pass when the score is below 9, writes
+   `postings/<dir>/review.md` and appends the score to the changelog. Don't run a second review or
+   pass, whatever the final score. If its report is garbled or `review.md` is missing, retry it once;
+   after that, hand the resume over as built and say the review failed.
+8. **Log it:** append a row to `applications.md` (create it with the header from that file's format
    if missing) with status `resume`.
-8. **Report** in a few lines: the changelog, the PDF path, and open the PDF for the user
+9. **Report** in a few lines: the changelog, the recruiter score (`<first>/10 → final <final>/10`)
+   with its still-open feedback from `review.md`, the PDF path, and open the PDF for the user
    (`Invoke-Item <pdf>`).
-9. **Shortlist.** Only when the user ran `/resume` directly (not from `/apply`, `/outreach` or a batch):
+10. **Shortlist.** Only when the user ran `/resume` directly (not from `/apply`, `/outreach` or a batch):
    ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
    `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
    `tailored resume`.
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent: skip step 0 (the orchestrator has already pulled the sources), then do steps 1–6 (the orchestrator owns `applications.md`; never write it), don't open the PDF, and **don't ask
+When the prompt says you are a batch subagent: skip step 0 (the orchestrator has already pulled the sources), then do steps 1–6 (the orchestrator owns `applications.md`; never write it, and runs step 7's recruiter review as its own stage), don't open the PDF, and **don't ask
 the user anything**. If the posting dir already has a verified resume (`changelog.md`), don't
 rebuild; report it as done. If `posting.md` is already there (the pre-screen saved it), use it
 and skip steps 1–2. Otherwise fetch postings with WebFetch or the ATS's public JSON API (Greenhouse:
