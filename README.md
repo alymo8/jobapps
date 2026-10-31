@@ -9,16 +9,62 @@ From finding postings to following up with people at the company. Nothing is sub
 message goes to an existing connection, without your OK.
 
 ```mermaid
+%%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
-    A["Find postings"] --> B["Tailor resume<br/>and cover letter"] --> C["Apply<br/>on your OK"] --> D["Reach out<br/>on LinkedIn"] --> E["Follow up"]
+    subgraph S1["1 · Find postings"]
+        direction TB
+        S10["Weekly search<br/>+ ATS scan"] --> S11["Ranked<br/>shortlist"] --> S12["You pick<br/>postings"]
+    end
+    subgraph S2["2 · Tailor"]
+        direction TB
+        S20["Read the<br/>posting"] --> S21["Match it to<br/>your resume"] --> S22["Resume +<br/>cover letter"]
+    end
+    subgraph S3["3 · Apply"]
+        direction TB
+        S30["Open the form<br/>in Chrome"] --> S31["Fill it from<br/>your profile"] --> S32["Submit on<br/>your OK"]
+    end
+    subgraph S4["4 · Reach out"]
+        direction TB
+        S40["Your LinkedIn<br/>connections"] --> S41["Recruiters<br/>and managers"] --> S42["Send a note<br/>or message"]
+    end
+    subgraph S5["5 · Follow up"]
+        direction TB
+        S50["Who accepted<br/>or replied?"] --> S51["Message,<br/>nudge, reply"] --> S52["Log the<br/>status"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
+    S5 ~~~ PAD["room for the zoom buttons"]
+    style PAD fill:none,stroke:none,color:transparent
 ```
 
 **Many postings at once:** `/batch` runs the same steps over a whole list, with one review round
 for all your approvals.
 
 ```mermaid
+%%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
-    A["List of postings"] --> B["Screen and score"] --> C["Prepare everything"] --> D["You review once"] --> E["Submit and send"]
+    subgraph S1["1 · Your list"]
+        direction TB
+        S10["Excel, CSV<br/>or URLs"] --> S11["Skip ones<br/>already done"]
+    end
+    subgraph S2["2 · Screen, score"]
+        direction TB
+        S20["Check<br/>eligibility"] --> S21["Score vs<br/>your targets"] --> S22["Set low scores<br/>aside"]
+    end
+    subgraph S3["3 · Prepare"]
+        direction TB
+        S30["Tailored<br/>resumes"] --> S31["Fill forms<br/>in Chrome"] --> S32["Draft LinkedIn<br/>messages"]
+    end
+    subgraph S4["4 · You review"]
+        direction TB
+        S40["One review<br/>sheet"] --> S41["Approve or<br/>skip each"]
+    end
+    subgraph S5["5 · Run"]
+        direction TB
+        S50["Submit<br/>approved forms"] --> S51["Send<br/>messages"] --> S52["Update<br/>trackers"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
+    S5 ~~~ PAD["room for the zoom buttons"]
+    style PAD fill:none,stroke:none,color:transparent
 ```
 
 ## Setup
@@ -31,8 +77,31 @@ Run `/onboard` in Claude Code: it checks prerequisites, asks for your material a
 exists.
 
 ```mermaid
+%%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
-    A["Check prerequisites"] --> B["Share your material<br/>and answer questions"] --> C["Create your sources<br/>Docs or local files"] --> D["Set up the<br/>weekly job search"] --> E["First tailored resume"]
+    subgraph S1["1 · Prerequisites"]
+        direction TB
+        S10["Python,<br/>LaTeX, git"] --> S11["Chrome<br/>extension"] --> S12["Claude Docs or<br/>desktop app"]
+    end
+    subgraph S2["2 · About you"]
+        direction TB
+        S20["Your resume<br/>and answers"] --> S21["Interview<br/>fills gaps"] --> S22["Docs or<br/>local files?"]
+    end
+    subgraph S3["3 · Your sources"]
+        direction TB
+        S30["Write six<br/>sources"] --> S31["Save your<br/>config"] --> S32["Copy into<br/>the repo"]
+    end
+    subgraph S4["4 · Job search"]
+        direction TB
+        S40["career-ops<br/>scanner"] --> S41["Shortlist<br/>page"] --> S42["Weekly run"]
+    end
+    subgraph S5["5 · First resume"]
+        direction TB
+        S50["Pick a real<br/>posting"] --> S51["Build the<br/>resume"] --> S52["Check it fits<br/>one page"]
+    end
+    S1 --> S2 --> S3 --> S4 --> S5
+    S5 ~~~ PAD["room for the zoom buttons"]
+    style PAD fill:none,stroke:none,color:transparent
 ```
 
 ### Manual setup (fallback)
