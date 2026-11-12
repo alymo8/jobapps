@@ -1,184 +1,199 @@
 import contextlib
 import datetime as dt
 import io
+import json
+import subprocess
 import sys
 import tempfile
 import unittest
 from pathlib import Path
-from unittest import mock
 
-sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "tools"))
+REPO = Path(__file__).resolve().parent.parent
+sys.path.insert(0, str(REPO / "tools"))
 import discover  # noqa: E402
 import read_postings as rp  # noqa: E402
 
 TODAY = dt.date(2026, 10, 10)
-HEADER = "url\tfirst_seen\tportal\ttitle\tcompany\tstatus\tlocation\n"
 
 
-def row(url, day, title="AI Engineer", company="Acme", status="added", location="Montreal", extra=0):
-    cells = [url, day, "greenhouse-api", title, company, status, location] + ["x"] * extra
-    return "\t".join(cells) + "\n"
+def p(url, title="AI Engineer", company="Acme", location="Montreal"):
+    return {"company": company, "title": title, "location": location, "url": url}
 
 
 class DiscoverTest(unittest.TestCase):
     def setUp(self):
         self.tmp = tempfile.TemporaryDirectory()
-        base = Path(self.tmp.name)
-        self.root = base / "jobapps"
-        self.co = base / "career-ops"
+        self.base = Path(self.tmp.name)
+        self.root = self.base / "jobapps"
         (self.root / "postings").mkdir(parents=True)
-        (self.co / "data").mkdir(parents=True)
 
     def tearDown(self):
         self.tmp.cleanup()
 
-    def history(self, *rows):
-        (self.co / "data" / "scan-history.tsv").write_text(HEADER + "".join(rows), encoding="utf-8")
+    def rows_json(self, *rows, bom=False):
+        path = self.base / "rows.json"
+        path.write_text(json.dumps(list(rows)), encoding="utf-8-sig" if bom else "utf-8")
+        return path
 
     def run_main(self, *args):
         out, err = io.StringIO(), io.StringIO()
-        argv = ["--root", str(self.root), "--career-ops", str(self.co), "--no-scan", *args]
         with contextlib.redirect_stdout(out), contextlib.redirect_stderr(err):
-            code = discover.main(argv, today=TODAY)
+            code = discover.main(["--root", str(self.root), *args], today=TODAY)
         return code, out.getvalue()
+
+    def run_rows(self, *rows, extra=(), bom=False):
+        return self.run_main("--input", str(self.rows_json(*rows, bom=bom)), *extra)
 
     def csvs(self):
         return sorted((self.root / "discovered").glob("*.csv"))
 
-    def test_filters_status_cutoff_and_collapses(self):
-        self.history(
-            row("https://a.example/1", "2026-10-09"),
-            row("https://a.example/1/", "2026-10-10"),
-            row("https://a.example/2", "2026-09-01"),
-            row("https://a.example/3", "2026-10-09", status="skipped_title"),
-            row("https://a.example/7", "2026-10-09", status=""),
-            row("https://a.example/8", "2026-06-14"),
-            row("https://a.example/8", "2026-10-09"),
-            row("https://a.example/4", "2026-10-08", extra=7),
-            "https://a.example/short\t2026-10-09\n",
-        )
-        code, _ = self.run_main("--since", "7")
-        self.assertEqual(code, 0)
-        got = rp.from_csv(self.csvs()[0])
-        self.assertEqual([x["url"] for x in got],
-                         ["https://a.example/4", "https://a.example/1", "https://a.example/7"])
-        self.assertEqual([x["rank"] for x in got], [1, 2, 3])
-
-    def test_formula_escape_undone(self):
-        self.history(row("https://a.example/5", "2026-10-09", title="'=SUM AI", company="'@Corp"))
-        self.run_main("--since", "7")
-        got = rp.from_csv(self.csvs()[0])[0]
-        self.assertEqual((got["title"], got["company"]), ("=SUM AI", "@Corp"))
+    def urls(self, path=None):
+        return [x["url"] for x in rp.from_csv(path or self.csvs()[0])]
 
     def test_dedupe_sources(self):
-        self.history(*[row(f"https://d.example/{i}", "2026-10-09") for i in range(1, 7)])
         (self.root / "applications.md").write_text(
             "| x | https://d.example/1/?utm_source=li |\n", encoding="utf-8")
         (self.root / "dlq.md").write_text(
             "| 2026-10-10 | b | 1 | C | T | https://D.EXAMPLE/2/ | score | LOW-SCORE | d | n | open |\n",
             encoding="utf-8")
-        p = self.root / "postings" / "Acme-3"
-        p.mkdir()
-        (p / "posting.md").write_text("# Acme: AI\n- URL: https://d.example/3\n", encoding="utf-8")
+        d = self.root / "postings" / "Acme-3"
+        d.mkdir()
+        (d / "posting.md").write_text("# Acme: AI\n- URL: https://d.example/3\n", encoding="utf-8")
         (self.root / "discovered").mkdir()
         (self.root / "discovered" / "2026-10-01.csv").write_text(
             "Rank,Company,Title,Location,URL\n1,A,T,L,https://d.example/4\n", encoding="utf-8")
         ex = self.root / "list.txt"
         ex.write_text("https://d.example/5\n", encoding="utf-8")
-        self.run_main("--since", "7", "--exclude", str(ex))
+        self.run_rows(*[p(f"https://d.example/{i}") for i in range(1, 7)], extra=("--exclude", str(ex)))
         new = [f for f in self.csvs() if f.name == "2026-10-10.csv"][0]
-        self.assertEqual([x["url"] for x in rp.from_csv(new)], ["https://d.example/6"])
+        self.assertEqual(self.urls(new), ["https://d.example/6"])
 
     def test_csv_round_trip_with_commas(self):
-        self.history(row("https://c.example/1", "2026-10-09", title="AI; ML Engineer", company="Acme, Inc"))
-        self.run_main("--since", "7")
+        self.run_rows(p("https://c.example/1", title="AI; ML Engineer", company="Acme, Inc"))
         got = rp.read_source(self.csvs()[0])[0]
         self.assertEqual((got["company"], got["title"]), ("Acme, Inc", "AI; ML Engineer"))
 
-    def test_nothing_new_writes_nothing(self):
-        self.history(row("https://a.example/1", "2026-01-01"))
-        code, out = self.run_main("--since", "7")
-        self.assertEqual(code, 0)
-        self.assertIn("no new postings", out)
-        self.assertFalse((self.root / "discovered").exists())
-
-    def test_last_run_cutoff_and_default(self):
-        self.history(row("https://a.example/1", "2026-10-05"), row("https://a.example/2", "2026-10-02"))
-        (self.root / "discovered").mkdir()
-        (self.root / "discovered" / ".last-run").write_text("2026-10-05\n", encoding="utf-8")
-        self.run_main()
-        self.assertEqual([x["url"] for x in rp.from_csv(self.csvs()[0])], ["https://a.example/1"])
-        self.assertEqual((self.root / "discovered" / ".last-run").read_text().strip(), "2026-10-10")
-
-    def test_default_cutoff_seven_days(self):
-        self.history(row("https://a.example/1", "2026-10-03"), row("https://a.example/2", "2026-10-02"))
-        self.run_main()
-        self.assertEqual([x["url"] for x in rp.from_csv(self.csvs()[0])], ["https://a.example/1"])
-
-    def test_second_run_dedupes_earlier_csv(self):
-        self.history(row("https://a.example/1", "2026-10-09"))
-        self.run_main("--since", "7")
-        code, out = self.run_main("--since", "7")
-        self.assertIn("no new postings", out)
-        self.history(row("https://a.example/1", "2026-10-09"), row("https://a.example/9", "2026-10-10"))
-        self.run_main("--since", "7")
-        self.assertEqual([f.name for f in self.csvs()], ["2026-10-10-2.csv", "2026-10-10.csv"])
-
-    def test_missing_career_ops(self):
-        with self.assertRaises(SystemExit) as cm:
-            discover.main(["--root", str(self.root), "--career-ops", str(self.co / "nope")], today=TODAY)
-        self.assertNotEqual(cm.exception.code, 0)
-
-    def test_missing_node(self):
-        self.history(row("https://a.example/1", "2026-10-09"))
-        with mock.patch.object(discover.shutil, "which", return_value=None):
-            with self.assertRaises(SystemExit) as cm:
-                discover.main(["--root", str(self.root), "--career-ops", str(self.co)], today=TODAY)
-        self.assertIn("node", str(cm.exception.code))
-        self.assertFalse((self.root / "discovered").exists())
-
-    def test_scan_failure(self):
-        self.history(row("https://a.example/1", "2026-10-09"))
-        done = mock.Mock(returncode=1)
-        with mock.patch.object(discover.shutil, "which", return_value="node"), \
-                mock.patch.object(discover.subprocess, "run", return_value=done) as run:
-            with self.assertRaises(SystemExit):
-                discover.main(["--root", str(self.root), "--career-ops", str(self.co)], today=TODAY)
-        self.assertEqual(run.call_args.args[0][1:], ["scan.mjs", "--quiet"])
-        self.assertFalse((self.root / "discovered").exists())
-
-
     def test_location_filter(self):
-        self.history(
-            row("https://l.example/1", "2026-10-09", location="Montreal, QC"),
-            row("https://l.example/2", "2026-10-09", location="San Francisco, CA"),
-            row("https://l.example/3", "2026-10-09", location=""),
-            row("https://l.example/4", "2026-10-09", location="Remote - Canada"),
+        self.run_rows(
+            p("https://l.example/1", location="Montreal, QC"),
+            p("https://l.example/2", location="San Francisco, CA"),
+            p("https://l.example/3", location=""),
+            p("https://l.example/4", location="Remote - Canada"),
+            extra=("--location", "canada", "Montreal"),
         )
-        self.run_main("--since", "7", "--location", "canada", "Montreal")
-        urls = [x["url"] for x in rp.from_csv(self.csvs()[0])]
-        self.assertEqual(urls, ["https://l.example/1", "https://l.example/3", "https://l.example/4"])
+        self.assertEqual(self.urls(), ["https://l.example/1", "https://l.example/3", "https://l.example/4"])
 
     def test_missing_exclude_file(self):
-        self.history(row("https://a.example/1", "2026-10-09"))
         with self.assertRaises(SystemExit) as cm:
-            self.run_main("--since", "7", "--exclude", str(self.root / "nope.csv"))
+            self.run_rows(p("https://a.example/1"), extra=("--exclude", str(self.root / "nope.csv")))
         self.assertIn("exclude", str(cm.exception.code))
         self.assertFalse((self.root / "discovered").exists())
 
     def test_applications_url_trailing_punctuation(self):
-        self.history(row("https://p.example/1", "2026-10-09"), row("https://p.example/2", "2026-10-09"))
         (self.root / "applications.md").write_text(
             "| x | Applied via https://p.example/1. Thanks |\n", encoding="utf-8")
-        self.run_main("--since", "7")
-        self.assertEqual([x["url"] for x in rp.from_csv(self.csvs()[0])], ["https://p.example/2"])
+        self.run_rows(p("https://p.example/1"), p("https://p.example/2"))
+        self.assertEqual(self.urls(), ["https://p.example/2"])
 
-    def test_scan_history_env_override(self):
-        other = self.root.parent / "elsewhere.tsv"
-        other.write_text(HEADER + row("https://e.example/1", "2026-10-09"), encoding="utf-8")
-        with mock.patch.dict(discover.os.environ, {"CAREER_OPS_SCAN_HISTORY": str(other)}):
-            self.run_main("--since", "7")
-        self.assertEqual([x["url"] for x in rp.from_csv(self.csvs()[0])], ["https://e.example/1"])
+    def test_nothing_new_writes_nothing(self):
+        code, out = self.run_rows()
+        self.assertEqual(code, 0)
+        self.assertIn("no new postings", out)
+        self.assertFalse((self.root / "discovered").exists())
+
+    def test_rank_is_input_order(self):
+        self.run_rows(p("https://r.example/c"), p("https://r.example/a"), p("https://r.example/b"))
+        got = rp.from_csv(self.csvs()[0])
+        self.assertEqual([x["url"] for x in got],
+                         ["https://r.example/c", "https://r.example/a", "https://r.example/b"])
+        self.assertEqual([x["rank"] for x in got], [1, 2, 3])
+
+    def test_duplicate_url_in_input_keeps_first(self):
+        self.run_rows(p("https://www.x.example/1/?utm_source=li", title="First"),
+                      p("https://x.example/1", title="Second"))
+        got = rp.from_csv(self.csvs()[0])
+        self.assertEqual(len(got), 1)
+        self.assertEqual(got[0]["title"], "First")
+
+    def test_second_run_dedupes_earlier_csv(self):
+        self.run_rows(p("https://a.example/1"))
+        _, out = self.run_rows(p("https://a.example/1"))
+        self.assertIn("no new postings", out)
+        self.run_rows(p("https://a.example/1"), p("https://a.example/9"))
+        self.assertEqual([f.name for f in self.csvs()], ["2026-10-10-2.csv", "2026-10-10.csv"])
+
+    def test_skipped_rows_counted(self):
+        no_title = p("https://s.example/x")
+        del no_title["title"]
+        no_location = p("https://s.example/2")
+        del no_location["location"]
+        _, out = self.run_rows(
+            p("https://s.example/1"),
+            no_title,
+            p(""),
+            p("   "),
+            p(None),
+            "x",
+            no_location,
+        )
+        got = rp.from_csv(self.csvs()[0])
+        self.assertEqual([x["url"] for x in got], ["https://s.example/1", "https://s.example/2"])
+        self.assertEqual(got[1]["location"], "")
+        self.assertIn("skipped 5 rows", out)
+
+    def test_malformed_json_exits_nonzero(self):
+        bad = self.base / "rows.json"
+        bad.write_text("[{", encoding="utf-8")
+        with self.assertRaises(SystemExit) as cm:
+            self.run_main("--input", str(bad))
+        self.assertIsInstance(cm.exception.code, str)
+        self.assertIn("not valid JSON", cm.exception.code)
+        self.assertFalse((self.root / "discovered").exists())
+
+    def test_top_level_object_exits_nonzero(self):
+        bad = self.base / "rows.json"
+        bad.write_text(json.dumps({"rows": []}), encoding="utf-8")
+        with self.assertRaises(SystemExit) as cm:
+            self.run_main("--input", str(bad))
+        self.assertIsInstance(cm.exception.code, str)
+        self.assertIn("JSON list", cm.exception.code)
+        self.assertFalse((self.root / "discovered").exists())
+
+    def test_missing_input_file(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.run_main("--input", str(self.base / "nope.json"))
+        self.assertIsInstance(cm.exception.code, str)
+        self.assertIn("not found", cm.exception.code)
+
+    def test_input_required(self):
+        with self.assertRaises(SystemExit) as cm:
+            self.run_main()
+        self.assertEqual(cm.exception.code, 2)
+
+    def test_input_utf8_bom_and_accents(self):
+        self.run_rows(p("https://u.example/1", company="Société Générale", location="Montréal"), bom=True)
+        got = rp.from_csv(self.csvs()[0])[0]
+        self.assertEqual((got["company"], got["location"]), ("Société Générale", "Montréal"))
+
+    def test_no_last_run_file(self):
+        self.run_rows(p("https://a.example/1"))
+        self.assertTrue(self.csvs())
+        self.assertFalse((self.root / "discovered" / ".last-run").exists())
+
+    def test_cli_round_trip_read_postings(self):
+        (self.root / "applications.md").write_text("| x | https://r.example/2 |\n", encoding="utf-8")
+        j = self.rows_json(p("https://r.example/1"), p("https://r.example/2"), p("https://r.example/3"))
+        done = subprocess.run([sys.executable, str(REPO / "tools" / "discover.py"),
+                               "--input", str(j), "--root", str(self.root)],
+                              capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(done.returncode, 0, done.stderr)
+        csv_path = self.csvs()[0]
+        read = subprocess.run([sys.executable, str(REPO / "tools" / "read_postings.py"), str(csv_path), "--all"],
+                              capture_output=True, text=True, encoding="utf-8")
+        self.assertEqual(read.returncode, 0, read.stderr)
+        self.assertEqual([x["url"] for x in json.loads(read.stdout)],
+                         ["https://r.example/1", "https://r.example/3"])
+
 
 if __name__ == "__main__":
     unittest.main()
