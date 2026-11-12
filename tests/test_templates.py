@@ -47,16 +47,24 @@ class SourceTemplatesTest(unittest.TestCase):
         self.assertEqual(
             list(targeting),
             ["Pay floor", "Score threshold", "Years of experience", "Target roles",
-             "Deal-breakers"],  # fmt: skip
+             "Locations", "Deal-breakers"],  # fmt: skip
         )
         self.assertEqual(set(targeting.values()), {"ASK"})
+
+    def test_profile_job_search_keys(self):
+        text = read("profile.md")
+        self.assertEqual(
+            bullets(section(text, "## Job search")),
+            {"Target companies": "ASK", "Priority companies": "ASK"},
+        )
+        self.assertEqual(re.findall(r"^## .*$", text, re.M)[-1], "## Job search")
 
     def test_profile_has_sections(self):
         headings = re.findall(r"^## .*$", read("profile.md"), re.M)
         for h in ("## Contact", "## Eligibility", "## Compensation & availability",
                   "## Common questions", "## Voluntary self-identification (EEO / diversity)",
                   "## Free-text answers", "## Career goals and cover letters",
-                  "## LinkedIn outreach", "## Targeting"):  # fmt: skip
+                  "## LinkedIn outreach", "## Targeting", "## Job search"):  # fmt: skip
             self.assertIn(h, headings)
         self.assertNotIn("## Workday work history", headings)
 
@@ -171,6 +179,25 @@ class ShortlistTemplateTest(unittest.TestCase):
         self.assertEqual(latest["counts"], dict.fromkeys(COUNT_KEYS, 0))
         index = self.load("data/index.json")
         self.assertEqual(index, {"schema_version": 1, "latest": None, "weeks": []})
+
+
+SAMPLE_RESUME = ROOT / "tests" / "fixtures" / "sample-resume.md"
+
+
+class SampleResumeFixtureTest(unittest.TestCase):
+    def test_sample_resume_shape(self):
+        self.assertTrue(SAMPLE_RESUME.is_file())
+        text = SAMPLE_RESUME.read_text(encoding="utf-8")
+        for h in ("## Experience", "## Education", "## Projects", "## Skills"):
+            self.assertRegex(text, rf"(?m)^{re.escape(h)}$", h)
+        jobs = re.split(r"(?m)^### ", section(text, "## Experience"))[1:]
+        self.assertEqual(len(jobs), 2)
+        for job in jobs:
+            self.assertGreaterEqual(len(re.findall(r"(?m)^- ", job)), 7, job.splitlines()[0])
+        emails = re.findall(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", text)
+        self.assertTrue(emails)
+        for email in emails:
+            self.assertTrue(email.endswith("@example.com"), email)
 
 
 ONBOARD = ROOT / ".claude" / "skills" / "onboard" / "SKILL.md"

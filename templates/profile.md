@@ -106,4 +106,9 @@ stories live in [stories.md](stories.md).
 - Score threshold: ASK
 - Years of experience: ASK
 - Target roles: ASK
+- Locations: ASK
 - Deal-breakers: ASK
+
+## Job search
+- Target companies: ASK
+- Priority companies: ASK
