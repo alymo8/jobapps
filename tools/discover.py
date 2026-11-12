@@ -1,27 +1,26 @@
-"""Find new postings with career-ops' scanner and write them as a /batch target list.
+"""Dedupe a JSON list of job postings and write the new ones as a /batch target list.
 
 Usage:
-  python tools/discover.py [--career-ops PATH] [--since N] [--exclude FILE ...] [--no-scan]
-                           [--location KEYWORD ...] [--root PATH]
+  python tools/discover.py --input <json> [--exclude FILE ...] [--location KEYWORD ...] [--root PATH]
 
-Runs `node scan.mjs --quiet` in the career-ops checkout (--career-ops, else CAREER_OPS_DIR),
-then reads its data/scan-history.tsv: rows with status `added` first seen on or after the
-cut-off (--since N days, else the date in discovered/.last-run, else 7 days). Drops URLs
-already in applications.md, dlq.md, postings/*/posting.md, earlier discovered/*.csv and every
---exclude file (compared with normalize_url). --location keeps rows whose location contains
-one of the keywords (case-insensitive) or is empty. The history file is
-CAREER_OPS_SCAN_HISTORY when set, else <career-ops>/data/scan-history.tsv. Writes discovered/<date>.csv
-(Rank,Company,Title,Location,URL) for `/batch <mode> <csv>`. --root points at another
-jobapps folder (tests, or running from a worktree).
+--input is a JSON list of postings, each an object with `company`, `title`, `url` and an
+optional `location` (read as UTF-8, a BOM allowed). A row is kept when `company`, `title` and
+`url` are strings and `url` is non-empty after stripping; `location` may be missing or null.
+Any other row (not an object, a required key missing or not a string, a blank url) is skipped
+and counted. Drops URLs already in applications.md, dlq.md, postings/*/posting.md, earlier
+discovered/*.csv and every --exclude file, and repeats within the input (the first one is kept),
+all compared with normalize_url. --location keeps rows whose location contains one of the
+keywords (case-insensitive) or is empty. Rank is the input order after dedupe. Writes
+discovered/<date>.csv (Rank,Company,Title,Location,URL) for `/batch <mode> <csv>`; with no new
+rows, prints `no new postings` and writes nothing. --root points at another jobapps folder
+(tests, or running from a worktree).
 """
 
 import argparse
 import csv
 import datetime as dt
-import os
+import json
 import re
-import shutil
-import subprocess
 import sys
 from pathlib import Path
 
@@ -30,37 +29,31 @@ from read_postings import POSTING_URL, dlq_rows, normalize_url, read_source  # n
 
 ROOT = Path(__file__).resolve().parent.parent
 HEADER = ["Rank", "Company", "Title", "Location", "URL"]
-# career-ops stores a cell matching ^'*[=+\-@] with one extra leading "'" (lib/tsv-formula-escape.mjs).
-FORMULA = re.compile(r"^'(?='*[=+\-@])")
 URL_RE = re.compile(r"https?://[^\s|<>()\[\]]+")
 
 
-def history_rows(path: Path) -> list[dict]:
-    """scan-history.tsv rows by position (first 7 columns), formula escaping undone."""
-    out = []
-    for line in path.read_text(encoding="utf-8").splitlines():
-        cells = [FORMULA.sub("", c, count=1).strip() for c in line.split("\t")]
-        if len(cells) < 7 or not cells[0].startswith("http"):
+def load_rows(path: Path) -> tuple[list[dict], int]:
+    """Valid posting rows from the --input JSON list (values stripped) and the skipped count."""
+    if not path.is_file():
+        raise SystemExit(f"discover: --input file not found: {path}")
+    try:
+        data = json.loads(path.read_text(encoding="utf-8-sig"))
+    except (json.JSONDecodeError, UnicodeDecodeError) as e:
+        raise SystemExit(f"discover: {path} is not valid JSON: {e}") from None
+    if not isinstance(data, list):
+        raise SystemExit(f"discover: {path} must hold a JSON list of postings")
+    rows, skipped = [], 0
+    for item in data:
+        if not isinstance(item, dict) or not all(
+            isinstance(item.get(k), str) for k in ("company", "title", "url")
+        ) or not item["url"].strip():
+            skipped += 1
             continue
-        try:
-            day = dt.date.fromisoformat(cells[1])
-        except ValueError:
-            continue
-        out.append(dict(url=cells[0], first_seen=day, title=cells[3], company=cells[4],
-                        status=cells[5], location=cells[6]))  # fmt: skip
-    return out
-
-
-def cutoff(root: Path, since: int | None, today: dt.date) -> dt.date:
-    if since is not None:
-        return today - dt.timedelta(days=since)
-    stamp = root / "discovered" / ".last-run"
-    if stamp.exists():
-        try:
-            return dt.date.fromisoformat(stamp.read_text(encoding="utf-8").strip())
-        except ValueError:
-            pass
-    return today - dt.timedelta(days=7)
+        loc = item.get("location")
+        rows.append(dict(company=item["company"].strip(), title=item["title"].strip(),
+                         location=loc.strip() if isinstance(loc, str) else "",
+                         url=item["url"].strip()))  # fmt: skip
+    return rows, skipped
 
 
 def known_urls(root: Path, excludes: list[Path]) -> set[str]:
@@ -82,14 +75,12 @@ def known_urls(root: Path, excludes: list[Path]) -> set[str]:
     return {normalize_url(u) for u in urls}
 
 
-def select(rows: list[dict], since_day: dt.date, known: set[str]) -> list[dict]:
-    """`added` (or empty-status) rows collapsed to the earliest per normalized URL, then kept when
-    that earliest first_seen is on or after since_day and the URL isn't known; oldest first."""
-    earliest: dict[str, dict] = {}
-    for r in sorted(rows, key=lambda r: r["first_seen"]):
-        if r["status"] in ("added", ""):
-            earliest.setdefault(normalize_url(r["url"]), r)
-    return [r for key, r in earliest.items() if r["first_seen"] >= since_day and key not in known]
+def select(rows: list[dict], known: set[str]) -> list[dict]:
+    """The first row per normalized URL, minus URLs in known; input order kept."""
+    seen: dict[str, dict] = {}
+    for r in rows:
+        seen.setdefault(normalize_url(r["url"]), r)
+    return [r for key, r in seen.items() if key not in known]
 
 
 def out_path(root: Path, today: dt.date) -> Path:
@@ -108,56 +99,33 @@ def write_csv(path: Path, rows: list[dict]) -> None:
             w.writerow([i, r["company"], r["title"], r["location"], r["url"]])
 
 
-def run_scan(career_ops: Path) -> None:
-    node = shutil.which("node")
-    if not node:
-        raise SystemExit("discover: node not found on PATH")
-    try:
-        done = subprocess.run([node, "scan.mjs", "--quiet"], cwd=career_ops, timeout=600)
-    except subprocess.TimeoutExpired:
-        raise SystemExit("discover: scan.mjs timed out after 10 minutes") from None
-    if done.returncode != 0:
-        raise SystemExit(f"discover: scan.mjs exited {done.returncode}")
-
-
 def main(argv: list[str] | None = None, today: dt.date | None = None) -> int:
     ap = argparse.ArgumentParser(description=__doc__.splitlines()[0])
-    ap.add_argument("--career-ops")
-    ap.add_argument("--since", type=int)
+    ap.add_argument("--input", required=True)
     ap.add_argument("--exclude", action="extend", nargs="+", default=[])
-    ap.add_argument("--no-scan", action="store_true")
     ap.add_argument("--location", action="extend", nargs="+", default=[])
     ap.add_argument("--root")
     args = ap.parse_args(argv)
     root = Path(args.root).resolve() if args.root else ROOT
-    career_ops = args.career_ops or os.environ.get("CAREER_OPS_DIR")
-    if not career_ops:
-        raise SystemExit("discover: pass --career-ops PATH or set CAREER_OPS_DIR")
-    career_ops = Path(career_ops)
-    if not career_ops.is_dir():
-        raise SystemExit(f"discover: career-ops folder not found: {career_ops}")
     excludes = [Path(x) for x in args.exclude]
     for f in excludes:
         if not f.is_file():
             raise SystemExit(f"discover: --exclude file not found: {f}")
-    if not args.no_scan:
-        run_scan(career_ops)
-    history = Path(os.environ.get("CAREER_OPS_SCAN_HISTORY") or career_ops / "data" / "scan-history.tsv")
-    if not history.exists():
-        raise SystemExit(f"discover: no scan history at {history}")
+    rows, skipped = load_rows(Path(args.input))
     today = today or dt.date.today()
-    rows = select(history_rows(history), cutoff(root, args.since, today), known_urls(root, excludes))
+    rows = select(rows, known_urls(root, excludes))
     if args.location:
         keys = [k.lower() for k in args.location]
         rows = [r for r in rows if not r["location"] or any(k in r["location"].lower() for k in keys)]
     if hasattr(sys.stdout, "reconfigure"):
         sys.stdout.reconfigure(encoding="utf-8")
+    if skipped:
+        print(f"skipped {skipped} rows (missing company, title or url)")
     if not rows:
         print("no new postings")
         return 0
     path = out_path(root, today)
     write_csv(path, rows)
-    (root / "discovered" / ".last-run").write_text(today.isoformat() + "\n", encoding="utf-8")
     print(f"{len(rows)} new postings -> {path}")
     return 0
 

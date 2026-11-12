@@ -13,7 +13,7 @@ message goes to an existing connection, without your OK.
 flowchart LR
     subgraph S1["1 · Find postings"]
         direction TB
-        S10["Weekly search<br/>+ ATS scan"] --> S11["Ranked<br/>shortlist"] --> S12["You pick<br/>postings"]
+        S10["Job scan (on demand<br/>or weekly)"] --> S11["Ranked<br/>shortlist"] --> S12["You pick<br/>postings"]
     end
     subgraph S2["2 · Tailor"]
         direction TB
@@ -69,7 +69,7 @@ flowchart LR
 
 ## Setup
 
-Run `/onboard` in Claude Code: it checks prerequisites, asks for your material and targets, creates your six Docs (or six local files), config, career-ops scan, shortlist and weekly routine (or a local scheduled task).
+Run `/onboard` in Claude Code: it checks your tools, reads your resume, asks a few questions about what you are looking for, writes your six sources (local files, or Claude Docs with `/onboard --docs`) and config, and builds a first resume. `/scan-jobs` and `/weekly-scan` find postings afterwards.
 
 ### How onboarding works
 
@@ -79,28 +79,20 @@ exists.
 ```mermaid
 %%{init: {"htmlLabels": false, "flowchart": {"htmlLabels": false, "padding": 20}}}%%
 flowchart LR
-    subgraph S1["1 · Prerequisites"]
+    subgraph S1["1 · Your resume"]
         direction TB
-        S10["Python,<br/>LaTeX, git"] --> S11["Chrome<br/>extension"] --> S12["Claude Docs or<br/>desktop app"]
+        S10["Tool<br/>check"] --> S11["Share your<br/>resume"]
     end
-    subgraph S2["2 · About you"]
+    subgraph S2["2 · A few questions"]
         direction TB
-        S20["Your resume<br/>and answers"] --> S21["Interview<br/>fills gaps"] --> S22["Docs or<br/>local files?"]
+        S20["Roles and<br/>locations"] --> S21["Pay floor,<br/>deal-breakers"] --> S22["Write six<br/>sources"]
     end
-    subgraph S3["3 · Your sources"]
+    subgraph S3["3 · First resume"]
         direction TB
-        S30["Write six<br/>sources"] --> S31["Save your<br/>config"] --> S32["Copy into<br/>the repo"]
+        S30["Pick a real<br/>posting"] --> S31["Build the<br/>resume"] --> S32["Check it fits<br/>one page"]
     end
-    subgraph S4["4 · Job search"]
-        direction TB
-        S40["career-ops<br/>scanner"] --> S41["Shortlist<br/>page"] --> S42["Weekly run"]
-    end
-    subgraph S5["5 · First resume"]
-        direction TB
-        S50["Pick a real<br/>posting"] --> S51["Build the<br/>resume"] --> S52["Check it fits<br/>one page"]
-    end
-    S1 --> S2 --> S3 --> S4 --> S5
-    S5 ~~~ PAD["room for the zoom buttons"]
+    S1 --> S2 --> S3
+    S3 ~~~ PAD["room for the zoom buttons"]
     style PAD fill:none,stroke:none,color:transparent
 ```
 
@@ -124,10 +116,7 @@ flowchart LR
      (the file's absolute path), the Profile entry also `"writable": true`. Without the file, skills stop and say
      the repo is not set up yet.
    - `shortlist` (optional): `artifact_url` and `title` of your weekly shortlist artifact. Absent:
-     `/job-shortlist` says the shortlist is not set up.
-   - `career_ops_dir` (optional): your career-ops checkout, used by `/discover`. Absent: `/discover`
-     asks for the path.
-   - `discover_locations` (optional): location keywords for `/discover`. Absent: no location filter.
+     `/job-shortlist` says to run `/weekly-scan`.
    - `linkedin_premium` (optional): `true` or `false`, the fallback when a LinkedIn run cannot tell
      your plan from the page. Absent: the skill asks you.
    - `targeting` (optional): `eligible_regions`, `home_city`, `currency`, `phone_country`. Absent:
@@ -136,16 +125,15 @@ flowchart LR
 4. **Optional:** create a gitignored `.personal-terms` file, one term per line (your name, handles,
    email, phone, Doc ids); `tests/test_no_personal_data.py` then also checks tracked files for them
    locally (CI runs only the generic patterns).
-5. **Optional:** set up career-ops for `/discover`, and the weekly shortlist artifact for
-   `/job-shortlist`: publish `templates/shortlist/` as the artifact and schedule a weekly routine
-   from `templates/weekly-search-prompt.md` (filled in).
+5. **Optional:** run `/weekly-scan` for the weekly shortlist artifact used by `/job-shortlist` (by
+   hand: publish `templates/shortlist/` and schedule `templates/weekly-search-prompt.md`, filled in).
 
 ## Map
 
 - [`CLAUDE.md`](CLAUDE.md) — how the workspace is laid out and how to work in it.
 - Local only, not tracked: `applications.md` (status per posting), `postings/` (per-posting
-  folders), `batches/` (`/batch` manifests), `discovered/` (`/discover` CSVs), `dlq.md`, and the personal source files.
-- [`.claude/skills/`](.claude/skills/) — `/onboard`, `/discover`, `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/followup`, `/batch`.
+  folders), `batches/` (`/batch` manifests), `discovered/` (`/scan-jobs` CSVs), `dlq.md`, and the personal source files.
+- [`.claude/skills/`](.claude/skills/) — `/onboard`, `/scan-jobs`, `/weekly-scan`, `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/followup`, `/batch`, `/job-shortlist`.
 - [`templates/`](templates/) — generic starting material `/onboard` uses.
 - [`knowledge/`](knowledge/README.md) — what the project knows: research, context, domain docs.
 - [`knowledge/decisions/`](knowledge/decisions/README.md) — decision records.

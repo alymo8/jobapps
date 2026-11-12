@@ -82,6 +82,11 @@ class BuildCoverLetterTest(unittest.TestCase):
             "- Preferred first name: Jordan\n", ""))
         self.assertEqual(self.bcl.signoff_name(profile), "Jordan")
 
+    def test_signoff_name_treats_ask_as_missing(self):
+        profile = self.temp_profile(self.fixture_text().replace(
+            "Preferred first name: Jordan", "Preferred first name: ask "))
+        self.assertEqual(self.bcl.signoff_name(profile), "Jordan")
+
     def test_check_signoff_uses_profile_name(self):
         code, report = self.run_main([str(self.letter), "--check", "--profile", str(FIXTURE)])
         self.assertEqual(code, 0)

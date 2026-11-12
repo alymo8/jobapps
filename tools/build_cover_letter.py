@@ -121,7 +121,10 @@ def contact(profile: Path) -> dict:
 
 def signoff_name(profile: Path) -> str:
     fields = contact_fields(profile)
-    return fields.get("Preferred first name") or fields["Full name"].split()[0]
+    preferred = fields.get("Preferred first name", "")
+    if preferred.strip().upper() == "ASK":
+        preferred = ""
+    return preferred or fields["Full name"].split()[0]
 
 
 def letter_tex_path(md: Path, profile: Path) -> Path:

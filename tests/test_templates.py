@@ -47,16 +47,24 @@ class SourceTemplatesTest(unittest.TestCase):
         self.assertEqual(
             list(targeting),
             ["Pay floor", "Score threshold", "Years of experience", "Target roles",
-             "Deal-breakers"],  # fmt: skip
+             "Locations", "Deal-breakers"],  # fmt: skip
         )
         self.assertEqual(set(targeting.values()), {"ASK"})
+
+    def test_profile_job_search_keys(self):
+        text = read("profile.md")
+        self.assertEqual(
+            bullets(section(text, "## Job search")),
+            {"Target companies": "ASK", "Priority companies": "ASK"},
+        )
+        self.assertEqual(re.findall(r"^## .*$", text, re.M)[-1], "## Job search")
 
     def test_profile_has_sections(self):
         headings = re.findall(r"^## .*$", read("profile.md"), re.M)
         for h in ("## Contact", "## Eligibility", "## Compensation & availability",
                   "## Common questions", "## Voluntary self-identification (EEO / diversity)",
                   "## Free-text answers", "## Career goals and cover letters",
-                  "## LinkedIn outreach", "## Targeting"):  # fmt: skip
+                  "## LinkedIn outreach", "## Targeting", "## Job search"):  # fmt: skip
             self.assertIn(h, headings)
         self.assertNotIn("## Workday work history", headings)
 
@@ -173,17 +181,41 @@ class ShortlistTemplateTest(unittest.TestCase):
         self.assertEqual(index, {"schema_version": 1, "latest": None, "weeks": []})
 
 
-ONBOARD = ROOT / ".claude" / "skills" / "onboard" / "SKILL.md"
+SAMPLE_RESUME = ROOT / "tests" / "fixtures" / "sample-resume.md"
 
 
-class OnboardSkillTest(unittest.TestCase):
-    def test_onboard_names_existing_templates(self):
-        self.assertTrue(ONBOARD.is_file())
-        text = ONBOARD.read_text(encoding="utf-8")
-        paths = {m.rstrip(".,;:)") for m in re.findall(r"(?<![\w/>.-])templates/[\w./-]+", text)}
-        self.assertTrue(paths)
-        for rel in paths:
-            self.assertTrue((ROOT / rel).exists(), rel)
+class SampleResumeFixtureTest(unittest.TestCase):
+    def test_sample_resume_shape(self):
+        self.assertTrue(SAMPLE_RESUME.is_file())
+        text = SAMPLE_RESUME.read_text(encoding="utf-8")
+        for h in ("## Experience", "## Education", "## Projects", "## Skills"):
+            self.assertRegex(text, rf"(?m)^{re.escape(h)}$", h)
+        jobs = re.split(r"(?m)^### ", section(text, "## Experience"))[1:]
+        self.assertEqual(len(jobs), 2)
+        for job in jobs:
+            self.assertGreaterEqual(len(re.findall(r"(?m)^- ", job)), 7, job.splitlines()[0])
+        emails = re.findall(r"[\w.+-]+@[\w-]+(?:\.[\w-]+)+", text)
+        self.assertTrue(emails)
+        for email in emails:
+            self.assertTrue(email.endswith("@example.com"), email)
+
+
+SKILLS = ROOT / ".claude" / "skills"
+
+
+class SkillsTest(unittest.TestCase):
+    def test_skills_name_existing_templates(self):
+        skill_files = sorted(SKILLS.glob("*/SKILL.md"))
+        self.assertTrue(skill_files)
+        for skill in skill_files:
+            text = skill.read_text(encoding="utf-8")
+            paths = {m.rstrip(".,;:)") for m in re.findall(r"(?<![\w/>.-])templates/[\w./-]+", text)}
+            for rel in paths:
+                self.assertTrue((ROOT / rel).exists(), f"{skill.parent.name}: {rel}")
+
+    def test_discover_skill_removed(self):
+        self.assertFalse((SKILLS / "discover").exists())
+        self.assertTrue((SKILLS / "scan-jobs" / "SKILL.md").is_file())
 
 
 if __name__ == "__main__":
