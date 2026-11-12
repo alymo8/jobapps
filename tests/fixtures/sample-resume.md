@@ -16,6 +16,8 @@ Fictional sample resume for the onboarding walkthrough. The person, companies an
 - Added OpenTelemetry tracing and SLO dashboards, bringing mean time to detect a payment failure under 5 minutes.
 - Mentored three junior engineers through design reviews and pairing; two were promoted within 18 months.
 - Wrote the team's API versioning guide, adopted by two other backend teams.
+- Ran the on-call rotation for the payments platform and wrote the runbooks that cut repeat pages by 40%.
+- Built a Java and Spring Boot microservice exposing the ledger search API over REST with an OpenAPI spec, used by the support and finance tools.
 
 ### Software Engineer, Prairie Freight Systems (Chicago, IL) - Jul 2019 to Feb 2022
 
@@ -26,22 +28,29 @@ Fictional sample resume for the onboarding walkthrough. The person, companies an
 - Wrote load tests with k6 that caught two capacity limits before peak season.
 - Raised unit test coverage of the routing module from 35% to 80%.
 - Worked with the data team to publish shipment events to the warehouse for daily reporting.
+- Moved the carrier onboarding service from MySQL to PostgreSQL with a dual-write cutover and no data loss.
+- Worked in two-week Agile sprints, running backlog grooming and sprint demos for the tracking team.
 
 ## Projects
 
 ### Tidewatch (open source)
 
 - A small Go CLI that watches public transit feeds and posts delay alerts to a chat channel; 300 stars.
+- Polls GTFS-realtime feeds from three transit agencies and deduplicates alerts with a Redis-backed window.
+- Ships as a single static binary and a Docker image, with releases built by GitHub Actions.
 
 ### Ledgerlint
 
 - A Python linter for double-entry accounting CSV files that flags unbalanced journal entries before import.
+- Ships rule plugins for currency rounding and duplicate transaction IDs, with 95% test coverage.
+- Runs as a pre-commit hook and in CI, so bad journal files are caught before they reach the ledger.
 
 ## Education
 
-### Northgate Institute of Technology - B.S. Computer Science, 2019
+### Northgate Institute of Technology (Chicago, IL) - B.S. Computer Science, 2019
 
 - Coursework: distributed systems, databases, operating systems, algorithms.
+- Senior capstone: a fault-tolerant key-value store in Go with Raft replication, built in a team of four.
 
 ## Skills
 
