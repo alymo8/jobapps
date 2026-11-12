@@ -106,7 +106,8 @@ Ask in one or two grouped rounds, and only what the material does not settle:
 | contact details missing from the resume (name, preferred name, email, phone, location, LinkedIn, GitHub, website) | profile `## Contact` |
 
 Every `## Targeting` line needs an answer (`Pay floor` and `Deal-breakers` may be `none`): keep
-asking until each has one. Other unanswered profile fields stay `ASK`.
+asking until each has one. Other unanswered profile fields stay `ASK`, except `Preferred first
+name`: when the user gives none, write the first word of `Full name`.
 
 Not asked here:
 

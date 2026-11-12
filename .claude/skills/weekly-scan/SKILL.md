@@ -86,7 +86,8 @@ Before filling, read the pulled `sources/profile.md` (run `.claude/skills/pull-s
 if it is missing). For `Target roles` or `Locations` under `## Targeting` missing or `ASK`, and
 for `## Job search` missing or with an `ASK` line, ask and save through
 `.claude/skills/write-source.md`, one run per change, exactly as `/scan-jobs` step 2 does: an
-`ASK` line is replaced; a missing `Locations` line is added at the end of `## Targeting`; a missing
+`ASK` line is replaced; a missing `Locations` line is added at the end of `## Targeting` (value:
+the places verbatim, comma-separated, plus `Remote` when the user accepts remote); a missing
 `## Job search` section is added in one "new section" run with the text
 `\n## Job search\n- Target companies: <answer> (<first name>, <today>)\n- Priority companies: <answer> (<first name>, <today>)\n`;
 `none` is a valid answer for either company line.
@@ -105,7 +106,8 @@ The routine or task holds a copy of these values, so changing them later means r
 
 ## schedule
 
-Run alone, the artifact URL and title come from config `shortlist` (stop with
+Run alone (without `prompt` in the same run), `schedule` runs `prompt` first, since it needs
+`<filled prompt>`. The artifact URL and title come from config `shortlist` (stop with
 `run /weekly-scan publish` if absent), as in `prompt`; the `shortlist` config write below
 writes those values back.
 
@@ -152,7 +154,8 @@ Docs mode:
 
 ## Local mode
 
-`publish` runs exactly as above; these replace the Docs text of `prompt` and `schedule`.
+`publish` runs exactly as above; these replace the Docs text of `prompt` and `schedule`:
+`prompt` = step 1, `schedule` = steps 1-4.
 
 1. **Fill the prompt** as in `prompt`, except that `<sources list>` gets one
    `- <Doc title>: <local_path>` line per source. Then append the line

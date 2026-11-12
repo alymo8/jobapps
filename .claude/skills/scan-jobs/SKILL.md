@@ -18,7 +18,8 @@ user's external target lists; it doesn't replace them. It never applies and neve
 2. **Fill the gaps before searching.** Never search with any of these missing.
    - `Target roles` or `Locations` under `## Targeting` missing or `ASK`: ask the user, then save
      each answer through `.claude/skills/write-source.md` (one run per change): an `ASK` line is
-     replaced; a missing `Locations` line is added at the end of `## Targeting`.
+     replaced; a missing `Locations` line is added at the end of `## Targeting`. A `Locations`
+     value is the places verbatim, comma-separated, plus `Remote` when the user accepts remote.
    - No `## Job search` section: ask for target companies and priority companies (`none` is a
      valid answer for either), then add the section in one `write-source.md` run, a "new section"
      edit with the text
@@ -44,7 +45,7 @@ user's external target lists; it doesn't replace them. It never applies and neve
    `--location` (the search already applied the location scope). It dedupes against
    `applications.md`, `dlq.md`, `postings/*/posting.md`, earlier `discovered/*.csv` and any
    `--exclude` files, and writes `discovered/<date>.csv`. If it prints `no new postings`, say so
-   (with the `unreadable` list, if any) and stop. If it exits non-zero, show its message and stop.
+   (with its `skipped N rows` line, if it printed one, and the `unreadable` list, if any) and stop. If it exits non-zero, show its message and stop.
 5. **Report.** Read the CSV it names and show the count, its `skipped N rows` line if it printed
    one, and the first 15 rows (rank, company, title, location). List the `unreadable` priority
    companies so the user can check them by hand. Over 60 rows: say so, and suggest batching a

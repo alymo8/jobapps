@@ -36,7 +36,7 @@ Run from the repo root.
    section's heading, stop and tell the user. Never use the `nth` option.
    New answers keep the profile's form: `- <question>: <answer> (<first name>, YYYY-MM-DD)`, with today's date; `<first name>` is the
    `Preferred first name` line under `## Contact` in the pulled `sources/profile.md` (trailing
-   parenthetical note stripped; if that line is missing, the first word of `Full name`).
+   parenthetical note stripped; if that line is missing or `ASK`, the first word of `Full name`).
 3. For a Doc entry (`doc_url`): **Edit the doc** with Docs `update` (the Claude Docs MCP server's `mcp__<id>__update`, always
    loaded): `ref {"object":"node","id":<node_id>}`, `engine "prose"`,
    `container {"kind":"project","id":<doc id>}`, and
