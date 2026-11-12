@@ -38,7 +38,8 @@ KEY_FUNCTIONS = ("norm_url", "norm_text", "norm_company", "match_key", "doc_id")
 KEYS_CODE_SHA256 = "eef6f61ddf7931bded86f6b3f51a6cfd5ed83072f25e14718a6229f633373e42"  # gitleaks:allow (a code hash, not a secret)
 DEFAULT_PENDING =Path.home() / ".job-shortlist" / "pending-decisions.jsonl"
 ROW_FIELDS = ("rank", "tab", "company", "title", "location", "work_mode", "company_type",
-              "priority", "canada", "new", "status", "deadline", "fit_notes", "url", "score")
+              "priority", "eligibility", "new", "status", "deadline", "fit_notes", "url", "score")
+OLD_FIELD_NAMES = {"canada": "eligibility"}  # weeks written before the rename
 
 
 class KeysError(Exception):
@@ -100,6 +101,10 @@ def load_rows(path):
         week, rows = data.get("week") or path.stem, data.get("rows") or []
     out = []
     for r in rows:
+        r = dict(r)
+        for old, new in OLD_FIELD_NAMES.items():
+            if old in r and not r.get(new):
+                r[new] = r.pop(old)
         r = {k: r.get(k, "") if r.get(k) is not None else "" for k in set(ROW_FIELDS) | set(r)}
         if isinstance(r["rank"], str) and r["rank"].strip().isdigit():
             r["rank"] = int(r["rank"])
@@ -166,8 +171,9 @@ def chips(row, today):
     if str(row.get("priority", "")).lower() == "yes":
         out.append("Priority")
     # Raw value on purpose: norm_text drops "(...)", which is where this flag lives.
-    if "province-restricted" in str(row.get("canada", "")).lower():
-        out.append("Province-restricted")
+    # Matches both "region-restricted" and the older "province-restricted".
+    if "restricted" in str(row.get("eligibility", "")).lower():
+        out.append("Region-restricted")
     day = parse_day(row.get("deadline", ""))
     if day:
         out.append(f"Deadline {day.isoformat()}" + (" (past)" if day < today else ""))

@@ -11,11 +11,12 @@ Read these with the Artifact tool: `action: "read"`, this artifact's `url`, and 
 - `data/latest.json`: identical to the newest `data/<week>.json`. Before the first weekly run it is an empty week: `week`, `generated_at` and `baseline_compared` null, every count 0, `summary_md` "", and `rows`, `coverage` and `flags` empty.
 - `data/<week>.json` contains:
   - `schema_version`, `week`, `generated_at`, `baseline_compared`.
-  - `counts`: `total`, `ranked`, `below_cut`, `new`, `new_in_ranked`, `priority`, `province_restricted`, `unverified`, `likely_live`. Optionally also `hidden_applied` and `hidden_not_interested`.
+  - `counts`: `total`, `ranked`, `below_cut`, `new`, `new_in_ranked`, `priority`, `region_restricted`, `unverified`, `likely_live`. Optionally also `hidden_applied` and `hidden_not_interested`.
   - `summary_md`.
-  - `rows[]`: `rank`, `tab` (main|below_cut), `company`, `title`, `location`, `work_mode`, `company_type`, `priority` (Yes/No), `canada` (location eligibility: Confirmed | Confirmed (region-restricted) | Unverified; the name is kept), `new` (Yes/No), `status` (Open|Likely live), `deadline`, `fit_notes`, `url`, `score`.
+  - `rows[]`: `rank`, `tab` (main|below_cut), `company`, `title`, `location`, `work_mode`, `company_type`, `priority` (Yes/No), `eligibility` (location eligibility: Confirmed | Confirmed (region-restricted) | Unverified), `new` (Yes/No), `status` (Open|Likely live), `deadline`, `fit_notes`, `url`, `score`.
   - `coverage[]`, `flags[]`.
-- `data/<week>.csv`: `rank,tab,company,title,location,work_mode,company_type,priority,canada,new,url`.
+  - Older weeks may use `canada` for `eligibility` and `province_restricted` for `region_restricted`; readers accept both.
+- `data/<week>.csv`: `rank,tab,company,title,location,work_mode,company_type,priority,eligibility,new,url`.
 - `data/decision_keys.py`: reference implementation of the key functions below. The page's JavaScript matches it exactly.
 
 ## Decisions (artifact database, collection `decisions`)

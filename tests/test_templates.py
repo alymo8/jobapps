@@ -150,7 +150,7 @@ SHORTLIST = TEMPLATES / "shortlist"
 SHORTLIST_FILES = ("index.html", "capabilities.json", "data/CONTRACT.md", "data/decision_keys.py",
                    "data/index.json", "data/latest.json")  # fmt: skip
 COUNT_KEYS = ("total", "ranked", "below_cut", "new", "new_in_ranked", "priority",
-              "province_restricted", "unverified", "likely_live", "hidden_applied",
+              "region_restricted", "unverified", "likely_live", "hidden_applied",
               "hidden_not_interested")  # fmt: skip
 
 

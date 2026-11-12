@@ -129,7 +129,7 @@ is the role still open, and would they be open to a short chat or to pointing th
 person. No new claims, no guilt-tripping.
 
 **Reply:** answer only from the posting's tailored resume and `sources/profile.md`,
-in the language of the reply (English or French). Anything neither covers (salary with no `sources/profile.md` rule, specific
+in the language of the reply. Anything neither covers (salary with no `sources/profile.md` rule, specific
 availability, references) becomes a question in `questions.txt`, not a guess. A request to
 schedule → ask the user for times; never invent any.
 

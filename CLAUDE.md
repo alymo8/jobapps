@@ -1,8 +1,10 @@
 # jobapps
 
 Project memory file: how to navigate and work in this repo. Keep it to about a
-screen; update it in the same change that makes it stale. Workspace-wide rules live
-in the workspace `CLAUDE.md` one level up.
+screen; update it in the same change that makes it stale. This file is complete on
+its own. If the repo sits inside the maintainer's claude-kit workspace, the
+`CLAUDE.md` one level up adds development-process rules (worktrees, spec and plan
+gates); without it, nothing here changes.
 
 ## Setup / prerequisites
 
@@ -103,5 +105,6 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 - Knowledge base: [`knowledge/`](knowledge/README.md)
 - Decisions: [`knowledge/decisions/`](knowledge/decisions/README.md)
-- Specs and plans: [`docs/superpowers/`](docs/superpowers/README.md)
-- Session hygiene: use `claude-kit:lean-context` when exploring; `/handoff` before `/clear`.
+- Specs and plans (design history): [`docs/superpowers/`](docs/superpowers/README.md)
+- Session hygiene: keep long command output (tests, builds) out of the main context; with the
+  optional claude-kit plugin, use `claude-kit:lean-context` when exploring and `/handoff` before `/clear`.
