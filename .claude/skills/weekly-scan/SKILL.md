@@ -86,7 +86,7 @@ Before filling, read the pulled `sources/profile.md` (run `.claude/skills/pull-s
 if it is missing). For `Target roles` or `Locations` under `## Targeting` missing or `ASK`, and
 for `## Job search` missing or with an `ASK` line, ask and save through
 `.claude/skills/write-source.md`, one run per change, exactly as `/scan-jobs` step 2 does: an
-`ASK` line is replaced; a missing `Locations` line is added under `## Targeting`; a missing
+`ASK` line is replaced; a missing `Locations` line is added at the end of `## Targeting`; a missing
 `## Job search` section is added in one "new section" run with the text
 `\n## Job search\n- Target companies: <answer> (<first name>, <today>)\n- Priority companies: <answer> (<first name>, <today>)\n`;
 `none` is a valid answer for either company line.

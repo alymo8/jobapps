@@ -14,12 +14,11 @@ user's external target lists; it doesn't replace them. It never applies and neve
    and stop. If `sources/profile.md` is missing, run `.claude/skills/pull-sources.md` first. Read
    `sources/profile.md`, `sources/mega-resume.tex` (ranking factor 2 is requirements overlap with
    the resume) and `config.local.json` `targeting` (`eligible_regions`, `home_city`; a missing key
-   is simply absent). Ignore any `career_ops_dir` or `discover_locations` key: they are no longer
-   used, and never delete them.
+   is simply absent).
 2. **Fill the gaps before searching.** Never search with any of these missing.
    - `Target roles` or `Locations` under `## Targeting` missing or `ASK`: ask the user, then save
      each answer through `.claude/skills/write-source.md` (one run per change): an `ASK` line is
-     replaced; a missing `Locations` line is added under `## Targeting` (after `Target roles`).
+     replaced; a missing `Locations` line is added at the end of `## Targeting`.
    - No `## Job search` section: ask for target companies and priority companies (`none` is a
      valid answer for either), then add the section in one `write-source.md` run, a "new section"
      edit with the text
