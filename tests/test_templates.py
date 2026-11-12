@@ -200,17 +200,22 @@ class SampleResumeFixtureTest(unittest.TestCase):
             self.assertTrue(email.endswith("@example.com"), email)
 
 
-ONBOARD = ROOT / ".claude" / "skills" / "onboard" / "SKILL.md"
+SKILLS = ROOT / ".claude" / "skills"
 
 
-class OnboardSkillTest(unittest.TestCase):
-    def test_onboard_names_existing_templates(self):
-        self.assertTrue(ONBOARD.is_file())
-        text = ONBOARD.read_text(encoding="utf-8")
-        paths = {m.rstrip(".,;:)") for m in re.findall(r"(?<![\w/>.-])templates/[\w./-]+", text)}
-        self.assertTrue(paths)
-        for rel in paths:
-            self.assertTrue((ROOT / rel).exists(), rel)
+class SkillsTest(unittest.TestCase):
+    def test_skills_name_existing_templates(self):
+        skill_files = sorted(SKILLS.glob("*/SKILL.md"))
+        self.assertTrue(skill_files)
+        for skill in skill_files:
+            text = skill.read_text(encoding="utf-8")
+            paths = {m.rstrip(".,;:)") for m in re.findall(r"(?<![\w/>.-])templates/[\w./-]+", text)}
+            for rel in paths:
+                self.assertTrue((ROOT / rel).exists(), f"{skill.parent.name}: {rel}")
+
+    def test_discover_skill_removed(self):
+        self.assertFalse((SKILLS / "discover").exists())
+        self.assertTrue((SKILLS / "scan-jobs" / "SKILL.md").is_file())
 
 
 if __name__ == "__main__":
