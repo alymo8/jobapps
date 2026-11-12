@@ -22,7 +22,7 @@ def row(rank, company, title, url, **kw):
     r = {
         "rank": rank, "tab": "main", "company": company, "title": title,
         "location": "Toronto, ON", "work_mode": "Hybrid", "company_type": "Startup",
-        "priority": "No", "canada": "Confirmed", "new": "No", "status": "Open",
+        "priority": "No", "eligibility": "Confirmed", "new": "No", "status": "Open",
         "deadline": "", "fit_notes": "", "url": url, "score": 50.0,
     }
     r.update(kw)
@@ -173,7 +173,7 @@ class ListTest(Base):
             row(1, "Mistral AI", "FDE", "https://m.com/1", new="Yes", priority="Yes", location="Montréal, QC"),
             row(2, "Acme", "Backend Engineer", "https://acme.com/2", tab="below_cut"),
             row(3, "Okta", "Engineer", "https://okta.com/3", deadline="2026-10-11"),
-            row(4, "Cohere", "ML Engineer", "https://c.com/4", deadline="2026-10-31", canada="Confirmed (province-restricted)"),
+            row(4, "Cohere", "ML Engineer", "https://c.com/4", deadline="2026-10-31", eligibility="Confirmed (region-restricted)"),
             row(50, "Globex", "AI Engineer", "https://globex.com/50", deadline="2026-10-22"),
             row(80, "TD", "Data Scientist", "https://td.com/80", deadline="2026-10-20"),
             row(90, "Shopify", "Dev", "https://shop.com/90", deadline="2026-10-25"),
@@ -207,10 +207,31 @@ class ListTest(Base):
         self.assertEqual(self.ranks(self.list("--top", "2")[1]), [80, 50])
         self.assertEqual(self.ranks(self.list("--top", "0")[1]), [])
 
+    def test_old_field_name_canada_still_read(self):
+        # Weeks written before the rename carry `canada` (and old text "province-restricted").
+        old = row(4, "Cohere", "ML Engineer", "https://c.com/4", canada="Confirmed (province-restricted)")
+        del old["eligibility"]
+        new = row(4, "Cohere", "ML Engineer", "https://c.com/4", eligibility="Confirmed (region-restricted)")
+        d = self.decisions_dir([])
+        outs = []
+        for r in (old, new):
+            _, out = self.run_cli("list", "--keys", FIXTURE_KEYS, "--rows", self.week([r]),
+                                  "--decisions", d, "--today", "2026-10-18")
+            outs.append(out["rows"][0]["chips"])
+        self.assertEqual(outs, [["Region-restricted"], ["Region-restricted"]])
+
+    def test_old_field_name_in_csv(self):
+        path = self.dir / "2026-10-17.csv"
+        path.write_text("rank,tab,company,title,location,work_mode,company_type,priority,canada,new,url\n"
+                        "1,main,A,T,X,Remote,Startup,No,Confirmed (region-restricted),No,https://a.com/1\n",
+                        encoding="utf-8")
+        _, rows = shortlist.load_rows(path)
+        self.assertEqual(rows[0]["eligibility"], "Confirmed (region-restricted)")
+
     def test_chips(self):
         rows = {r["rank"]: r["chips"] for r in self.list()[1]["rows"]}
         self.assertEqual(rows[1], ["New", "Priority"])
-        self.assertEqual(rows[4], ["Province-restricted", "Deadline 2026-10-31"])
+        self.assertEqual(rows[4], ["Region-restricted", "Deadline 2026-10-31"])
         self.assertEqual(rows[50], ["Deadline 2026-10-22"])
         self.assertEqual(rows[3], ["Deadline 2026-10-11 (past)"])
 

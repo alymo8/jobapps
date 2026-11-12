@@ -111,7 +111,7 @@ From `sources/profile.md` `## Contact` and `## Common questions`.
 - Previously worked for the organization: `sources/profile.md`; if not answerable, `ASK`.
 - Name: `Full name` split into first/last; preferred name from `Preferred first name` if asked.
 - Address: split `Street address` on commas: part 1 → Address Line 1, part 2 → City; the
-  province abbreviation → its full name in the Province dropdown (`QC` → `Quebec`); the rest →
+  state or province abbreviation → its full name in the State/Province dropdown (e.g. `CA` → `California`, `QC` → `Quebec`); the rest →
   Postal Code.
 - Phone: device type `Mobile`, country code `<phone_country>` (config `targeting`; when absent, mark the field `ASK`), number from `Phone`, unless `sources/profile.md`
   says otherwise.

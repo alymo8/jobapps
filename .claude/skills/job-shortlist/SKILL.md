@@ -1,6 +1,6 @@
 ---
 name: job-shortlist
-description: Read the user's weekly job shortlist artifact and record decisions in its `decisions` collection so decided postings leave the list. Use when the user asks what's on the list ("show my top 20", "new this week", "Montreal ones", "what's at Stripe"), says "I applied to X", says a posting is not wanted ("skip the Okta ones", "not interested in #43"), asks to undo a decision, or asks "what have I applied to?"; /apply, /resume, /cover-letter and /batch run its "Record applied" when the user says yes to "Mark <company> – <title> as applied?".
+description: Read the user's weekly job shortlist artifact and record decisions in its `decisions` collection so decided postings leave the list. Use when the user asks what's on the list ("show my top 20", "new this week", "Berlin ones", "what's at Stripe"), says "I applied to X", says a posting is not wanted ("skip the Okta ones", "not interested in #43"), asks to undo a decision, or asks "what have I applied to?"; /apply, /resume, /cover-letter and /batch run its "Record applied" when the user says yes to "Mark <company> – <title> as applied?".
 argument-hint: [show <filters> | applied <posting> | not-interested <postings> | undo <posting> | review]
 ---
 
@@ -66,8 +66,8 @@ warning on stderr.
 
 ## Show the shortlist
 
-Map the request to `list` flags: "top 20" → `--top 20`; "new this week" → `--new`; "Montreal ones"
-→ `--location montreal` (several places → several `--location`); "what's at Stripe" →
+Map the request to `list` flags: "top 20" → `--top 20`; "new this week" → `--new`; "Berlin ones"
+→ `--location berlin` (several places → several `--location`); "what's at Stripe" →
 `--company stripe`; "priority" → `--priority`; "main list" → `--tab main`. No count given → `--top 20`.
 Run with `--table` and print its output as is (the week line, then rank, company, title, location,
 chips, URL). Deadlines in the next 7 days come first, then rank order.

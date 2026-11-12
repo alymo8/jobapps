@@ -132,17 +132,17 @@ Don't rename or remove fields. Only add fields.
   empty.
 - `<week>.json` contains:
   - `schema_version`, `week`, `generated_at` (ISO), `baseline_compared` (previous week date).
-  - `counts{total, ranked, below_cut, new, new_in_ranked, priority, province_restricted, unverified, likely_live, hidden_applied, hidden_not_interested}`.
-    `province_restricted` counts the region-restricted postings (the field name is kept).
+  - `counts{total, ranked, below_cut, new, new_in_ranked, priority, region_restricted, unverified, likely_live, hidden_applied, hidden_not_interested}`.
+    `region_restricted` counts the region-restricted postings.
   - `summary_md`: the weekly summary markdown.
   - `rows[]`, each with: `rank`, `tab` (main | below_cut), `company`, `title`, `location`,
-    `work_mode`, `company_type`, `priority` (Yes/No), `canada` (the Location Eligibility value:
-    Confirmed | Confirmed (region-restricted) | Unverified; the field name is kept), `new`
+    `work_mode`, `company_type`, `priority` (Yes/No), `eligibility` (the Location Eligibility value:
+    Confirmed | Confirmed (region-restricted) | Unverified), `new`
     (Yes/No), `status` (Open | Likely live), `deadline` (YYYY-MM-DD or ""), `fit_notes`, `url`,
     `score`.
   - `coverage[]`, each with: `company`, `result`, `qualifying_count`, `board`, `notes`.
   - `flags[]`, each with: `section`, and `items[]` of `{company, item, location_or_status, detail, url}`.
-- `<week>.csv` columns: `rank,tab,company,title,location,work_mode,company_type,priority,canada,new,url`.
+- `<week>.csv` columns: `rank,tab,company,title,location,work_mode,company_type,priority,eligibility,new,url`.
 
 ## Respect my decisions (applied / not interested)
 

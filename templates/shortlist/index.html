@@ -181,7 +181,7 @@ async function loadWeek(path){
   doc=await (await fetch(path)).json();
   const c=doc.counts;
   $("#sub").textContent=doc.week?`Week of ${doc.week} · compared with ${doc.baseline_compared||"no earlier week"}`:"No list yet: the first weekly run fills this page.";
-  $("#stats").innerHTML=[["Qualifying",c.total],["New this week",c.new],["New in top 100",c.new_in_ranked],["Priority companies",c.priority],["Region-restricted",c.province_restricted],["Likely live",c.likely_live]]
+  $("#stats").innerHTML=[["Qualifying",c.total],["New this week",c.new],["New in top 100",c.new_in_ranked],["Priority companies",c.priority],["Region-restricted",c.region_restricted??c.province_restricted],["Likely live",c.likely_live]]
     .map(([l,v])=>`<div class="stat"><b>${v}</b><span>${l}</span></div>`).join("");
   renderTabs(); render();
   for(const r of doc.rows){ if(!rowIds.has(r.url)) rowIds.set(r.url,await docId(r.url)); }
@@ -201,8 +201,9 @@ function chips(r,d){
   if(d)o.push(`<span class="chip ${d.decision==="applied"?"c-ap":"c-ni"}">${dlabel(d)} ${esc(ddate(d))}</span>`);
   if(r.new==="Yes")o.push('<span class="chip c-new">New</span>');
   if(r.priority==="Yes")o.push('<span class="chip c-pri">Priority</span>');
-  if(/restricted/.test(r.canada))o.push('<span class="chip c-prov">Region-restricted</span>');
-  if(r.canada==="Unverified")o.push('<span class="chip c-unv">Location unverified</span>');
+  const elig=r.eligibility??r.canada??"";
+  if(/restricted/.test(elig))o.push('<span class="chip c-prov">Region-restricted</span>');
+  if(elig==="Unverified")o.push('<span class="chip c-unv">Location unverified</span>');
   if(r.status==="Likely live")o.push('<span class="chip c-live">Likely live</span>');
   if(r.deadline)o.push(`<span class="chip c-dl">Closes ${esc(r.deadline)}</span>`);
   o.push(`<span class="chip c-mode">${esc(r.work_mode)}</span>`);
