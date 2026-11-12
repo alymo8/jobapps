@@ -16,7 +16,7 @@ published `data/*` files, the weekly run) is built and owned elsewhere; this ski
 - Artifact: `config.local.json` "shortlist" — "artifact_url" (the page) and "title".
 - If `config.local.json` does not exist, tell the user:
   `config.local.json is missing: this repo is not set up yet (run /onboard, or see README "Setup").` and stop. If it has no `shortlist` key, tell the user:
-  `The shortlist is not set up: run /onboard, or add "shortlist" to config.local.json (README "Setup").` and stop.
+  `The shortlist is not set up: run /weekly-scan, or add "shortlist" to config.local.json (README "Setup").` and stop.
 - Collection: `decisions`. Document id: `doc_id(url)` from the artifact's `data/decision_keys.py`.
 - Data contract: `data/CONTRACT.md` in the artifact (source of truth; read it when a field is unclear).
 - Pending file: `~/.job-shortlist/pending-decisions.jsonl`. Keys cache: `~/.job-shortlist/decision_keys.py`.
