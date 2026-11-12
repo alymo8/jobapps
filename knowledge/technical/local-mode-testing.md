@@ -23,7 +23,11 @@ What tripped the first end-to-end run of local mode and `/weekly-scan`'s weekly 
   `%USERPROFILE%/.claude/projects/<session folder slug>/` written during the run (its file name is
   not the `local_...` id), and list its `tool_use` inputs.
 - **A fictional persona needs enough material.** With 3 bullets per job, `/resume` stops at fill
-  about 0.5 and dead-letters the posting as `FAILED`; give each job 7-8 bullets and 2-3 projects.
+  about 0.5 and dead-letters the posting as `FAILED`; 7-8 bullets per job still gave fill 0.83.
+  Give each job 9-10 bullets and 2-3 projects (`tests/fixtures/sample-resume.md` reaches 0.96).
+- **Walking `/onboard` as a new user:** `git worktree add --detach <scratchpad>/e2e HEAD` has no
+  `config.local.json`, so it is a clean first run; answer with `tests/fixtures/sample-resume.md`
+  and a sources folder outside the repo. Remove the worktree and folder afterwards.
 - **Paths from Python in a Git Bash loop** end in `\r` on Windows (`for p in $(python ...)`), which
   makes `pull_sources.py` crash on the target path; strip them with `tr -d '\r'`.
 
