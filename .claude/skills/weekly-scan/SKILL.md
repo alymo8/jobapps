@@ -70,9 +70,15 @@ Ask first if config has `shortlist`. Artifact publish, `file_path`
 "templates/shortlist/data/index.json", "data/latest.json":
 "templates/shortlist/data/latest.json"}`, `capabilities` = the JSON in
 `templates/shortlist/capabilities.json` (never published as a file), `icon: "list"`. Note the
-artifact URL and its title.
+artifact URL and its title, and write `shortlist` `{"artifact_url", "title"}` to config now
+(Rules, "Config writes"), so a re-run or `/weekly-scan publish` alone leaves `/job-shortlist`
+set up.
 
 ## prompt
+
+Run alone (without `publish` in the same run), this part and `schedule` read the artifact URL
+(`<shortlist artifact URL>`) and title from config `shortlist`; if it is absent, stop and say
+`run /weekly-scan publish`.
 
 Copy `templates/weekly-search-prompt.md` to `<S>/weekly-scan/weekly-prompt.md`.
 
@@ -98,6 +104,10 @@ The routine or task holds a copy of these values, so changing them later means r
 `/weekly-scan` (redo).
 
 ## schedule
+
+Run alone, the artifact URL and title come from config `shortlist` (stop with
+`run /weekly-scan publish` if absent), as in `prompt`; the `shortlist` config write below
+writes those values back.
 
 Docs mode:
 
