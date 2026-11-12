@@ -18,7 +18,7 @@ in the workspace `CLAUDE.md` one level up.
 python tools/build_resume.py postings/<dir>/<name>.tex          # compile + JSON checks (1 page, fill, skills lines)
 python tools/build_cover_letter.py postings/<dir>/cover_letter.md [--check]
 python tools/read_postings.py <file.xlsx|.csv|.txt|dlq.md|url> [--rows 1-20] [--new] [--all] [--for outreach]
-python tools/discover.py [--since N] [--exclude <list>] [--location <kw> ...] [--career-ops <dir>]  # -> discovered/<date>.csv
+python tools/discover.py --input <rows.json> [--exclude <list>] [--location <kw> ...]  # dedupe -> discovered/<date>.csv (used by /scan-jobs)
 python tools/pull_sources.py <downloaded.md> <target>                      # doc code block -> sources/ (see .claude/skills/pull-sources.md)
 python tools/pull_sources.py --local <local file> <target>             # local source file -> sources/
 python -I tools/shortlist.py list --keys <decision_keys.py> --rows <latest.json> --decisions <dir> --top 10 --table  # see job-shortlist skill
@@ -28,12 +28,14 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 ## Architecture in brief
 
-- Sources of truth: six Claude Docs or six local files outside the repo, chosen at /onboard (listed in `config.local.json` `sources`) for the mega resume, both prompts,
+- Sources of truth: six Claude Docs or six local files outside the repo, chosen at /onboard (local files by default; listed in `config.local.json` `sources`) for the mega resume, both prompts,
   the profile, stories and answers, pulled into gitignored `sources/` per
   `.claude/skills/pull-sources.md`. Of the six sources, Claude Code writes only to the profile source (Doc or local file), through
   `.claude/skills/write-source.md` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md),
-  [ADR 0011](knowledge/decisions/0011-local-source-files-option.md)).
-- Skills in `.claude/skills/`: `/onboard` sets up a new user (templates in `templates/`); `/discover` (career-ops scanner → CSV) → `/resume` → `/apply`; `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
+  [ADR 0011](knowledge/decisions/0011-local-source-files-option.md),
+  [ADR 0013](knowledge/decisions/0013-minimal-onboarding-and-claude-job-scan.md)).
+- Skills in `.claude/skills/`: `/onboard` sets up a new user (resume, short interview, sources, first resume; templates in `templates/`); `/scan-jobs` (Claude job search → CSV) → `/resume` → `/apply`;
+  `/weekly-scan` publishes the shortlist and schedules the weekly search ([ADR 0013](knowledge/decisions/0013-minimal-onboarding-and-claude-job-scan.md)); `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
   `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
   `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
 - Weekly shortlist: a claude.ai artifact (URL in `config.local.json` `shortlist`). Claude Code

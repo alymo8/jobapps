@@ -1,7 +1,9 @@
 # ADR 0010: Onboarding creates the user's Docs and shortlist
 
-- **Status:** accepted
+- **Status:** partly superseded by 0013
 - **Date:** 2026-10-28
+
+Partly superseded by [ADR 0013](0013-minimal-onboarding-and-claude-job-scan.md): onboarding scope; the creation exception extends to /weekly-scan.
 
 Supersedes [ADR 0003](0003-claude-code-writes-to-the-profile-doc.md) (as amended by
 [ADR 0009](0009-shared-repo-and-local-config.md)) and
