@@ -1,15 +1,15 @@
 ---
 title: Testing local source mode end to end
 status: stable
-last_updated: 2026-10-29
+last_updated: 2026-11-11
 sources: the end-to-end run of the local-sources spec (criteria 2-5)
 ---
 
 # Testing local source mode end to end
 
-What tripped the first end-to-end run of `/onboard` local mode and its weekly scheduled task.
+What tripped the first end-to-end run of local mode and `/weekly-scan`'s weekly scheduled task.
 
-- **Creating the scheduled task.** Auto mode's classifier may refuse
+- **Creating the scheduled task** (`/weekly-scan`). Auto mode's classifier may refuse
   `mcp__scheduled-tasks__create_scheduled_task`; get the user's explicit OK, then call it again.
   The task keeps the session's Auto mode only when it is created in a turn the user typed in the
   desktop app with no subagent still running; otherwise its runs start in the default mode and

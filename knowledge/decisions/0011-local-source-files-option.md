@@ -1,7 +1,9 @@
 # ADR 0011: Local source files as an onboarding option
 
-- **Status:** accepted
+- **Status:** amended by 0013
 - **Date:** 2026-10-29
+
+Amended by [ADR 0013](0013-minimal-onboarding-and-claude-job-scan.md): local files are the default.
 
 Amends ADR 0010 on four points; 0010 stays accepted. This widens
 [ADR 0010](0010-onboarding-creates-user-docs-and-shortlist.md) rather than reversing or narrowing
