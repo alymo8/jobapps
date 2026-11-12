@@ -3,7 +3,7 @@
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development (recommended) or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking.
 
 - **Date:** 2026-11-11
-- **Status:** approved
+- **Status:** implemented
 
 **Goal:** `/onboard` shrinks to tool check → resume → short interview (7 topics) → write sources → first resume; finding jobs moves to two new skills, `/scan-jobs` (on demand) and `/weekly-scan` (scheduled, publishes the shortlist), and career-ops is dropped.
 

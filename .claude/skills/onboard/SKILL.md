@@ -169,11 +169,12 @@ In Docs mode go to **Docs mode** below; in local mode to **Local mode**.
 **Local mode** (no Docs calls).
 
 1. Ask for the folder (`<folder>`, default `~/jobapps-sources`); it must be outside the repo. Run
-   this check from the repo, with the answer as `<folder>` (`~` and `%USERPROFILE%` are expanded,
-   symlinks and letter case resolved):
+   this check from the repo root, with the answer as `<folder>` (`~` and `%USERPROFILE%` are
+   expanded, symlinks and letter case resolved; without git, or outside a git checkout, it checks
+   against the current folder only):
 
    ```
-   python -I -c "import os,subprocess,sys; f=os.path.normcase(os.path.realpath(os.path.expandvars(os.path.expanduser(sys.argv[1])))); out=subprocess.run(['git','worktree','list','--porcelain'],capture_output=True,text=True,check=True).stdout; roots=[os.path.normcase(os.path.realpath(l[9:])) for l in out.splitlines() if l.startswith('worktree ')]; bad=[r for r in roots if f==r or f.startswith(r.rstrip(os.sep)+os.sep)]; print('inside '+bad[0] if bad else 'ok '+os.path.realpath(os.path.expandvars(os.path.expanduser(sys.argv[1]))).replace(os.sep,'/'))" "<folder>"
+   python -I -c "import os,shutil,subprocess,sys; f=os.path.normcase(os.path.realpath(os.path.expandvars(os.path.expanduser(sys.argv[1])))); r=subprocess.run(['git','worktree','list','--porcelain'],capture_output=True,text=True) if shutil.which('git') else None; out=r.stdout if r and r.returncode==0 else 'worktree '+os.getcwd(); roots=[os.path.normcase(os.path.realpath(l[9:])) for l in out.splitlines() if l.startswith('worktree ')]; bad=[r for r in roots if f==r or f.startswith(r.rstrip(os.sep)+os.sep)]; print('inside '+bad[0] if bad else 'ok '+os.path.realpath(os.path.expandvars(os.path.expanduser(sys.argv[1]))).replace(os.sep,'/'))" "<folder>"
    ```
 
    `inside ...` (the repo or one of its worktrees): refuse and ask again. `ok <path>`: `<path>` is

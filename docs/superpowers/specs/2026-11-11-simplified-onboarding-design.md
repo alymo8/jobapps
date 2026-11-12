@@ -1,7 +1,7 @@
 # Simplified onboarding; job search as its own skills: design
 
 - **Date:** 2026-11-11
-- **Status:** approved
+- **Status:** implemented
 
 ## Purpose
 
