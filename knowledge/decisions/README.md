@@ -19,3 +19,4 @@ the next number for a new one, never deleted, superseded instead. Template:
 | [0011](0011-local-source-files-option.md) | Local source files as an onboarding option | amended by 0013 | 2026-10-29 |
 | [0012](0012-recruiter-review-one-pass.md) | Recruiter review: one read, one improvement pass, then final | accepted | 2026-10-31 |
 | [0013](0013-minimal-onboarding-and-claude-job-scan.md) | Minimal onboarding; job search as its own skills | accepted | 2026-11-11 |
+| [0014](0014-region-neutral-shortlist-fields.md) | Region-neutral shortlist fields, old names still read | accepted | 2026-11-11 |

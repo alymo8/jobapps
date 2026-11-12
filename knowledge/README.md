@@ -10,6 +10,7 @@ docs. Each fact has exactly one home; raw originals stay verbatim in
 | Domain | Doc | Summary |
 |---|---|---|
 | technical | [local-mode-testing.md](technical/local-mode-testing.md) | Gotchas of testing local source mode and `/weekly-scan`'s scheduled task end to end |
+| technical | [shortlist-page-testing.md](technical/shortlist-page-testing.md) | Serving and checking the shortlist artifact page locally with sample weeks |
 
 Add a domain folder (for example `technical/`, `product/`, `market/`) when the first
 real research for it arrives; keep this table current so any topic is one hop away.
