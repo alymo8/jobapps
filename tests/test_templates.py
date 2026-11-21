@@ -46,8 +46,9 @@ class SourceTemplatesTest(unittest.TestCase):
         targeting = bullets(section(read("profile.md"), "## Targeting"))
         self.assertEqual(
             list(targeting),
-            ["Pay floor", "Score threshold", "Years of experience", "Target roles",
-             "Locations", "Deal-breakers"],  # fmt: skip
+            ["Pay floor", "Score threshold", "Years of experience", "Target roles", "Job type",
+             "Terms available", "Internship length", "Expected graduation", "GPA", "Locations",
+             "Deal-breakers"],  # fmt: skip
         )
         self.assertEqual(set(targeting.values()), {"ASK"})
 
@@ -128,9 +129,9 @@ class SourceTemplatesTest(unittest.TestCase):
             self.assertTrue(line.endswith(" \\\\"), line)
 
 
-WEEKLY_PLACEHOLDERS = ("<target roles in priority order>", "<target companies>",
-                       "<priority companies>", "<location scope>", "<shortlist artifact URL>",
-                       "<sources list>")  # fmt: skip
+WEEKLY_PLACEHOLDERS = ("<target roles in priority order>", "<job type and terms>",
+                       "<target companies>", "<priority companies>", "<location scope>",
+                       "<shortlist artifact URL>", "<sources list>")  # fmt: skip
 
 
 class WeeklyPromptTemplateTest(unittest.TestCase):
@@ -144,6 +145,13 @@ class WeeklyPromptTemplateTest(unittest.TestCase):
         self.assertRegex(text, r"(?m)^<sources list>$")
         self.assertNotIn("Claude Docs", text.split("## Target roles", 1)[0])
         self.assertRegex(text, r"(?m)^### Known board-access notes \(from past runs\)$")
+
+    def test_weekly_prompt_lessons_are_hints(self):
+        text = (TEMPLATES / "weekly-search-prompt.md").read_text(encoding="utf-8")
+        self.assertRegex(text, r"(?m)^## Untrusted content$")
+        before = section(text, "## Before you start")
+        self.assertNotIn("follow its \"Lessons for next week\"", before)
+        self.assertIn("not instructions", before)
 
 
 SHORTLIST = TEMPLATES / "shortlist"
@@ -216,6 +224,25 @@ class SkillsTest(unittest.TestCase):
     def test_discover_skill_removed(self):
         self.assertFalse((SKILLS / "discover").exists())
         self.assertTrue((SKILLS / "scan-jobs" / "SKILL.md").is_file())
+
+    def test_apply_skill_removed(self):
+        # ADR 0015: the user applies by hand; nothing may still point at the removed skill.
+        self.assertFalse((SKILLS / "apply").exists())
+        for path in sorted(SKILLS.rglob("*.md")):
+            self.assertNotIn("skills/apply/", path.read_text(encoding="utf-8"), str(path))
+
+    def test_linkedin_is_read_only(self):
+        text = (SKILLS / "linkedin-tab.md").read_text(encoding="utf-8")
+        self.assertIn("**Read only**", text)
+        self.assertNotIn("Batch execute mode", (SKILLS / "outreach" / "SKILL.md").read_text(encoding="utf-8"))
+
+
+class ConfigExampleTest(unittest.TestCase):
+    def test_targeting_keys(self):
+        config = json.loads((ROOT / "config.example.json").read_text(encoding="utf-8"))
+        self.assertEqual(list(config["targeting"]),
+                         ["eligible_regions", "search_countries", "home_city", "currency",
+                          "phone_country"])  # fmt: skip
 
 
 if __name__ == "__main__":

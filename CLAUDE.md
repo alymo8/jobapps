@@ -10,7 +10,9 @@ gates); without it, nothing here changes.
 
 - Python 3 for `tools/` (stdlib plus PDF rendering libs used by the build scripts).
 - `pdflatex` on PATH, or MiKTeX installed via scoop (`build_resume.py` falls back to it).
-- Chrome with the Claude-in-Chrome extension for `/apply`, `/outreach`, `/followup`.
+- With Nix: `nix develop` (`flake.nix`) gives both, plus PyMuPDF and openpyxl. Flakes see only
+  git-tracked files: `git add flake.nix flake.lock`, or use `nix develop path:.`.
+- Chrome with the Claude-in-Chrome extension for `/outreach`, `/followup` (read-only LinkedIn).
 - The Claude Docs connector (Docs mode only), signed in to the user's account: skills pull the sources listed in
   `config.local.json` (README "Setup").
 
@@ -36,15 +38,16 @@ python -m py_compile tools/*.py                                  # CI runs this 
   `.claude/skills/write-source.md` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md),
   [ADR 0011](knowledge/decisions/0011-local-source-files-option.md),
   [ADR 0013](knowledge/decisions/0013-minimal-onboarding-and-claude-job-scan.md)).
-- Skills in `.claude/skills/`: `/onboard` sets up a new user (resume, short interview, sources, first resume; templates in `templates/`); `/scan-jobs` (Claude job search → CSV) → `/resume` → `/apply`;
-  `/weekly-scan` publishes the shortlist and schedules the weekly search ([ADR 0013](knowledge/decisions/0013-minimal-onboarding-and-claude-job-scan.md)); `/outreach` (LinkedIn only; `--apply` to apply first) → `/followup`;
-  `/cover-letter` when a form offers one; `/batch` fans these out over many postings;
+- Skills in `.claude/skills/`: `/onboard` sets up a new user (resume, short interview, sources, first resume; templates in `templates/`); `/scan-jobs` (Claude job search → CSV; `--country` for one run) → `/resume` → the user applies by hand;
+  `/weekly-scan` publishes the shortlist and schedules the search, weekly or daily ([ADR 0013](knowledge/decisions/0013-minimal-onboarding-and-claude-job-scan.md), [ADR 0016](knowledge/decisions/0016-internship-targeting-and-search-countries.md)); `/outreach` (LinkedIn drafts) → `/followup`;
+  `/cover-letter` when a form offers one; `/batch` fans `/resume` and outreach drafting out over many postings;
   `/job-shortlist` reads the weekly shortlist artifact and records applied / not-interested decisions.
 - Weekly shortlist: a claude.ai artifact (URL in `config.local.json` `shortlist`). Claude Code
   reads its `data/*` and writes only its `decisions` collection, keys from its `decision_keys.py`
   via `tools/shortlist.py` ([ADR 0010](knowledge/decisions/0010-onboarding-creates-user-docs-and-shortlist.md)).
-  The apply flow asks "Mark <company> – <title> as applied?".
-- `/batch` stage 1a.5 scores each posting (`.claude/skills/batch/scoring.md`, `sonnet`) against `## Targeting` in `sources/profile.md` and dead-letters low scores as `LOW-SCORE` before resumes.
+  "I applied to X" goes through its "Record applied", which also updates `applications.md`.
+- `/batch` stage 1a.5 scores each posting (`.claude/skills/batch/scoring.md`, `sonnet`) against `## Targeting` in `sources/profile.md` (internship lines: job type, terms, length, graduation, GPA) and dead-letters low scores as `LOW-SCORE` before resumes.
+- `/onboard` runs a resume panel on the user's resume (`.claude/skills/onboard/panel.md`, adapted from `/hiring-panel`): its findings become interview questions and mega-resume wording fixes.
 - After each resume build, a fresh `opus` subagent grades it as a recruiter (`.claude/skills/resume/recruiter-review.md`):
   score /10, one improvement pass below 9, then final, low score or not (`/batch` stage 1c; [ADR 0012](knowledge/decisions/0012-recruiter-review-one-pass.md)).
 - Per posting: `postings/<Company>-<id>/` holds `posting.md`, the resume `.tex`, `review.md`,
@@ -54,9 +57,9 @@ python -m py_compile tools/*.py                                  # CI runs this 
 
 ## Conventions
 
-- Never submit an application without the user's explicit OK. On LinkedIn, messages to the user's existing
-  connections and replies need the user's OK (names shown first); requests and messages to new people
-  go out without it ([ADR 0005](knowledge/decisions/0005-linkedin-approval-only-for-existing-connections.md)).
+- Claude never submits an application and never sends, connects or types on LinkedIn: it tailors
+  resumes and drafts send sheets; the user applies and sends by hand and says what was done
+  ([ADR 0015](knowledge/decisions/0015-manual-applying-and-outreach.md)).
 - LinkedIn runs use one tab at a time, recycled every 8 page opens (`.claude/skills/linkedin-tab.md`,
   [ADR 0007](knowledge/decisions/0007-light-linkedin-runs.md)); `/batch` does LinkedIn work one posting at a time.
 - Everything written about the user must be truth-checked against the source files above.
@@ -75,7 +78,7 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - `tools/` scripts aren't ruff-clean at the default 88-column limit; CI byte-compiles them and runs the unittest suite (no linter).
 - CI (`ci.yml`) runs only on pull requests and pushes to `main`; a feature-branch push runs only
   `secret-scan`, so CI results appear once the PR is open.
-- `applications.md` statuses and the legend line are written by four skills (outreach, apply,
+- `applications.md` statuses and the legend line are written by four skills (outreach, job-shortlist,
   batch, followup); change a status rule or the legend in all four, byte-identical.
 - `tests/fixtures/decision_keys.py`: the key functions match the shortlist artifact's keys file; the
   docstring is neutral, so the file is not byte-identical to it (`-text` in `.gitattributes`);
@@ -89,9 +92,9 @@ python -m py_compile tools/*.py                                  # CI runs this 
 - A new git worktree has none of the gitignored local files (`config.local.json`, `.personal-terms`,
   `sources/`): copy the first two in from the main checkout and pull the sources there; copy any
   new ones back before removing the worktree.
-- LinkedIn's profile Connect button sometimes opens no dialog (or freezes the tab); open
-  `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>` instead, which shows the
-  invite dialog directly. When a profile's Message button opens nothing, use Messaging → New message.
+- Send sheets can tell the user: when a profile's Connect button opens no dialog, open
+  `https://www.linkedin.com/preload/custom-invite/?vanityName=<vanity>`; when Message opens
+  nothing, use Messaging → New message.
 - `ArtifactData list` on an empty `decisions` collection writes no files to `out_dir`;
   `shortlist.py` treats a missing directory as no decisions. Its saved files carry no `version`
   (only the tool's result text shows `version N`), so `shortlist.py doc --existing` and `pending-plan`

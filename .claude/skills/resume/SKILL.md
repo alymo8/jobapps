@@ -1,6 +1,6 @@
 ---
 name: resume
-description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled, visually verified and graded by a recruiter-review subagent (one improvement pass below 9/10). Use when the user runs /resume or asks for a resume for a posting; /apply and /outreach run this first.
+description: Tailor the user's one-page LaTeX resume to a job posting (URL or pasted text) from sources/mega-resume.tex, following sources/resume_prompt.md, compiled, visually verified and graded by a recruiter-review subagent (one improvement pass below 9/10). Use when the user runs /resume or asks for a resume for a posting; /outreach runs this first.
 argument-hint: <posting URL or pasted posting>
 ---
 
@@ -56,8 +56,9 @@ All paths are relative to the `jobapps/` folder (the project root).
 9. **Report** in a few lines: the changelog, the recruiter score (`<first>/10 → final <final>/10`)
    with its still-open feedback from `review.md`, the PDF path, and open the PDF for the user
    (`Invoke-Item <pdf>`).
-10. **Shortlist.** Only when the user ran `/resume` directly (not from `/apply`, `/outreach` or a batch):
-   ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
+10. **Shortlist.** Only when the user ran `/resume` directly (not from `/outreach` or a batch):
+   say `Apply at <posting URL> with <pdf name>; say "applied" when it's in and I'll mark <company> – <title> as applied.`
+   (the user applies by hand). On "applied" (now or later), run "Record applied" in
    `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
    `tailored resume`.
 

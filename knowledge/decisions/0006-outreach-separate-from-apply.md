@@ -1,6 +1,6 @@
 # ADR 0006: Outreach separate from apply
 
-- **Status:** accepted
+- **Status:** superseded by [0015](0015-manual-applying-and-outreach.md)
 - **Date:** 2026-10-19
 
 ## Context

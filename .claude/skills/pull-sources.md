@@ -1,6 +1,6 @@
 # Pull the sources (Claude Docs or local files)
 
-A shared procedure file, not a skill: `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/batch`
+A shared procedure file, not a skill: `/resume`, `/cover-letter`, `/outreach`, `/batch`
 and `/followup` follow it before reading anything in `sources/`.
 
 The mega resume, both prompts, and the user's profile, stories and answers live either in six
@@ -50,9 +50,9 @@ changed, the other five unchanged.`
 
 ## When it runs
 
-At the start of `/resume`, `/cover-letter`, `/apply`, `/outreach`, `/batch` and `/followup`, before
-any file in `sources/` is read. When one of these skills runs another (`/apply` runs `/resume` and
-`/cover-letter`; `/outreach` runs `/apply`), only the outermost one pulls. `/batch` pulls once in
+At the start of `/resume`, `/cover-letter`, `/outreach`, `/batch` and `/followup`, before
+any file in `sources/` is read. When one of these skills runs another (`/outreach` runs
+`/resume`), only the outermost one pulls. `/batch` pulls once in
 the main session before fanning out, and its subagent prompts say the sources are already pulled.
 
 ## Failure

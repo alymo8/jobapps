@@ -1,8 +1,8 @@
 # Application profile
 
-Reusable answers for job applications. `/apply` reads this first and only asks the user about
-questions not answered here, then saves the new answer here (under the right heading) so it's never
-asked twice. Facts about experience come from `mega-resume.tex`, not from this file.
+Reusable answers for job applications, to copy into forms you fill by hand. Claude reads this
+first and only asks the user about questions not answered here, then saves the new answer here
+(under the right heading) so it's never asked twice. Facts about experience come from `mega-resume.tex`, not from this file.
 
 Answers marked `ASK` are unknown: ask the user the first time one is needed, then replace `ASK`.
 
@@ -106,6 +106,11 @@ stories live in [stories.md](stories.md).
 - Score threshold: ASK
 - Years of experience: ASK
 - Target roles: ASK
+- Job type: ASK
+- Terms available: ASK
+- Internship length: ASK
+- Expected graduation: ASK
+- GPA: ASK
 - Locations: ASK
 - Deal-breakers: ASK
 

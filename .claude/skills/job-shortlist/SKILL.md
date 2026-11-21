@@ -1,6 +1,6 @@
 ---
 name: job-shortlist
-description: Read the user's weekly job shortlist artifact and record decisions in its `decisions` collection so decided postings leave the list. Use when the user asks what's on the list ("show my top 20", "new this week", "Berlin ones", "what's at Stripe"), says "I applied to X", says a posting is not wanted ("skip the Okta ones", "not interested in #43"), asks to undo a decision, or asks "what have I applied to?"; /apply, /resume, /cover-letter and /batch run its "Record applied" when the user says yes to "Mark <company> – <title> as applied?".
+description: Read the user's weekly job shortlist artifact and record decisions in its `decisions` collection so decided postings leave the list. Use when the user asks what's on the list ("show my top 20", "new this week", "Berlin ones", "what's at Stripe"), says "I applied to X" (the user applies by hand; this also updates applications.md), says a posting is not wanted ("skip the Okta ones", "not interested in #43"), asks to undo a decision, or asks "what have I applied to?"; /resume, /cover-letter and /batch run its "Record applied" when the user says yes to "Mark <company> – <title> as applied?".
 argument-hint: [show <filters> | applied <posting> | not-interested <postings> | undo <posting> | review]
 ---
 
@@ -16,7 +16,8 @@ published `data/*` files, the weekly run) is built and owned elsewhere; this ski
 - Artifact: `config.local.json` "shortlist" — "artifact_url" (the page) and "title".
 - If `config.local.json` does not exist, tell the user:
   `config.local.json is missing: this repo is not set up yet (run /onboard, or see README "Setup").` and stop. If it has no `shortlist` key, tell the user:
-  `The shortlist is not set up: run /weekly-scan, or add "shortlist" to config.local.json (README "Setup").` and stop.
+  `The shortlist is not set up: run /weekly-scan, or add "shortlist" to config.local.json (README "Setup").` and stop;
+  for "Record applied", first do its step 5 (the tracker), which needs no shortlist.
 - Collection: `decisions`. Document id: `doc_id(url)` from the artifact's `data/decision_keys.py`.
 - Data contract: `data/CONTRACT.md` in the artifact (source of truth; read it when a field is unclear).
 - Pending file: `~/.job-shortlist/pending-decisions.jsonl`. Keys cache: `~/.job-shortlist/decision_keys.py`.
@@ -99,6 +100,14 @@ run), plus an optional date ("yesterday" → that date) and note.
    - Date given → `--decided-at YYYY-MM-DD`; else omit (now).
 3. A version conflict → `get` again and redo step 2 once; still failing → tell the user.
 4. Confirm in one line: `Recorded: Applied — <company>, <title>. It won't appear in next week's list.`
+5. **Tracker.** Not in a `/batch` run (the orchestrator writes `applications.md` itself). Find the
+   `applications.md` row whose posting dir's `posting.md` `- URL:` line matches the URL, else the
+   row with the same company and title. Set its status by the status it had: `outreach-only-ready`
+   → `outreach-ready`, `outreach-only-sent` → `outreach-sent`; `in-conversation`, `no-response`
+   or `closed` keep their status and get `applied <date>` in Notes; anything else → `applied`,
+   with the date. No row → add one (status `applied`, the date, Notes `applied by hand`). When you
+   write the row and the legend line lacks `outreach-only`, rewrite the legend line to:
+   ``Status: `resume` → `ready` (form filled, awaiting OK) → `applied` → `outreach-ready` → `outreach-sent` → `in-conversation` | `no-response` | `closed`; not applied: `outreach-only-ready` → `outreach-only-sent`.``
 
 ## Record not interested
 
@@ -155,6 +164,8 @@ Only after every write succeeded, `pending-clear`. Tell the user in one line how
 
 ## Running inside other skills
 
-`/apply`, `/resume`, `/cover-letter` and `/batch` ask `Mark <company> – <title> as applied?` and on
+`/resume`, `/cover-letter` and `/batch` ask `Mark <company> – <title> as applied?` and on
 yes run "Record applied" (or, in `/batch`, steps 1-2 for each chosen posting, then one
-`ArtifactData batch` per 50 writes). Batch subagents never run this skill.
+`ArtifactData batch` per 50 writes). Batch subagents never run this skill. The user applies by
+hand ([ADR 0015](../../../knowledge/decisions/0015-manual-applying-and-outreach.md)): "I applied to
+X" is the usual way a posting reaches `applied`.

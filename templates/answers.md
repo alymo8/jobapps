@@ -1,6 +1,6 @@
 # Free-text answer bank
 
-Answers <first name> has written for past applications, in <first name>'s own voice. `/apply`
+Answers <first name> has written for past applications, in <first name>'s own voice. Claude
 starts from the closest one when a posting asks a similar free-text question (cover letters:
 `/cover-letter`, rules in cover_letter_prompt.md), tailors it to the posting, and marks the result
 `draft` for <first name>'s review. Reuse the facts and the voice; don't paste an answer that

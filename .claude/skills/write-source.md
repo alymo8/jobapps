@@ -3,7 +3,7 @@
 A shared procedure file, not a skill: the only way Claude Code changes a source (the profile's Claude
 Doc or its local file). Skills
 follow it whenever they save something to `sources/profile.md`: a reusable answer, an `ASK`
-replaced by the user's answer, `## Workday work history`, `## Targeting`. Only entries with
+replaced by the user's answer, `## Targeting`. Only entries with
 `"writable": true` in `config.local.json` `sources` (today the profile) are ever written. Batch subagents never
 run it; the orchestrator does.
 

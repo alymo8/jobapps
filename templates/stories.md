@@ -1,7 +1,7 @@
 # Behavioral stories
 
 <first name>'s STAR stories (Situation, Task, Action, Result), for behavioral free-text questions,
-cover letters and outreach messages. `/apply` picks the story that fits a question from the index
+cover letters and outreach messages. Claude picks the story that fits a question from the index
 below. Facts in Situation/Action/Result are <first name>'s own; anything under **Open** is an
 unconfirmed prep note (a missing number, a likely follow-up question): never state it as fact, ask
 <first name> if it is needed.

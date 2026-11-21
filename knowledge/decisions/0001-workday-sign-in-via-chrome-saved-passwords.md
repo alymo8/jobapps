@@ -1,6 +1,6 @@
 # ADR 0001: Workday sign-in via Chrome saved passwords
 
-- **Status:** accepted
+- **Status:** superseded by [0015](0015-manual-applying-and-outreach.md)
 - **Date:** 2026-10-05
 
 ## Context

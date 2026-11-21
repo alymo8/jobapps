@@ -1,6 +1,6 @@
 # ADR 0005: LinkedIn approval only for existing connections
 
-- **Status:** accepted
+- **Status:** superseded by [0015](0015-manual-applying-and-outreach.md)
 - **Date:** 2026-10-19
 
 ## Context

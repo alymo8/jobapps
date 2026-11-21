@@ -1,6 +1,6 @@
 ---
 name: cover-letter
-description: Write a tailored, one-page cover letter for one job posting, following sources/cover_letter_prompt.md, from sources/mega-resume.tex, sources/stories.md, sources/answers.md and sources/profile.md, truth-checked. Use when the user runs /cover-letter or asks for a cover letter; /apply runs it whenever a form offers a cover letter.
+description: Write a tailored, one-page cover letter for one job posting, following sources/cover_letter_prompt.md, from sources/mega-resume.tex, sources/stories.md, sources/answers.md and sources/profile.md, truth-checked. Use when the user runs /cover-letter or asks for a cover letter, e.g. when a form they are filling by hand offers one (--pdf for forms that only take an upload).
 argument-hint: <posting URL | posting dir> [--pdf]
 ---
 
@@ -36,13 +36,14 @@ All paths are relative to `jobapps/` (the project root).
    `postings/<dir>/changelog.md`. Fix or flag any claim without a source.
 6. **Report**: the prompt's "What to report", then the full letter text verbatim. Open the file for
    the user (`Invoke-Item postings/<dir>/cover_letter.md`, or the PDF when built).
-7. **Shortlist.** Only when the user ran `/cover-letter` directly (not from `/apply`, `/outreach` or a
-   batch): ask `Mark <company> – <title> as applied?`. On yes, run "Record applied" in
+7. **Shortlist.** Only when the user ran `/cover-letter` directly (not from `/outreach` or a
+   batch): say `Say "applied" once the application is in and I'll mark <company> – <title> as applied.`
+   On "applied" (now or later), run "Record applied" in
    `.claude/skills/job-shortlist/SKILL.md` with the `posting.md` URL, company and title, note
    `tailored resume + cover letter`.
 
 ## Running as a batch subagent
 
-When the prompt says you are a batch subagent (or `/apply` runs this inside a batch subagent): skip step 0 (the
+When the prompt says you are a batch subagent: skip step 0 (the
 orchestrator has already pulled the sources), then do steps 1-5, don't open files, and don't ask the user anything. End with: posting dir, word count,
 `ok`, PDF path if built, and any sentence to sanity-check.

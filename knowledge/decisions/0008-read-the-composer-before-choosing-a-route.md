@@ -1,6 +1,6 @@
 # ADR 0008: Read the message composer before choosing a LinkedIn route
 
-- **Status:** accepted
+- **Status:** superseded by [0015](0015-manual-applying-and-outreach.md)
 - **Date:** 2026-10-23
 
 ## Context

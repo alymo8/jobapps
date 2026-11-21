@@ -44,6 +44,10 @@
       "<country>",
       "<region>"
     ],
+    "search_countries": [
+      "<country>",
+      "<country or region>"
+    ],
     "home_city": "<city>",
     "currency": "USD",
     "phone_country": "<Country (+code)>"
